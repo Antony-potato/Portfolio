@@ -1,46 +1,68 @@
-# Astro Starter Kit: Basics
+# 🌌 Mi Portafolio Profesional
 
-```sh
-npm create astro@latest -- --template basics
+Proyecto web personal construido con **[Astro](https://astro.build/)**, diseñado para mostrar proyectos, habilidades y trayectoria profesional de manera rápida, moderna y optimizada.
+
+## 🚀 Inicio Rápido
+
+Para ejecutar este proyecto en tu entorno local, sigue estos pasos:
+
+### 1. Clonar o descargar
+Si ya lo subiste a GitHub, puedes clonarlo:
+```bash
+git clone <URL_DE_TU_REPOSITORIO>
+cd Portafolio
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+### 2. Instalar dependencias
+Instala todas las dependencias necesarias de Node.js:
+```bash
+npm install
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+### 3. Iniciar el servidor de desarrollo
+Ejecuta el servidor de desarrollo local para ver tus cambios en tiempo real:
+```bash
+npm run dev
+```
+El proyecto estará disponible en [http://localhost:4321](http://localhost:4321).
 
-## 🧞 Commands
+---
 
-All commands are run from the root of the project, from a terminal:
+## 🛠️ Comandos Disponibles
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+| Comando | Acción |
+| :--- | :--- |
+| `npm run dev` | Inicia el servidor de desarrollo en `localhost:4321` |
+| `npm run build` | Compila el sitio de producción en `./dist/` |
+| `npm run preview` | Previsualiza la compilación de producción localmente |
+| `npm run astro` | Ejecuta comandos de la CLI de Astro |
 
-## 👀 Want to learn more?
+---
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## 🐙 Cómo subir este proyecto a GitHub
+
+Este proyecto ya está inicializado con **Git** y configurado con la rama por defecto `main`. Para subirlo a tu cuenta de GitHub, sigue estos sencillos pasos:
+
+1. **Crea un nuevo repositorio en GitHub**:
+   - Ve a [github.com/new](https://github.com/new).
+   - Nómbralo (por ejemplo, `Portafolio`).
+   - Deja el repositorio **vacío** (no agregues README, .gitignore ni licencia, ya que este proyecto ya los tiene).
+
+2. **Vincula tu repositorio local con GitHub**:
+   En la terminal del proyecto, ejecuta el siguiente comando reemplazando con tu usuario y nombre de repositorio:
+   ```bash
+   git remote add origin https://github.com/TU_USUARIO/TU_REPOSITORIO.git
+   ```
+
+3. **Sube tus cambios**:
+   Sube la rama `main` a GitHub:
+   ```bash
+   git push -u origin main
+   ```
+
+¡Listo! A partir de ese momento, cada vez que hagas cambios, solo tendrás que hacer:
+```bash
+git add .
+git commit -m "Tus cambios"
+git push
+```
