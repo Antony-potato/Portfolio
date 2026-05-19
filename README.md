@@ -1,8 +1,8 @@
-# 🌌 Mi Portafolio Profesional
+# Mi Portafolio Profesional
 
-Proyecto web personal construido con **[Astro](https://astro.build/)**, diseñado para mostrar proyectos, habilidades y trayectoria profesional de manera rápida, moderna y optimizada.
+Proyecto web personal construido con Astro, diseñado para mostrar proyectos, habilidades y trayectoria profesional de manera rápida, moderna y optimizada.
 
-## 🚀 Inicio Rápido
+## Inicio Rápido
 
 Para ejecutar este proyecto en tu entorno local, sigue estos pasos:
 
@@ -24,11 +24,11 @@ Ejecuta el servidor de desarrollo local para ver tus cambios en tiempo real:
 ```bash
 npm run dev
 ```
-El proyecto estará disponible en [http://localhost:4321](http://localhost:4321).
+El proyecto estará disponible en http://localhost:4321.
 
 ---
 
-## 🛠️ Comandos Disponibles
+## Comandos Disponibles
 
 | Comando | Acción |
 | :--- | :--- |
@@ -39,14 +39,14 @@ El proyecto estará disponible en [http://localhost:4321](http://localhost:4321)
 
 ---
 
-## 🐙 Cómo subir este proyecto a GitHub
+## Cómo subir este proyecto a GitHub
 
-Este proyecto ya está inicializado con **Git** y configurado con la rama por defecto `main`. Para subirlo a tu cuenta de GitHub, sigue estos sencillos pasos:
+Este proyecto ya está inicializado con Git y configurado con la rama por defecto `main`. Para subirlo a tu cuenta de GitHub, sigue estos pasos:
 
 1. **Crea un nuevo repositorio en GitHub**:
-   - Ve a [github.com/new](https://github.com/new).
+   - Ve a github.com/new.
    - Nómbralo (por ejemplo, `Portafolio`).
-   - Deja el repositorio **vacío** (no agregues README, .gitignore ni licencia, ya que este proyecto ya los tiene).
+   - Deja el repositorio vacío (no agregues README, .gitignore ni licencia, ya que este proyecto ya los tiene).
 
 2. **Vincula tu repositorio local con GitHub**:
    En la terminal del proyecto, ejecuta el siguiente comando reemplazando con tu usuario y nombre de repositorio:
@@ -60,7 +60,7 @@ Este proyecto ya está inicializado con **Git** y configurado con la rama por de
    git push -u origin main
    ```
 
-¡Listo! A partir de ese momento, cada vez que hagas cambios, solo tendrás que hacer:
+A partir de ese momento, cada vez que hagas cambios, solo tendrás que hacer:
 ```bash
 git add .
 git commit -m "Tus cambios"
