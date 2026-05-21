@@ -1,0 +1,147 @@
+---
+import { LANGUAGES, defaultLang } from '../i18n';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang?: Lang;
+  t: (key: string) => string;
+}
+
+const { lang = defaultLang, t } = Astro.props;
+---
+
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 md:h-20">
+      <!-- Logo -->
+      <a href={lang === defaultLang ? '/' : `/${lang}/`} class="text-lg font-bold tracking-tight">
+        <span class="gradient-text">AC</span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#about" class="nav-link text-sm text-text-secondary hover:text-text transition-colors">{t('nav.about')}</a>
+        <a href="#skills" class="nav-link text-sm text-text-secondary hover:text-text transition-colors">{t('nav.skills')}</a>
+        <a href="#projects" class="nav-link text-sm text-text-secondary hover:text-text transition-colors">{t('nav.projects')}</a>
+        <a href="#experience" class="nav-link text-sm text-text-secondary hover:text-text transition-colors">{t('nav.experience')}</a>
+        <a href="#contact" class="nav-link text-sm text-text-secondary hover:text-text transition-colors">{t('nav.contact')}</a>
+
+        <!-- Language Toggle -->
+        <div class="flex items-center gap-1 ml-4 p-1 rounded-full bg-surface border border-border">
+          {Object.entries(LANGUAGES).map(([code, { name, flag }]) => (
+            <a
+              href={code === defaultLang ? '/' : `/${code}/`}
+              class={`lang-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                lang === code
+                  ? 'bg-accent text-white'
+                  : 'text-text-secondary hover:text-text'
+              }`}
+              aria-label={name}
+            >
+              {flag} {code.toUpperCase()}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button id="mobile-menu-btn" class="md:hidden p-2 text-text-secondary hover:text-text transition-colors" aria-label="Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="md:hidden fixed inset-0 top-16 bg-bg/95 backdrop-blur-xl hidden">
+    <div class="flex flex-col items-center justify-center h-full gap-8">
+      <a href="#about" class="mobile-nav-link text-2xl font-medium text-text-secondary hover:text-text transition-colors">{t('nav.about')}</a>
+      <a href="#skills" class="mobile-nav-link text-2xl font-medium text-text-secondary hover:text-text transition-colors">{t('nav.skills')}</a>
+      <a href="#projects" class="mobile-nav-link text-2xl font-medium text-text-secondary hover:text-text transition-colors">{t('nav.projects')}</a>
+      <a href="#experience" class="mobile-nav-link text-2xl font-medium text-text-secondary hover:text-text transition-colors">{t('nav.experience')}</a>
+      <a href="#contact" class="mobile-nav-link text-2xl font-medium text-text-secondary hover:text-text transition-colors">{t('nav.contact')}</a>
+
+      <!-- Mobile Language Toggle -->
+      <div class="flex items-center gap-2 mt-4">
+        {Object.entries(LANGUAGES).map(([code, { name, flag }]) => (
+          <a
+            href={code === defaultLang ? '/' : `/${code}/`}
+            class={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              lang === code
+                ? 'bg-accent text-white'
+                : 'bg-surface border border-border text-text-secondary'
+            }`}
+          >
+            {flag} {name}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Navbar scroll behavior
+  const navbar = document.getElementById('navbar')!;
+  const mobileBtn = document.getElementById('mobile-menu-btn')!;
+  const mobileMenu = document.getElementById('mobile-menu')!;
+  let lastScroll = 0;
+
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.scrollY;
+
+    if (currentScroll > 50) {
+      navbar.style.background = 'rgba(10, 10, 10, 0.8)';
+      navbar.style.backdropFilter = 'blur(12px)';
+      navbar.style.borderBottom = '1px solid rgba(42, 42, 42, 0.5)';
+    } else {
+      navbar.style.background = 'transparent';
+      navbar.style.backdropFilter = 'none';
+      navbar.style.borderBottom = 'none';
+    }
+
+    lastScroll = currentScroll;
+  });
+
+  // Mobile menu toggle
+  mobileBtn.addEventListener('click', () => {
+    const isOpen = !mobileMenu.classList.contains('hidden');
+    if (isOpen) {
+      mobileMenu.classList.add('hidden');
+      document.body.style.overflow = '';
+    } else {
+      mobileMenu.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+  });
+
+  // Close mobile menu on link click
+  document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.add('hidden');
+      document.body.style.overflow = '';
+    });
+  });
+</script>
+
+<style>
+  .nav-link {
+    position: relative;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--color-accent);
+    transition: width 0.3s ease;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+</style>

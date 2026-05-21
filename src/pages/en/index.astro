@@ -1,17 +1,16 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { getLangFromUrl, useTranslations, defaultLang } from '../i18n';
-import type { Lang } from '../i18n';
+import Layout from '../../layouts/Layout.astro';
+import { useTranslations } from '../../i18n';
 
-import Navbar from '../components/Navbar.astro';
-import Hero from '../components/Hero.tsx';
-import About from '../components/About.astro';
-import Skills from '../components/Skills.astro';
-import Projects from '../components/Projects.astro';
-import Experience from '../components/Experience.astro';
-import Contact from '../components/Contact.astro';
+import Navbar from '../../components/Navbar.astro';
+import Hero from '../../components/Hero.tsx';
+import About from '../../components/About.astro';
+import Skills from '../../components/Skills.astro';
+import Projects from '../../components/Projects.astro';
+import Experience from '../../components/Experience.astro';
+import Contact from '../../components/Contact.astro';
 
-const lang = getLangFromUrl(Astro.url) as Lang;
+const lang = 'en';
 const t = useTranslations(lang);
 ---
 
