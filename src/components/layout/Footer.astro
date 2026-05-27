@@ -1,0 +1,68 @@
+---
+import { Icon } from "astro-icon/components";
+import { useTranslations, type Lang } from "~/i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const year = new Date().getFullYear();
+
+const socials = [
+  { icon: "simple-icons:github", href: "https://github.com/Antony-potato", label: "GitHub" },
+  { icon: "simple-icons:linkedin", href: "https://linkedin.com/in/antoniocortazar", label: "LinkedIn" },
+  { icon: "lucide:mail", href: "mailto:hola@antoniocortazar.dev", label: "Email" },
+];
+---
+
+<footer class="border-t border-ink-300 dark:border-ink-700 mt-32">
+  <div class="wrapper py-16 grid gap-12 md:grid-cols-3">
+    <div class="flex flex-col gap-4">
+      <p class="eyebrow">// ANTONIO CORTÁZAR · {year}</p>
+      <p class="text-2xl font-display font-bold leading-tight">
+        {t("footer.tagline")}
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <p class="eyebrow">// {t("nav.contact")}</p>
+      <a
+        href="mailto:hola@antoniocortazar.dev"
+        class="font-mono text-sm hover:text-accent-500 transition-colors"
+      >
+        hola@antoniocortazar.dev
+      </a>
+      <p class="font-mono text-sm text-ink-500 dark:text-ink-400">81 3511 2848</p>
+      <p class="font-mono text-sm text-ink-500 dark:text-ink-400">Cancún, Qroo · MX</p>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <p class="eyebrow">// SOCIAL</p>
+      <ul class="flex gap-4">
+        {
+          socials.map((s) => (
+            <li>
+              <a
+                href={s.href}
+                aria-label={s.label}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center justify-center size-10 border border-ink-300 dark:border-ink-700 rounded-sm text-ink-700 dark:text-ink-300 hover:border-accent-500 hover:text-accent-500 transition-colors"
+              >
+                <Icon name={s.icon} class="size-4" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrapper flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-t border-ink-300 dark:border-ink-700 py-6 font-mono text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400">
+    <p>© {year} Antonio Cortázar · {t("footer.rights")}</p>
+    <p>v0.1 · Astro 6 · Tailwind 4</p>
+  </div>
+</footer>

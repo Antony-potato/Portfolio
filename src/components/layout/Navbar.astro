@@ -1,0 +1,77 @@
+---
+import { Icon } from "astro-icon/components";
+import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+import ThemeToggle from "../islands/ThemeToggle.tsx";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const home = getLocalizedPath(lang, "/");
+
+const nav = [
+  { href: home, label: t("nav.home") },
+  { href: getLocalizedPath(lang, lang === "es" ? "/proyectos" : "/projects"), label: t("nav.projects") },
+  { href: getLocalizedPath(lang, lang === "es" ? "/servicios" : "/services"), label: t("nav.services") },
+  { href: getLocalizedPath(lang, lang === "es" ? "/contacto" : "/contact"), label: t("nav.contact") },
+];
+
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+---
+
+<header class="sticky top-0 z-50 border-b border-ink-300/60 dark:border-ink-700/60 bg-ink-50/80 dark:bg-ink-950/80 backdrop-blur-md">
+  <a
+    href="#main"
+    class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:bg-accent-500 focus:text-ink-950 focus:px-4 focus:py-2 focus:rounded-sm"
+  >
+    Skip to content
+  </a>
+
+  <nav class="wrapper flex h-16 items-center justify-between" aria-label="Primary">
+    <a href={home} class="flex items-center gap-2 font-mono text-sm font-semibold">
+      <span class="inline-block size-2 rounded-full bg-accent-500"></span>
+      <span class="uppercase tracking-wider">A. Cortázar</span>
+    </a>
+
+    <ul class="hidden md:flex items-center gap-8">
+      {
+        nav.map((item) => {
+          const itemPath = item.href.replace(/\/$/, "") || "/";
+          const isActive = itemPath === currentPath;
+          return (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive ? "page" : undefined}
+                class:list={[
+                  "font-mono text-xs uppercase tracking-wider transition-colors",
+                  isActive
+                    ? "text-accent-500"
+                    : "text-ink-700 dark:text-ink-300 hover:text-accent-500",
+                ]}
+              >
+                {item.label}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <div class="flex items-center gap-4">
+      <LanguageSwitcher lang={lang} />
+      <ThemeToggle client:idle />
+      <a
+        href={nav[nav.length - 1]?.href ?? home}
+        class="md:hidden text-ink-700 dark:text-ink-300"
+        aria-label={t("nav.contact")}
+      >
+        <Icon name="lucide:menu" class="size-5" />
+      </a>
+    </div>
+  </nav>
+</header>

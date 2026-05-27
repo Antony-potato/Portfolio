@@ -1,0 +1,97 @@
+---
+import { Icon } from "astro-icon/components";
+import Badge from "./Badge.astro";
+import type { Lang } from "~/i18n/utils";
+
+interface Props {
+  href: string;
+  title: string;
+  summary: string;
+  category: string;
+  role: string;
+  year: number;
+  client?: string | undefined;
+  stack: string[];
+  cover: string;
+  lang: Lang;
+  labels: {
+    role: string;
+    year: string;
+    stack: string;
+    client: string;
+  };
+}
+
+const {
+  href,
+  title,
+  summary,
+  category,
+  role,
+  year,
+  client,
+  stack,
+  cover,
+  labels,
+} = Astro.props;
+
+const stackPreview = stack.slice(0, 3).join(" · ");
+const stackMore = stack.length > 3 ? ` +${stack.length - 3}` : "";
+---
+
+<a
+  href={href}
+  class="group relative flex flex-col overflow-hidden border border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-900 transition-colors duration-300 hover:border-accent-500 dark:hover:border-accent-500 focus-visible:border-accent-500"
+>
+  <div class="flex items-center justify-between border-b border-ink-300 dark:border-ink-700 px-5 py-3">
+    <Badge variant="outline">{category}</Badge>
+    <Icon
+      name="lucide:arrow-up-right"
+      class="size-4 text-ink-500 dark:text-ink-400 transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-accent-500"
+    />
+  </div>
+
+  <div class="relative aspect-[16/10] overflow-hidden bg-ink-100 dark:bg-ink-800">
+    <img
+      src={cover}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      class="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+    />
+  </div>
+
+  <div class="flex flex-col gap-4 p-5">
+    <h3 class="font-display text-2xl font-bold leading-tight">{title}</h3>
+    <p class="text-sm text-ink-500 dark:text-ink-400 line-clamp-2">{summary}</p>
+  </div>
+
+  <dl class="grid grid-cols-2 border-t border-ink-300 dark:border-ink-700 text-xs">
+    <div class="border-r border-ink-300 dark:border-ink-700 px-5 py-3">
+      <dt class="font-mono uppercase tracking-wider text-ink-400 dark:text-ink-500">
+        {labels.stack}
+      </dt>
+      <dd class="mt-1 font-mono text-ink-950 dark:text-ink-100">
+        {stackPreview}{stackMore}
+      </dd>
+    </div>
+    <div class="px-5 py-3">
+      <dt class="font-mono uppercase tracking-wider text-ink-400 dark:text-ink-500">
+        {labels.year}
+      </dt>
+      <dd class="mt-1 font-mono text-ink-950 dark:text-ink-100">{year}</dd>
+    </div>
+    <div class="border-t border-r border-ink-300 dark:border-ink-700 px-5 py-3">
+      <dt class="font-mono uppercase tracking-wider text-ink-400 dark:text-ink-500">
+        {labels.role}
+      </dt>
+      <dd class="mt-1 font-mono text-ink-950 dark:text-ink-100">{role}</dd>
+    </div>
+    <div class="border-t border-ink-300 dark:border-ink-700 px-5 py-3">
+      <dt class="font-mono uppercase tracking-wider text-ink-400 dark:text-ink-500">
+        {labels.client}
+      </dt>
+      <dd class="mt-1 font-mono text-ink-950 dark:text-ink-100">{client ?? "—"}</dd>
+    </div>
+  </dl>
+</a>

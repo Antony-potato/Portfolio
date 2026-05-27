@@ -1,0 +1,40 @@
+---
+title: "Pocky"
+summary: "Mascota virtual PWA con sincronización en tiempo real entre dispositivos. Funciona en iOS y Android desde la web."
+role: "Fullstack Developer"
+year: 2025
+client: "Proyecto personal"
+stack: ["React", "Firebase", "TypeScript", "PWA", "Service Workers"]
+category: "pwa"
+liveUrl: "https://pocky.app"
+repoUrl: "https://github.com/Antony-potato/pocky"
+cover: "/assets/stock-3.jpg"
+gallery: ["/assets/stock-3.jpg"]
+featured: true
+order: 3
+lang: "es"
+---
+
+## Contexto
+
+**Pocky** es una mascota virtual estilo Tamagotchi pero moderna: corre en cualquier navegador, se instala como app y mantiene el estado sincronizado entre dispositivos en tiempo real. La idea: experimentar con PWA + Firebase y ver hasta dónde se puede empujar el navegador como runtime de app móvil.
+
+## Reto
+
+- Estado en tiempo real entre iPhone y Android sin servidor propio.
+- Instalable como app desde Safari (PWA en iOS tiene caprichos).
+- Service Workers para background tasks (el bicho se pone triste si no le hablas).
+- Latencia humana — animaciones que se sientan vivas, no robóticas.
+
+## Solución
+
+- **Firebase Realtime DB** para sincronización con presence.
+- Manifest + iconos optimizados para añadir a Home Screen en iOS y Android.
+- Service Worker con estrategia de cache `stale-while-revalidate`.
+- Loop de animación con `requestAnimationFrame` y interpolación.
+
+## Resultado
+
+- Funciona como app instalable en iPhone y Android sin tienda.
+- Estado sincronizado en menos de 200 ms entre dispositivos.
+- 0 backend propio — toda la lógica vive en cliente + Firebase.

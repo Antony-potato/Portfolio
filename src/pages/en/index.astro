@@ -1,38 +1,27 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { useTranslations } from '../../i18n';
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import Hero from "~/components/sections/Hero.astro";
+import About from "~/components/sections/About.astro";
+import Stack from "~/components/sections/Stack.astro";
+import Projects from "~/components/sections/Projects.astro";
+import Experience from "~/components/sections/Experience.astro";
+import Services from "~/components/sections/Services.astro";
+import Certifications from "~/components/sections/Certifications.astro";
+import Contact from "~/components/sections/Contact.astro";
 
-import Navbar from '../../components/Navbar.astro';
-import Hero from '../../components/Hero.tsx';
-import About from '../../components/About.astro';
-import Skills from '../../components/Skills.astro';
-import Projects from '../../components/Projects.astro';
-import Experience from '../../components/Experience.astro';
-import Contact from '../../components/Contact.astro';
-
-const lang = 'en';
-const t = useTranslations(lang);
+const lang = "en" as const;
 ---
 
-<Layout lang={lang}>
-  <Navbar lang={lang} t={t} />
-
-  <!-- Hero (React + Framer Motion) -->
-  <Hero client:only="react" lang={lang} t={t} />
-
-  <About t={t} />
-  <Skills t={t} />
-  <Projects t={t} />
-  <Experience t={t} />
-  <Contact t={t} />
-
-  <!-- Footer -->
-  <footer class="border-t border-border py-8 text-center">
-    <p class="text-sm text-text-muted">
-      © {new Date().getFullYear()} Antonio Cortázar. {t('footer.rights')}.
-    </p>
-    <p class="text-xs text-text-muted mt-2 font-mono">
-      {t('footer.built')}
-    </p>
-  </footer>
-</Layout>
+<BaseLayout
+  title="Antonio Cortázar — Software Engineer"
+  description="Antonio Cortázar Jiménez portfolio. I build web and mobile products with Astro, React, Tailwind, AWS and Firebase."
+>
+  <Hero lang={lang} />
+  <About lang={lang} />
+  <Stack lang={lang} />
+  <Projects lang={lang} />
+  <Experience lang={lang} />
+  <Services lang={lang} />
+  <Certifications lang={lang} />
+  <Contact lang={lang} />
+</BaseLayout>

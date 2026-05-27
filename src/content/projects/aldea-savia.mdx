@@ -1,0 +1,40 @@
+---
+title: "Aldea Savia"
+summary: "Landing inmobiliaria para un desarrollo residencial sustentable. Carga ultrarrápida y captación de leads."
+role: "Frontend Developer"
+year: 2025
+client: "Onix Living"
+stack: ["Astro", "Tailwind", "TypeScript", "Vercel"]
+category: "web"
+liveUrl: "https://aldeasavia.mx"
+repoUrl: null
+cover: "/assets/stock-1.jpg"
+gallery: ["/assets/stock-1.jpg"]
+featured: true
+order: 1
+lang: "es"
+---
+
+## Contexto
+
+Onix Living lanzó **Aldea Savia**, un desarrollo residencial con enfoque sustentable. El equipo necesitaba una landing que comunicara los valores del proyecto (entorno natural, comunidad, calidad de vida) y al mismo tiempo capturara leads calificados sin fricción.
+
+## Reto
+
+- Tiempo de carga competitivo para tráfico mobile de campañas pagadas.
+- Galería de imágenes pesada sin penalizar Core Web Vitals.
+- SEO local — el desarrollo apuntaba a una zona geográfica específica.
+- Integración con CRM existente.
+
+## Solución
+
+- **Astro + Tailwind v4** con render estático y `<Image />` con AVIF + lazy loading.
+- Galería con `picture` responsive y precarga del primer slide para LCP estable.
+- Metadata local + schema.org `RealEstateAgent`.
+- Formulario con honeypot + integración a webhook del CRM.
+
+## Resultado
+
+- **Lighthouse mobile:** 98 Performance, 100 SEO.
+- LCP **< 1.6 s** en 4G.
+- Bundle JS final **< 25 KB**.

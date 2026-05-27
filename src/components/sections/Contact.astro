@@ -1,0 +1,54 @@
+---
+import { Icon } from "astro-icon/components";
+import SectionTitle from "../ui/SectionTitle.astro";
+import { useTranslations, type Lang } from "~/i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const channels = [
+  { icon: "lucide:mail", label: t("contact.email"), href: "mailto:hola@antoniocortazar.dev" },
+  { icon: "simple-icons:linkedin", label: t("contact.linkedin"), href: "https://linkedin.com/in/antoniocortazar" },
+  { icon: "simple-icons:github", label: t("contact.github"), href: "https://github.com/Antony-potato" },
+];
+---
+
+<section id="contact" class="wrapper py-24 md:py-32">
+  <div class="grid gap-16 lg:grid-cols-12">
+    <div class="lg:col-span-5 reveal">
+      <SectionTitle eyebrow={t("contact.eyebrow")} title={t("contact.title")} />
+      <p class="mt-8 text-lg text-ink-700 dark:text-ink-300 max-w-xl">{t("contact.body")}</p>
+    </div>
+
+    <ul class="lg:col-span-7 grid gap-4 self-center" data-stagger>
+      {
+        channels.map((c, i) => (
+          <li data-stagger-child>
+            <a
+              href={c.href}
+              target={c.href.startsWith("http") ? "_blank" : undefined}
+              rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
+              class="group flex items-center justify-between gap-6 border border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-950 px-6 py-5 hover:border-accent-500 transition-colors"
+            >
+              <div class="flex items-center gap-4">
+                <span class="font-mono text-xs uppercase tracking-wider text-ink-400 dark:text-ink-500">
+                  0{i + 1}
+                </span>
+                <Icon name={c.icon} class="size-5 text-ink-500 dark:text-ink-400 group-hover:text-accent-500" />
+                <span class="font-display text-lg font-semibold">{c.label}</span>
+              </div>
+              <Icon
+                name="lucide:arrow-up-right"
+                class="size-4 text-ink-500 dark:text-ink-400 transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-accent-500"
+              />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

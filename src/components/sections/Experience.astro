@@ -1,0 +1,100 @@
+---
+import SectionTitle from "../ui/SectionTitle.astro";
+import { useTranslations, type Lang } from "~/i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+interface Role {
+  company: string;
+  title: string;
+  period: string;
+  bullets: string[];
+}
+
+const roles: Role[] = lang === "es"
+  ? [
+      {
+        company: "Freelance",
+        title: "Desarrollo Web y Soporte TI",
+        period: `2024 — ${t("experience.current")}`,
+        bullets: [
+          "Landings inmobiliarias en Astro con SEO y performance.",
+          "Dashboards internos con Next.js y Gridstack.",
+          "PWAs con Firebase para experimentación y producto personal.",
+        ],
+      },
+      {
+        company: "Office Depot",
+        title: "Supervisor Área Tecnología",
+        period: "jun 2024 — ago 2025",
+        bullets: [
+          "Liderazgo de equipo en zona de tecnología.",
+          "Asesoría técnica y de ventas a clientes.",
+          "Gestión de inventario y exhibición.",
+        ],
+      },
+    ]
+  : [
+      {
+        company: "Freelance",
+        title: "Web Development & IT Support",
+        period: `2024 — ${t("experience.current")}`,
+        bullets: [
+          "Real-estate landings on Astro with SEO and performance focus.",
+          "Internal dashboards with Next.js and Gridstack.",
+          "PWAs with Firebase for experimentation and personal product.",
+        ],
+      },
+      {
+        company: "Office Depot",
+        title: "Technology Area Supervisor",
+        period: "Jun 2024 — Aug 2025",
+        bullets: [
+          "Team leadership in the technology area.",
+          "Technical and sales advisory.",
+          "Inventory and merchandising management.",
+        ],
+      },
+    ];
+---
+
+<section id="experience" class="wrapper py-24 md:py-32">
+  <SectionTitle eyebrow={t("experience.eyebrow")} title={t("experience.title")} class="reveal mb-16" />
+
+  <ol class="flex flex-col" data-stagger>
+    {
+      roles.map((r, i) => (
+        <li
+          data-stagger-child
+          class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 border-t border-ink-300 dark:border-ink-700 py-8 last:border-b"
+        >
+          <div class="md:col-span-1 font-mono text-xs uppercase tracking-wider text-ink-400 dark:text-ink-500">
+            0{i + 1}
+          </div>
+          <div class="md:col-span-3">
+            <p class="font-display text-2xl font-bold leading-tight">{r.company}</p>
+            <p class="mt-1 font-mono text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400">
+              {r.period}
+            </p>
+          </div>
+          <div class="md:col-span-8">
+            <p class="text-lg font-medium mb-3">{r.title}</p>
+            <ul class="flex flex-col gap-1.5 text-ink-700 dark:text-ink-300">
+              {r.bullets.map((b) => (
+                <li class="flex gap-3">
+                  <span class="text-accent-500 font-mono" aria-hidden="true">→</span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>

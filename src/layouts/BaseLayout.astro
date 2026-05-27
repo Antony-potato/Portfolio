@@ -1,0 +1,98 @@
+---
+import { ClientRouter } from "astro:transitions";
+import { Font } from "astro:assets";
+import "~/styles/global.css";
+import Navbar from "~/components/layout/Navbar.astro";
+import Footer from "~/components/layout/Footer.astro";
+import { getLangFromUrl } from "~/i18n/utils";
+import { SITE, buildTitle, type SeoProps } from "~/lib/seo";
+
+type Props = SeoProps;
+
+const lang = getLangFromUrl(Astro.url);
+const {
+  title,
+  description = SITE.defaultDescription,
+  image = SITE.defaultImage,
+  canonical = Astro.url.href,
+  type = "website",
+} = Astro.props;
+
+const fullTitle = buildTitle(title);
+const ogImageUrl = new URL(image, Astro.site ?? SITE.url).toString();
+
+const alternates = [
+  { hreflang: "es", href: new URL(Astro.url.pathname.replace(/^\/en(\/|$)/, "/"), Astro.site ?? SITE.url).toString() },
+  { hreflang: "en", href: new URL(`/en${Astro.url.pathname.replace(/^\/en/, "")}`, Astro.site ?? SITE.url).toString() },
+];
+
+const themeInit = `(() => {
+  try {
+    const saved = localStorage.getItem("theme");
+    const dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    if (dark) document.documentElement.classList.add("theme-dark");
+  } catch (e) {}
+})();`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.author} />
+    <link rel="canonical" href={canonical} />
+
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+    <link rel="alternate" hreflang="x-default" href={SITE.url} />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:locale" content={lang === "es" ? "es_MX" : "en_US"} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-mono" />
+
+    <script is:inline set:html={themeInit} />
+
+    <ClientRouter />
+  </head>
+  <body>
+    <Navbar lang={lang} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+
+    <script>
+      import { initLenis } from "~/lib/lenis";
+      import { initAnimations, teardownAnimations } from "~/lib/animations";
+
+      const boot = () => {
+        initLenis();
+        initAnimations();
+      };
+
+      boot();
+
+      document.addEventListener("astro:after-swap", () => {
+        teardownAnimations();
+        boot();
+      });
+    </script>
+  </body>
+</html>

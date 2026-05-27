@@ -1,18 +1,194 @@
 @import "tailwindcss";
 
+/* ====================================================================
+   Tokens — ver DESIGN.md §2 y §3
+   Tailwind v4 expone cada token como utilidad (bg-accent-500, etc.)
+   ==================================================================== */
 @theme {
-  --color-bg: #0a0a0a;
-  --color-bg-secondary: #111111;
-  --color-surface: #1a1a1a;
-  --color-surface-hover: #222222;
-  --color-border: #2a2a2a;
-  --color-border-hover: #3a3a3a;
-  --color-text: #f5f5f5;
-  --color-text-secondary: #a0a0a0;
-  --color-text-muted: #666666;
-  --color-accent: #6366f1;
-  --color-accent-hover: #818cf8;
-  --color-accent-glow: rgba(99, 102, 241, 0.15);
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  /* Neutrales */
+  --color-ink-50: #f4f2ed;
+  --color-ink-100: #e8e6e1;
+  --color-ink-200: #d6d3cd;
+  --color-ink-300: #b8b8be;
+  --color-ink-400: #8c8c93;
+  --color-ink-500: #6b6b75;
+  --color-ink-600: #4e4e57;
+  --color-ink-700: #26262d;
+  --color-ink-800: #1a1a1f;
+  --color-ink-900: #111114;
+  --color-ink-950: #0a0a0b;
+
+  /* Acento principal — naranja TE / ChainGPT */
+  --color-accent-50: #fff4eb;
+  --color-accent-100: #ffe1cf;
+  --color-accent-200: #ffc299;
+  --color-accent-300: #ffa366;
+  --color-accent-400: #ff8a4d;
+  --color-accent-500: #ff6a1a;
+  --color-accent-600: #e25510;
+  --color-accent-700: #b8420a;
+  --color-accent-800: #8a3208;
+  --color-accent-900: #5a2105;
+
+  /* Glow secundarios (WebGL, decoración del hero) */
+  --color-glow-cyan: #4cc9ff;
+  --color-glow-magenta: #ff3d8a;
+
+  /* Semánticos */
+  --color-success: #2fbf71;
+  --color-warning: #f2b134;
+  --color-danger: #ef4444;
+
+  /* Tipografía */
+  --font-sans: "Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, "JetBrains Mono", monospace;
+  --font-display: var(--font-sans);
+
+  /* Escala tipográfica */
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.2;
+  --text-display: clamp(3.5rem, 12vw, 9rem);
+  --text-display--line-height: 0.9;
+
+  /* Easings */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* Spacing extra */
+  --spacing-section-mobile: 5rem;
+  --spacing-section-tablet: 7.5rem;
+  --spacing-section: 10rem;
+}
+
+/* ====================================================================
+   Dark mode toggle — la clase `theme-dark` la setea ThemeToggle island
+   ==================================================================== */
+@custom-variant dark (&:where(.theme-dark, .theme-dark *));
+
+/* ====================================================================
+   Base — resets y defaults
+   ==================================================================== */
+@layer base {
+  :root {
+    color-scheme: light dark;
+    --bg: var(--color-ink-50);
+    --fg: var(--color-ink-950);
+    --muted: var(--color-ink-500);
+    --border: var(--color-ink-300);
+  }
+
+  :root.theme-dark {
+    --bg: var(--color-ink-950);
+    --fg: var(--color-ink-100);
+    --muted: var(--color-ink-400);
+    --border: var(--color-ink-700);
+  }
+
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100dvh;
+    line-height: 1.6;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-accent-500);
+    color: var(--color-ink-950);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    color: var(--fg);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    font-weight: 800;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ====================================================================
+   Utilidades — patrones recurrentes
+   ==================================================================== */
+@layer components {
+  .wrapper {
+    width: 100%;
+    max-width: 90rem;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 4rem);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .grid-lines {
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 8rem 8rem;
+    opacity: 0.25;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Reveal — usado por GSAP ScrollTrigger */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    will-change: transform, opacity;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 800ms var(--ease-out-expo),
+      transform 800ms var(--ease-out-expo);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }

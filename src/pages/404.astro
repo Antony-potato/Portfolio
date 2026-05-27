@@ -1,0 +1,23 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import Button from "~/components/ui/Button.astro";
+import { useTranslations, getLangFromUrl } from "~/i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<BaseLayout title="404">
+  <section class="wrapper min-h-[70vh] flex flex-col items-center justify-center gap-8 text-center py-32">
+    <p class="eyebrow">// 404 — NOT FOUND</p>
+    <h1 class="font-display font-black text-[clamp(5rem,18vw,12rem)] leading-none tracking-[-0.05em]">
+      404
+    </h1>
+    <p class="text-2xl font-display font-bold">{t("404.title")}</p>
+    <p class="max-w-md text-ink-500 dark:text-ink-400">{t("404.body")}</p>
+    <Button href={lang === "es" ? "/" : "/en"} variant="primary" size="md">
+      {t("404.cta")}
+      <span aria-hidden="true">→</span>
+    </Button>
+  </section>
+</BaseLayout>

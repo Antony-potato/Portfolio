@@ -1,0 +1,67 @@
+---
+import { getCollection } from "astro:content";
+import SectionTitle from "../ui/SectionTitle.astro";
+import ProjectCard from "../ui/ProjectCard.astro";
+import Button from "../ui/Button.astro";
+import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const all = await getCollection("projects", ({ data }) => data.lang === lang || data.lang === "es");
+const featured = all
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const projectsBase = lang === "es" ? "/proyectos" : "/projects";
+const allHref = getLocalizedPath(lang, projectsBase);
+
+const labels = {
+  role: t("projects.role"),
+  year: t("projects.year"),
+  stack: t("projects.stack"),
+  client: t("projects.client"),
+};
+---
+
+<section id="projects" class="wrapper py-24 md:py-32">
+  <SectionTitle
+    eyebrow={t("projects.eyebrow")}
+    title={t("projects.title")}
+    description={t("projects.subtitle")}
+    class="reveal mb-16"
+  />
+
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-stagger>
+    {
+      featured.map((p) => (
+        <div data-stagger-child>
+          <ProjectCard
+            href={getLocalizedPath(lang, `${projectsBase}/${p.id}`)}
+            title={p.data.title}
+            summary={p.data.summary}
+            category={p.data.category}
+            role={p.data.role}
+            year={p.data.year}
+            client={p.data.client}
+            stack={p.data.stack}
+            cover={p.data.cover}
+            lang={lang}
+            labels={labels}
+          />
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="mt-12 flex justify-center">
+    <Button href={allHref} variant="secondary" size="md">
+      {t("projects.all")}
+      <span aria-hidden="true">→</span>
+    </Button>
+  </div>
+</section>

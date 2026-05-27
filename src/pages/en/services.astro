@@ -1,0 +1,12 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import Services from "~/components/sections/Services.astro";
+import Contact from "~/components/sections/Contact.astro";
+
+const lang = "en" as const;
+---
+
+<BaseLayout title="Services — CRZR" description="IT support and web development services via CRZR.">
+  <Services lang={lang} />
+  <Contact lang={lang} />
+</BaseLayout>

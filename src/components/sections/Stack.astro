@@ -1,0 +1,83 @@
+---
+import { Icon } from "astro-icon/components";
+import SectionTitle from "../ui/SectionTitle.astro";
+import { useTranslations, type Lang } from "~/i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+interface Tech {
+  name: string;
+  icon: string;
+}
+
+const groups: { titleKey: "stack.frontend" | "stack.backend" | "stack.infra" | "stack.specialty"; items: Tech[] }[] = [
+  {
+    titleKey: "stack.frontend",
+    items: [
+      { name: "Astro", icon: "simple-icons:astro" },
+      { name: "Next.js", icon: "simple-icons:nextdotjs" },
+      { name: "Vue 3", icon: "simple-icons:vuedotjs" },
+      { name: "React 19", icon: "simple-icons:react" },
+      { name: "TypeScript", icon: "simple-icons:typescript" },
+      { name: "Tailwind CSS", icon: "simple-icons:tailwindcss" },
+    ],
+  },
+  {
+    titleKey: "stack.backend",
+    items: [
+      { name: "Node.js", icon: "simple-icons:nodedotjs" },
+      { name: "Express", icon: "simple-icons:express" },
+      { name: "Laravel", icon: "simple-icons:laravel" },
+      { name: "Spring Boot", icon: "simple-icons:springboot" },
+      { name: "PHP", icon: "simple-icons:php" },
+    ],
+  },
+  {
+    titleKey: "stack.infra",
+    items: [
+      { name: "AWS", icon: "simple-icons:amazonaws" },
+      { name: "Docker", icon: "simple-icons:docker" },
+      { name: "Kubernetes", icon: "simple-icons:kubernetes" },
+      { name: "GitHub Actions", icon: "simple-icons:githubactions" },
+      { name: "Vercel", icon: "simple-icons:vercel" },
+    ],
+  },
+  {
+    titleKey: "stack.specialty",
+    items: [
+      { name: "Firebase", icon: "simple-icons:firebase" },
+      { name: "PWA", icon: "simple-icons:pwa" },
+      { name: "Microservicios", icon: "lucide:boxes" },
+      { name: "CI/CD", icon: "lucide:git-pull-request-arrow" },
+      { name: "Snipe-IT", icon: "lucide:package-search" },
+    ],
+  },
+];
+---
+
+<section id="stack" class="wrapper py-24 md:py-32">
+  <SectionTitle eyebrow={t("stack.eyebrow")} title={t("stack.title")} class="reveal mb-16" />
+
+  <div class="grid gap-px bg-ink-300 dark:bg-ink-700 border border-ink-300 dark:border-ink-700 md:grid-cols-2 lg:grid-cols-4">
+    {
+      groups.map((g) => (
+        <div class="bg-ink-50 dark:bg-ink-950 p-6 flex flex-col gap-4">
+          <p class="eyebrow">// {t(g.titleKey)}</p>
+          <ul class="flex flex-col gap-2">
+            {g.items.map((tech) => (
+              <li class="flex items-center gap-3 font-mono text-sm">
+                <Icon name={tech.icon} class="size-4 text-ink-500 dark:text-ink-400 shrink-0" />
+                <span>{tech.name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>

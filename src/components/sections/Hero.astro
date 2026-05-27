@@ -1,0 +1,72 @@
+---
+import Button from "../ui/Button.astro";
+import MetadataStrip from "../ui/MetadataStrip.astro";
+import MetaBalls from "../islands/MetaBalls.tsx";
+import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const projectsPath = getLocalizedPath(lang, lang === "es" ? "/proyectos" : "/projects");
+const contactPath = getLocalizedPath(lang, lang === "es" ? "/contacto" : "/contact");
+
+const stripItems = [
+  { label: t("strip.available") },
+  { label: t("strip.year") },
+  { label: t("strip.location") },
+  { label: t("strip.role") },
+  { label: t("strip.signal") },
+];
+---
+
+<section class="relative isolate overflow-hidden border-b border-ink-300 dark:border-ink-700">
+  <div class="absolute inset-0 -z-20 grid-lines pointer-events-none" aria-hidden="true"></div>
+  <MetaBalls client:visible opacity={0.55} count={6} />
+
+  <div class="wrapper relative z-10 grid gap-16 py-24 md:py-32 lg:grid-cols-12 lg:gap-8">
+    <div class="lg:col-span-9 flex flex-col gap-8">
+      <p class="eyebrow">{t("hero.eyebrow")}</p>
+
+      <h1 class="font-display font-black leading-[0.95] tracking-[-0.04em] text-[clamp(2.75rem,8vw,7rem)] text-balance">
+        {t("hero.title")}
+      </h1>
+
+      <p class="max-w-2xl text-lg md:text-xl text-ink-500 dark:text-ink-400">
+        {t("hero.subtitle")}
+      </p>
+
+      <div class="flex flex-wrap items-center gap-4">
+        <Button href={projectsPath} variant="primary" size="lg">
+          {t("hero.cta.primary")}
+          <span aria-hidden="true">→</span>
+        </Button>
+        <Button href={contactPath} variant="secondary" size="lg">
+          {t("hero.cta.secondary")}
+        </Button>
+      </div>
+    </div>
+
+    <aside class="lg:col-span-3 flex lg:flex-col gap-6 lg:gap-4 lg:border-l lg:border-ink-300 dark:lg:border-ink-700 lg:pl-6">
+      <div>
+        <p class="eyebrow">// ROLE</p>
+        <p class="mt-1 font-mono text-sm">Software Engineer</p>
+      </div>
+      <div>
+        <p class="eyebrow">// LOCATION</p>
+        <p class="mt-1 font-mono text-sm">Cancún, Qroo · MX</p>
+      </div>
+      <div>
+        <p class="eyebrow">// VERSION</p>
+        <p class="mt-1 font-mono text-sm">v0.1 — 2026</p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="wrapper pb-8">
+    <MetadataStrip items={stripItems} />
+  </div>
+</section>

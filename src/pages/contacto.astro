@@ -1,0 +1,10 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import Contact from "~/components/sections/Contact.astro";
+
+const lang = "es" as const;
+---
+
+<BaseLayout title="Contacto" description="Hablemos. Disponible para freelance, prácticas y proyectos remunerados.">
+  <Contact lang={lang} />
+</BaseLayout>

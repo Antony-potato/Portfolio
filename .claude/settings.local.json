@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:antony-potato.github.io)",
+      "Read(//c/Users/Antonio C/.claude/projects/c--Users-Antonio-C-Desktop-Proyectos-Personal-Portafolio/memory/**)",
+      "Bash(git -C \"c:/Users/Antonio C/Desktop/Proyectos/Personal/Portafolio\" status)",
+      "WebSearch",
+      "WebFetch(domain:www.reactbits.dev)",
+      "WebFetch(domain:www.worldquantfoundry.com)",
+      "Bash(npm --version)",
+      "Bash(npm create *)",
+      "Bash(npx astro *)",
+      "Bash(npm i *)"
+    ]
+  }
+}

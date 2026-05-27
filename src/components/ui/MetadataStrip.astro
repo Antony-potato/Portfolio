@@ -1,0 +1,37 @@
+---
+interface Item {
+  label: string;
+  value?: string;
+}
+
+interface Props {
+  items: Item[];
+  class?: string;
+}
+
+const { items, class: className = "" } = Astro.props;
+---
+
+<div
+  class={`flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-ink-300 dark:border-ink-700 py-3 font-mono text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400 ${className}`}
+>
+  {
+    items.map((item, i) => (
+      <span class="flex items-center gap-2">
+        {item.value ? (
+          <>
+            <span class="text-ink-400 dark:text-ink-500">{item.label}</span>
+            <span class="text-ink-950 dark:text-ink-100">{item.value}</span>
+          </>
+        ) : (
+          item.label
+        )}
+        {i < items.length - 1 && (
+          <span class="ml-6 text-ink-300 dark:text-ink-700" aria-hidden="true">
+            ◆
+          </span>
+        )}
+      </span>
+    ))
+  }
+</div>

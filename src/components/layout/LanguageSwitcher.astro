@@ -1,0 +1,28 @@
+---
+import { languages, type Lang } from "~/i18n/ui";
+import { getAlternateLang, getLocalizedPath } from "~/i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const other = getAlternateLang(lang);
+
+const currentPath = Astro.url.pathname;
+const pathWithoutLang =
+  lang === "es" ? currentPath : currentPath.replace(/^\/en(\/|$)/, "/");
+const targetPath = getLocalizedPath(other, pathWithoutLang);
+---
+
+<a
+  href={targetPath}
+  class="font-mono text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400 hover:text-accent-500 transition-colors"
+  aria-label={`Switch language to ${languages[other]}`}
+>
+  <span aria-current={false} class="text-ink-950 dark:text-ink-100">
+    {languages[lang]}
+  </span>
+  <span class="text-ink-300 dark:text-ink-700">/</span>
+  <span>{languages[other]}</span>
+</a>

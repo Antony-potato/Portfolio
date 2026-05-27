@@ -1,0 +1,38 @@
+---
+import { getCollection, render } from "astro:content";
+import ProjectLayout from "~/layouts/ProjectLayout.astro";
+
+export async function getStaticPaths() {
+  const all = await getCollection("projects");
+  const sorted = all.sort((a, b) => a.data.order - b.data.order);
+  return sorted.map((entry, i) => {
+    const next = sorted[(i + 1) % sorted.length];
+    return {
+      params: { slug: entry.id },
+      props: { entry, next },
+    };
+  });
+}
+
+const { entry, next } = Astro.props;
+const { Content } = await render(entry);
+const lang = "es" as const;
+---
+
+<ProjectLayout
+  title={entry.data.title}
+  summary={entry.data.summary}
+  role={entry.data.role}
+  year={entry.data.year}
+  client={entry.data.client}
+  stack={entry.data.stack}
+  category={entry.data.category}
+  cover={entry.data.cover}
+  liveUrl={entry.data.liveUrl}
+  repoUrl={entry.data.repoUrl}
+  nextSlug={next?.id}
+  nextTitle={next?.data.title}
+  lang={lang}
+>
+  <Content />
+</ProjectLayout>

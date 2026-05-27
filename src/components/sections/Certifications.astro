@@ -1,0 +1,47 @@
+---
+import SectionTitle from "../ui/SectionTitle.astro";
+import { useTranslations, type Lang } from "~/i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+interface Cert {
+  name: string;
+  issuer: string;
+  date: string;
+}
+
+const certs: Cert[] = [
+  { name: "AWS Academy Graduate — Data Engineering", issuer: "AWS Academy", date: "2025-12" },
+  { name: "Big Data Foundations — Level 1 & 2", issuer: "IBM", date: "2026-04" },
+  { name: "EF SET English C1 Advanced (67/100)", issuer: "EF SET", date: "2025-07" },
+  { name: "Figma Avanzado", issuer: "LinkedIn Learning", date: "2025" },
+];
+---
+
+<section id="certifications" class="wrapper py-24 md:py-32">
+  <SectionTitle eyebrow={t("certs.eyebrow")} title={t("certs.title")} class="reveal mb-16" />
+
+  <ul class="grid gap-px bg-ink-300 dark:bg-ink-700 border border-ink-300 dark:border-ink-700 md:grid-cols-2" data-stagger>
+    {
+      certs.map((c, i) => (
+        <li data-stagger-child class="bg-ink-50 dark:bg-ink-950 p-6 flex flex-col gap-2">
+          <div class="flex items-baseline gap-3">
+            <span class="font-mono text-xs uppercase tracking-wider text-ink-400 dark:text-ink-500">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <p class="font-mono text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400">
+              {c.date}
+            </p>
+          </div>
+          <p class="font-display text-lg font-bold leading-tight">{c.name}</p>
+          <p class="text-sm text-ink-500 dark:text-ink-400">{c.issuer}</p>
+        </li>
+      ))
+    }
+  </ul>
+</section>
