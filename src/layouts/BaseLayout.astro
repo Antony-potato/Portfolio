@@ -29,8 +29,7 @@ const alternates = [
 const themeInit = `(() => {
   try {
     const saved = localStorage.getItem("theme");
-    const dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-    if (dark) document.documentElement.classList.add("theme-dark");
+    if (saved === "dark") document.documentElement.classList.add("theme-dark");
   } catch (e) {}
 })();`;
 ---
