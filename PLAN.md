@@ -1,4 +1,4 @@
-# Plan de Portafolio — Antonio Cortázar Jiménez
+# Plan de Portafolio — Antonio Cortazar Jimenez
 
 > **Versión:** 1.0 — 2026-05-27
 > **Objetivo doble:** (1) mostrar capacidad técnica para reclutadores y (2) capturar leads hacia los servicios comerciales (CRZR).
@@ -10,7 +10,7 @@
 
 | Campo | Valor |
 |---|---|
-| Nombre | Antonio Cortázar Jiménez |
+| Nombre | Antonio Cortazar Jimenez |
 | Título | Ingeniero en Desarrollo de Software (estudiante, Tecmilenio) |
 | Pitch corto | "Construyo productos web y móviles que cierran el bucle entre diseño, código e infraestructura." |
 | Stack frontend | Astro, Next.js, Vue 3, React 19, TypeScript, Tailwind |

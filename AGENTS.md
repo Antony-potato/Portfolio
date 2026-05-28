@@ -8,7 +8,7 @@
 
 ## 1. Identidad del proyecto
 
-- **Nombre:** Portafolio personal de Antonio Cortázar Jiménez.
+- **Nombre:** Portafolio personal de Antonio Cortazar Jimenez.
 - **Propósito:** mostrar trabajo + canalizar leads hacia CRZR (marca de servicios).
 - **Dominio target:** por definir (ver PLAN.md §12).
 - **Hosting:** Vercel (preferido) con preview deploys por PR.

@@ -8,13 +8,13 @@ export interface SeoProps {
 }
 
 export const SITE = {
-  name: "Antonio Cortázar",
+  name: "Antonio Cortazar",
   url: "https://antoniocortazar.dev",
-  defaultTitle: "Antonio Cortázar — Software Engineer",
-  defaultDescription: "Portafolio de Antonio Cortázar Jiménez. Frontend, PWA y DevOps. Astro, React, Tailwind, AWS.",
+  defaultTitle: "Antonio Cortazar — Software Engineer",
+  defaultDescription: "Portafolio de Antonio Cortazar Jimenez. Frontend, PWA y DevOps. Astro, React, Tailwind, AWS.",
   defaultImage: "/og-default.png",
   twitter: "@antony_cj",
-  author: "Antonio Cortázar Jiménez",
+  author: "Antonio Cortazar Jimenez",
 };
 
 export function buildTitle(title?: string): string {
