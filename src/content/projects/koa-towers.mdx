@@ -1,10 +1,10 @@
 ---
 title: "Koa Towers"
-summary: "Landing para torre residencial vertical de gama media-alta. Foco en branding y conversión."
+summary: "Visor interactivo premium de disponibilidad para desarrollo residencial. Integración de inventario en tiempo real con Google Sheets."
 role: "Frontend Developer"
-year: 2025
+year: 2026
 client: "Onix Living"
-stack: ["Astro", "Tailwind", "TypeScript", "Vercel"]
+stack: ["Astro", "Vanilla JS", "CSS Custom Properties", "Google Sheets API"]
 category: "web"
 liveUrl: "https://koatowers.mx"
 repoUrl: null
@@ -15,26 +15,31 @@ order: 2
 lang: "es"
 ---
 
-## Contexto
+## El Proyecto
 
-**Koa Towers** es una torre residencial vertical dirigida a un segmento medio-alto. La marca pedía una landing con peso editorial — más cercana a una revista de arquitectura que a un anuncio inmobiliario tradicional.
+**Koa Towers** es un desarrollo residencial vertical premium en Cancún, creado por **Onix Living**. El proyecto nació con el objetivo de revolucionar la forma en que el equipo de ventas presenta el complejo y gestiona la disponibilidad de departamentos, evolucionando de herramientas estáticas a una experiencia digital inmersiva y siempre actualizada.
 
-## Reto
+## El Desafío
 
-- Diferenciarse visualmente de Aldea Savia (mismo cliente, distinto tono).
-- Galería de planos + renders en alta resolución.
-- Microcopy en tono aspiracional sin caer en lo cursi.
-- Form de agendamiento de visita con calendario.
+El principal cuello de botella operativo del cliente era el control de inventario. La disponibilidad dependía de actualizaciones manuales y la constante exportación de documentos PDF que quedaban obsoletos de inmediato. 
 
-## Solución
+El proyecto requería resolver dos frentes críticos:
+1. **Sincronización sin fricción:** Lograr que el inventario se actualizara en tiempo real, sin requerir conocimientos técnicos por parte del equipo administrativo.
+2. **Presentación de alto nivel:** Desarrollar un explorador interactivo que transmitiera la exclusividad del desarrollo, mostrando de forma clara las torres, los planos y su ubicación exacta.
 
-- Tipografía display extragrande con tracking negativo (estilo editorial).
-- Composición asimétrica de imágenes con masonry adaptativo.
-- Lenis para smooth scroll que refuerza la cadencia editorial.
-- Integración con servicio de agendamiento externo.
+## La Solución
 
-## Resultado
+Construimos una plataforma enfocada en la autonomía del cliente y el rendimiento extremo:
 
-- **Lighthouse mobile:** 96 Performance, 100 SEO.
-- Tasa de conversión de agendamiento medida desde campañas pagadas.
-- Visual identity distinta de Aldea Savia sin perder consistencia de marca paraguas.
+- **Gestión desde Google Sheets:** Diseñamos un flujo de datos dinámico donde el cliente solo modifica una hoja de cálculo. El sitio consume esta información para actualizar colores, estado y precios directamente sobre los planos interactivos al instante.
+- **Exploración Inmersiva:** Implementamos un visor 3D cinemático sincronizado con el *scroll* del usuario y planos 2D interactivos con capacidades de zoom y paneo, permitiendo descubrir cada unidad a detalle.
+- **Contexto Preciso:** Integramos la API de Google Maps para ofrecer una experiencia de ubicación elegante y útil para los prospectos.
+- **Rendimiento Ultrarrápido:** Al utilizar Astro junto con tecnologías web nativas en lugar de frameworks pesados, garantizamos una navegación fluida e instantánea en cualquier dispositivo móvil o de escritorio.
+
+## El Impacto
+
+La plataforma se convirtió en el principal motor digital de ventas del desarrollo:
+
+- **Eficiencia Operativa:** El equipo eliminó por completo el uso de PDFs estáticos, manejando su inventario de manera centralizada y segura.
+- **Percepción de Valor:** La combinación de una interfaz ultrarrápida y visuales inmersivos elevó la presentación del producto, facilitando el proceso de compra.
+- **Experiencia Premium:** El rendimiento excepcional de la web refleja la calidad y exclusividad que Onix Living ofrece en el mundo físico.

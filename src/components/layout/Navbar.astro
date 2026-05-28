@@ -1,8 +1,8 @@
 ---
-import { Icon } from "astro-icon/components";
-import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
-import LanguageSwitcher from "./LanguageSwitcher.astro";
-import ThemeToggle from "../islands/ThemeToggle.tsx";
+import { useTranslations, getLocalizedPath, getAlternateLang, type Lang } from "~/i18n/utils";
+import { languages } from "~/i18n/ui";
+import PillNav from "../islands/PillNav.tsx";
+import "../islands/PillNav.css";
 
 interface Props {
   lang: Lang;
@@ -13,7 +13,7 @@ const t = useTranslations(lang);
 
 const home = getLocalizedPath(lang, "/");
 
-const nav = [
+const items = [
   { href: home, label: t("nav.home") },
   { href: getLocalizedPath(lang, lang === "es" ? "/proyectos" : "/projects"), label: t("nav.projects") },
   { href: getLocalizedPath(lang, lang === "es" ? "/servicios" : "/services"), label: t("nav.services") },
@@ -21,57 +21,68 @@ const nav = [
 ];
 
 const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+const activeItem = items.find((i) => (i.href.replace(/\/$/, "") || "/") === currentPath);
+const activeHref = activeItem?.href ?? home;
+
+const other = getAlternateLang(lang);
+const pathWithoutLang =
+  lang === "es" ? Astro.url.pathname : Astro.url.pathname.replace(/^\/en(\/|$)/, "/");
+const targetHref = getLocalizedPath(other, pathWithoutLang);
 ---
 
-<header class="sticky top-0 z-50 border-b border-ink-300/60 dark:border-ink-700/60 bg-ink-50/80 dark:bg-ink-950/80 backdrop-blur-md">
-  <a
-    href="#main"
-    class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:bg-accent-500 focus:text-ink-950 focus:px-4 focus:py-2 focus:rounded-sm"
-  >
-    Skip to content
-  </a>
+<a
+  href="#main"
+  class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-accent-500 focus:text-ink-950 focus:px-4 focus:py-2 focus:rounded-sm"
+>
+  Skip to content
+</a>
 
-  <nav class="wrapper flex h-16 items-center justify-between" aria-label="Primary">
-    <a href={home} class="flex items-center gap-2 font-mono text-sm font-semibold">
-      <span class="inline-block size-2 rounded-full bg-accent-500"></span>
-      <span class="uppercase tracking-wider">A. Cortázar</span>
-    </a>
+<div class="floating-nav">
+  <PillNav
+    logo="/logo-ac.svg"
+    logoAlt="Antonio Cortázar"
+    items={items}
+    activeHref={activeHref}
+    baseColor="var(--pill-base)"
+    pillColor="var(--pill-bg-color)"
+    pillTextColor="var(--pill-text-color)"
+    hoveredPillTextColor="var(--pill-hover-text)"
+    languageToggle={{
+      currentCode: languages[lang],
+      targetHref,
+      ariaLabel: `Switch language to ${languages[other]}`,
+    }}
+    themeToggle
+    client:load
+  />
+</div>
 
-    <ul class="hidden md:flex items-center gap-8">
-      {
-        nav.map((item) => {
-          const itemPath = item.href.replace(/\/$/, "") || "/";
-          const isActive = itemPath === currentPath;
-          return (
-            <li>
-              <a
-                href={item.href}
-                aria-current={isActive ? "page" : undefined}
-                class:list={[
-                  "font-mono text-xs uppercase tracking-wider transition-colors",
-                  isActive
-                    ? "text-accent-500"
-                    : "text-ink-700 dark:text-ink-300 hover:text-accent-500",
-                ]}
-              >
-                {item.label}
-              </a>
-            </li>
-          );
-        })
-      }
-    </ul>
+<style is:global>
+  :root {
+    --pill-base: #0a0a0b;
+    --pill-bg-color: #f4f2ed;
+    --pill-text-color: #0a0a0b;
+    --pill-hover-text: #f4f2ed;
+  }
 
-    <div class="flex items-center gap-4">
-      <LanguageSwitcher lang={lang} />
-      <ThemeToggle client:idle />
-      <a
-        href={nav[nav.length - 1]?.href ?? home}
-        class="md:hidden text-ink-700 dark:text-ink-300"
-        aria-label={t("nav.contact")}
-      >
-        <Icon name="lucide:menu" class="size-5" />
-      </a>
-    </div>
-  </nav>
-</header>
+  :root.theme-dark {
+    --pill-base: #f4f2ed;
+    --pill-bg-color: #0a0a0b;
+    --pill-text-color: #f4f2ed;
+    --pill-hover-text: #0a0a0b;
+  }
+
+  .floating-nav {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    pointer-events: none;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .floating-nav > * {
+    pointer-events: auto;
+  }
+</style>

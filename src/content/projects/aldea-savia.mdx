@@ -1,12 +1,12 @@
 ---
 title: "Aldea Savia"
-summary: "Landing inmobiliaria para un desarrollo residencial sustentable. Carga ultrarrápida y captación de leads."
-role: "Frontend Developer"
-year: 2025
+summary: "Plataforma interactiva de ventas y presentación premium para un desarrollo residencial en Tulum. Herramienta de alto rendimiento que digitaliza el inventario."
+role: "Desarrollo Web"
+year: 2026
 client: "Onix Living"
-stack: ["Astro", "Tailwind", "TypeScript", "Vercel"]
+stack: ["Desarrollo a Medida", "Interactividad 3D/2D", "Integración con Google Sheets", "Mapas Personalizados"]
 category: "web"
-liveUrl: "https://aldeasavia.mx"
+liveUrl: "https://aldeasavia.onixliving.mx"
 repoUrl: null
 cover: "/assets/stock-1.jpg"
 gallery: ["/assets/stock-1.jpg"]
@@ -17,24 +17,30 @@ lang: "es"
 
 ## Contexto
 
-Onix Living lanzó **Aldea Savia**, un desarrollo residencial con enfoque sustentable. El equipo necesitaba una landing que comunicara los valores del proyecto (entorno natural, comunidad, calidad de vida) y al mismo tiempo capturara leads calificados sin fricción.
+Onix Living lanzó **Aldea Savia**, un desarrollo residencial premium con enfoque sustentable en Tulum, México. Tradicionalmente, la fuerza de ventas gestionaba y presentaba la disponibilidad de lotes y unidades mediante hojas de cálculo manuales y extensos documentos PDF. Este proceso requería actualización constante y a menudo resultaba en información desactualizada frente al cliente. 
 
-## Reto
+El objetivo fue transformar esta experiencia creando una plataforma interactiva en tiempo real. Esta herramienta serviría como el principal apoyo de ventas a pie de obra, comunicando los valores del proyecto a través de una estética editorial de "Quiet Luxury", al mismo tiempo que agilizaba la gestión del inventario.
 
-- Tiempo de carga competitivo para tráfico mobile de campañas pagadas.
-- Galería de imágenes pesada sin penalizar Core Web Vitals.
-- SEO local — el desarrollo apuntaba a una zona geográfica específica.
-- Integración con CRM existente.
+## El Reto
 
-## Solución
+- **Gestión de inventario simplificada:** El equipo administrativo necesitaba poder actualizar la disponibilidad (lotes disponibles, reservados, vendidos) de forma inmediata y sencilla, sin tener que aprender a usar plataformas de gestión complejas.
+- **Rendimiento impecable en campo:** Los asesores inmobiliarios utilizan la herramienta directamente en el sitio de construcción en Tulum, donde la conexión móvil suele ser inestable. La plataforma debía cargar de manera instantánea bajo cualquier condición de red.
+- **Interactividad inmersiva y fluida:** Se requería una experiencia de navegación táctil avanzada (modelos 3D y planos interactivos con zoom y paneo) que funcionara con total suavidad en dispositivos móviles, sin sacrificar la velocidad de carga.
+- **Diseño de marca cohesivo:** La integración de mapas y herramientas de ubicación debía adaptarse perfectamente a la elegante paleta monocromática y de tonos tierra de la marca, alejándose de las visualizaciones de mapas genéricas.
 
-- **Astro + Tailwind v4** con render estático y `<Image />` con AVIF + lazy loading.
-- Galería con `picture` responsive y precarga del primer slide para LCP estable.
-- Metadata local + schema.org `RealEstateAgent`.
-- Formulario con honeypot + integración a webhook del CRM.
+## La Solución
 
-## Resultado
+- **Sincronización en tiempo real:** Desarrollamos un sistema inteligente que conecta la plataforma directamente con una hoja de cálculo de Google Sheets. Esto permite que cualquier cambio realizado por administración se refleje de manera instantánea en la web, manteniendo siempre el inventario al día de la manera más accesible posible.
+- **Experiencia de visualización inmersiva:**
+  - Creamos un motor interactivo a medida que permite a los usuarios explorar el desarrollo a través de recorridos guiados y planos dinámicos, adaptándose perfectamente tanto a pantallas táctiles como a ordenadores.
+  - La interfaz destaca de manera visual e intuitiva el estado de cada unidad, facilitando la toma de decisiones del cliente final.
+- **Diseño premium y rendimiento técnico:** Construimos la plataforma desde cero priorizando la eficiencia. Al evitar plantillas genéricas o herramientas pesadas, logramos una interfaz sofisticada, de transiciones suaves y carga ultrarrápida, alineada con el concepto de "Quiet Luxury".
+- **Mapas personalizados:** Implementamos una visualización de mapas completamente adaptada a la identidad del proyecto, ofreciendo una experiencia visual fluida y sin interrupciones con el resto de la interfaz.
 
-- **Lighthouse mobile:** 98 Performance, 100 SEO.
-- LCP **< 1.6 s** en 4G.
-- Bundle JS final **< 25 KB**.
+## Resultados y Valor Aportado
+
+- **Velocidad y accesibilidad insuperables:** La plataforma carga de manera casi instantánea incluso en redes móviles lentas, garantizando que la fuerza de ventas nunca pierda el momento frente al cliente.
+- **Precisión absoluta en ventas:** Gracias a la conexión directa con Google Sheets, se eliminó la fricción operativa y los errores de disponibilidad cruzada. El equipo administrativo actualiza un documento simple y la plataforma hace el resto.
+- **Experiencia de usuario premium:** Una interfaz fluida, intuitiva y visualmente impactante que eleva la percepción del desarrollo Aldea Savia y facilita el proceso de venta.
+- **Reconocimiento de excelencia:** Métricas perfectas en auditorías de calidad web (SEO y Rendimiento), asegurando el mayor alcance y la mejor experiencia posible en cualquier dispositivo.
+
