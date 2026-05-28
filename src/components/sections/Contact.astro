@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import SectionTitle from "../ui/SectionTitle.astro";
+import Button from "../ui/Button.astro";
 import { useTranslations, type Lang } from "~/i18n/utils";
 
 interface Props {
@@ -10,11 +11,18 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
+// Google Apps Script web app URL. Define PUBLIC_CONTACT_SHEET_URL en tu .env
+const endpoint = import.meta.env.PUBLIC_CONTACT_SHEET_URL ?? "";
+
 const channels = [
   { icon: "lucide:mail", label: t("contact.email"), href: "mailto:hola@antoniocortazar.dev" },
   { icon: "simple-icons:linkedin", label: t("contact.linkedin"), href: "https://linkedin.com/in/antoniocortazar" },
   { icon: "simple-icons:github", label: t("contact.github"), href: "https://github.com/Antony-potato" },
 ];
+
+const fieldClass =
+  "w-full border border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-950 px-4 py-3 text-base text-ink-950 dark:text-ink-100 placeholder:text-ink-400 dark:placeholder:text-ink-500 transition-colors focus:outline-none focus:border-accent-500 focus-visible:outline-2 focus-visible:outline-accent-500 focus-visible:outline-offset-0";
+const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400";
 ---
 
 <section id="contact" class="wrapper py-24 md:py-32">
@@ -22,33 +30,156 @@ const channels = [
     <div class="lg:col-span-5 reveal">
       <SectionTitle eyebrow={t("contact.eyebrow")} title={t("contact.title")} />
       <p class="mt-8 text-lg text-ink-700 dark:text-ink-300 max-w-xl">{t("contact.body")}</p>
+
+      <ul class="mt-10 grid gap-3" data-stagger>
+        {
+          channels.map((c) => (
+            <li data-stagger-child>
+              <a
+                href={c.href}
+                target={c.href.startsWith("http") ? "_blank" : undefined}
+                rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                class="group inline-flex items-center gap-3 text-ink-700 dark:text-ink-300 hover:text-accent-500 dark:hover:text-accent-400 transition-colors"
+              >
+                <Icon name={c.icon} class="size-5" />
+                <span class="font-display font-semibold">{c.label}</span>
+                <Icon
+                  name="lucide:arrow-up-right"
+                  class="size-4 transition-transform duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
 
-    <ul class="lg:col-span-7 grid gap-4 self-center" data-stagger>
-      {
-        channels.map((c, i) => (
-          <li data-stagger-child>
-            <a
-              href={c.href}
-              target={c.href.startsWith("http") ? "_blank" : undefined}
-              rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              class="group flex items-center justify-between gap-6 border border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-950 px-6 py-5 hover:border-accent-500 transition-colors"
-            >
-              <div class="flex items-center gap-4">
-                <span class="font-mono text-xs uppercase tracking-wider text-ink-400 dark:text-ink-500">
-                  0{i + 1}
-                </span>
-                <Icon name={c.icon} class="size-5 text-ink-500 dark:text-ink-400 group-hover:text-accent-500" />
-                <span class="font-display text-lg font-semibold">{c.label}</span>
-              </div>
-              <Icon
-                name="lucide:arrow-up-right"
-                class="size-4 text-ink-500 dark:text-ink-400 transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-accent-500"
-              />
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <form
+      id="contact-form"
+      class="lg:col-span-7 grid gap-5 reveal"
+      data-endpoint={endpoint}
+      data-sending={t("contact.form.sending")}
+      data-success={t("contact.form.success")}
+      data-error={t("contact.form.error")}
+      novalidate
+    >
+      <div class="absolute -left-[9999px]" aria-hidden="true">
+        <label>
+          No llenes esto
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="grid gap-2">
+        <label class={labelClass} for="cf-name">{t("contact.form.name")}</label>
+        <input
+          id="cf-name"
+          name="name"
+          type="text"
+          required
+          autocomplete="name"
+          placeholder={t("contact.form.name.placeholder")}
+          class={fieldClass}
+        />
+      </div>
+
+      <div class="grid gap-2">
+        <label class={labelClass} for="cf-email">{t("contact.form.email")}</label>
+        <input
+          id="cf-email"
+          name="email"
+          type="email"
+          required
+          autocomplete="email"
+          placeholder={t("contact.form.email.placeholder")}
+          class={fieldClass}
+        />
+      </div>
+
+      <div class="grid gap-2">
+        <label class={labelClass} for="cf-message">{t("contact.form.message")}</label>
+        <textarea
+          id="cf-message"
+          name="message"
+          rows="5"
+          required
+          placeholder={t("contact.form.message.placeholder")}
+          class={`${fieldClass} resize-y`}></textarea>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <Button type="submit" variant="primary" size="lg">
+          <span data-btn-label>{t("contact.form.send")}</span>
+          <span aria-hidden="true">→</span>
+        </Button>
+        <p
+          data-form-status
+          role="status"
+          aria-live="polite"
+          class="text-sm text-ink-500 dark:text-ink-400 data-[state=success]:text-success data-[state=error]:text-danger"
+        >
+        </p>
+      </div>
+    </form>
   </div>
 </section>
+
+<script>
+  const form = document.getElementById("contact-form") as HTMLFormElement | null;
+
+  if (form) {
+    const endpoint = form.dataset.endpoint ?? "";
+    const status = form.querySelector<HTMLElement>("[data-form-status]");
+    const submit = form.querySelector<HTMLButtonElement>("button[type=submit]");
+    const label = form.querySelector<HTMLElement>("[data-btn-label]");
+    const idleLabel = label?.textContent ?? "";
+
+    const setStatus = (text: string, state: "" | "pending" | "success" | "error") => {
+      if (!status) return;
+      status.textContent = text;
+      if (state) status.dataset.state = state;
+      else delete status.dataset.state;
+    };
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      // Honeypot: si está lleno, es un bot. Fingimos éxito sin enviar.
+      const honeypot = form.elements.namedItem("_gotcha") as HTMLInputElement | null;
+      if (honeypot?.value) {
+        setStatus(form.dataset.success ?? "", "success");
+        form.reset();
+        return;
+      }
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      if (!endpoint) {
+        setStatus(form.dataset.error ?? "", "error");
+        return;
+      }
+
+      if (submit) submit.disabled = true;
+      if (label) label.textContent = form.dataset.sending ?? idleLabel;
+      setStatus(form.dataset.sending ?? "", "pending");
+
+      try {
+        await fetch(endpoint, {
+          method: "POST",
+          mode: "no-cors",
+          body: new FormData(form),
+        });
+        setStatus(form.dataset.success ?? "", "success");
+        form.reset();
+      } catch {
+        setStatus(form.dataset.error ?? "", "error");
+      } finally {
+        if (submit) submit.disabled = false;
+        if (label) label.textContent = idleLabel;
+      }
+    });
+  }
+</script>

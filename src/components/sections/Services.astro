@@ -12,9 +12,9 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const services = [
-  { icon: "lucide:wrench", titleKey: "services.item.1.title", bodyKey: "services.item.1.body" },
-  { icon: "lucide:code-2", titleKey: "services.item.2.title", bodyKey: "services.item.2.body" },
-  { icon: "lucide:activity", titleKey: "services.item.3.title", bodyKey: "services.item.3.body" },
+  { icon: "lucide:layout-dashboard", titleKey: "services.item.1.title", bodyKey: "services.item.1.body" },
+  { icon: "lucide:gauge", titleKey: "services.item.2.title", bodyKey: "services.item.2.body" },
+  { icon: "lucide:server", titleKey: "services.item.3.title", bodyKey: "services.item.3.body" },
 ] as const;
 ---
 
@@ -29,12 +29,9 @@ const services = [
       <SectionTitle eyebrow={t("services.eyebrow")} title={t("services.title")} />
       <p class="mt-8 text-lg text-ink-700 dark:text-ink-300">{t("services.body")}</p>
       <div class="mt-8 flex flex-wrap gap-4">
-        <Button href="https://crzr.mx" variant="primary" size="lg" external>
-          {t("services.cta")}
-          <span aria-hidden="true">→</span>
-        </Button>
-        <Button href="mailto:hola@antoniocortazar.dev?subject=Cotización" variant="secondary" size="lg">
+        <Button href="mailto:hola@antoniocortazar.dev?subject=Cotización" variant="primary" size="lg">
           {t("services.cta.secondary")}
+          <span aria-hidden="true">→</span>
         </Button>
       </div>
     </div>

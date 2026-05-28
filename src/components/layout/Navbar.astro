@@ -80,9 +80,28 @@ const targetHref = getLocalizedPath(other, pathWithoutLang);
     z-index: 50;
     pointer-events: none;
     max-width: calc(100vw - 2rem);
+    transition: transform 0.35s ease;
+    will-change: transform;
+  }
+
+  .floating-nav.is-hidden {
+    transform: translateX(-50%) translateY(calc(-100% - 1.5rem));
   }
 
   .floating-nav > * {
     pointer-events: auto;
+  }
+
+  @media (max-width: 768px) {
+    .floating-nav {
+      left: 1rem;
+      right: 1rem;
+      transform: none;
+      max-width: none;
+    }
+
+    .floating-nav.is-hidden {
+      transform: translateY(calc(-100% - 1.5rem));
+    }
   }
 </style>

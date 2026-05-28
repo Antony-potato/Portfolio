@@ -83,7 +83,7 @@ const themeInit = `(() => {
     <Footer lang={lang} />
 
     <script>
-      import { initLenis } from "~/lib/lenis";
+      import { initLenis, destroyLenis } from "~/lib/lenis";
       import { initAnimations, teardownAnimations } from "~/lib/animations";
 
       const boot = () => {
@@ -95,6 +95,8 @@ const themeInit = `(() => {
 
       document.addEventListener("astro:after-swap", () => {
         teardownAnimations();
+        destroyLenis();
+        if (!window.location.hash) window.scrollTo(0, 0);
         boot();
       });
     </script>

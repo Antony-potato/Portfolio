@@ -73,6 +73,41 @@ const PillNav: React.FC<PillNavProps> = ({
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
   const navItemsRef = useRef<HTMLDivElement | null>(null);
   const logoRef = useRef<HTMLAnchorElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const menuOpenRef = useRef(false);
+
+  useEffect(() => {
+    const floating = containerRef.current?.closest(
+      ".floating-nav",
+    ) as HTMLElement | null;
+    if (!floating) return;
+
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    const update = () => {
+      const y = window.scrollY;
+      if (menuOpenRef.current || y < 80) {
+        floating.classList.remove("is-hidden");
+      } else if (y > lastY + 4) {
+        floating.classList.add("is-hidden");
+      } else if (y < lastY - 4) {
+        floating.classList.remove("is-hidden");
+      }
+      lastY = y;
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(update);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const layout = () => {
@@ -207,9 +242,16 @@ const PillNav: React.FC<PillNavProps> = ({
   const toggleMobileMenu = () => {
     const newState = !isMobileMenuOpen;
     setIsMobileMenuOpen(newState);
+    menuOpenRef.current = newState;
 
     const hamburger = hamburgerRef.current;
     const menu = mobileMenuRef.current;
+
+    if (newState) {
+      containerRef.current
+        ?.closest(".floating-nav")
+        ?.classList.remove("is-hidden");
+    }
 
     if (hamburger) {
       const lines = hamburger.querySelectorAll(".hamburger-line");
@@ -268,6 +310,53 @@ const PillNav: React.FC<PillNavProps> = ({
 
   const homeHref = items?.[0]?.href || "#";
 
+  const renderThemeIcon = (variant: "desktop" | "mobile") => {
+    const maskId = `pillnav-moon-mask-${variant}`;
+    return (
+      <svg
+        className="theme-svg"
+        viewBox="0 0 24 24"
+        width="18"
+        height="18"
+        aria-hidden="true"
+      >
+        <mask id={maskId}>
+          <rect x="0" y="0" width="24" height="24" fill="white" />
+          <circle
+            className="theme-moon-cut"
+            cx="18"
+            cy="7"
+            r="6"
+            fill="black"
+          />
+        </mask>
+        <circle
+          className="theme-core"
+          cx="12"
+          cy="12"
+          r="5.5"
+          fill="currentColor"
+          mask={`url(#${maskId})`}
+        />
+        <g
+          className="theme-rays"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        >
+          <line x1="12" y1="1" x2="12" y2="3.2" />
+          <line x1="12" y1="20.8" x2="12" y2="23" />
+          <line x1="1" y1="12" x2="3.2" y2="12" />
+          <line x1="20.8" y1="12" x2="23" y2="12" />
+          <line x1="4.2" y1="4.2" x2="5.8" y2="5.8" />
+          <line x1="18.2" y1="18.2" x2="19.8" y2="19.8" />
+          <line x1="4.2" y1="19.8" x2="5.8" y2="18.2" />
+          <line x1="18.2" y1="5.8" x2="19.8" y2="4.2" />
+        </g>
+      </svg>
+    );
+  };
+
   const renderLangToggle = (variant: "desktop" | "mobile") =>
     languageToggle ? (
       <a
@@ -281,7 +370,7 @@ const PillNav: React.FC<PillNavProps> = ({
     ) : null;
 
   return (
-    <div className="pill-nav-container">
+    <div className="pill-nav-container" ref={containerRef}>
       <nav
         className={`pill-nav ${className}`}
         aria-label="Primary"
@@ -329,7 +418,7 @@ const PillNav: React.FC<PillNavProps> = ({
         </div>
 
         {(languageToggle || themeToggle) && (
-          <div className="pill-controls desktop-only">
+          <div className="pill-controls">
             {renderLangToggle("desktop")}
 
             {themeToggle && (
@@ -343,47 +432,7 @@ const PillNav: React.FC<PillNavProps> = ({
                     : "Switch to dark mode"
                 }
               >
-                <svg
-                  className="theme-svg"
-                  viewBox="0 0 24 24"
-                  width="18"
-                  height="18"
-                  aria-hidden="true"
-                >
-                  <mask id="pillnav-moon-mask">
-                    <rect x="0" y="0" width="24" height="24" fill="white" />
-                    <circle
-                      className="theme-moon-cut"
-                      cx="18"
-                      cy="7"
-                      r="6"
-                      fill="black"
-                    />
-                  </mask>
-                  <circle
-                    className="theme-core"
-                    cx="12"
-                    cy="12"
-                    r="5.5"
-                    fill="currentColor"
-                    mask="url(#pillnav-moon-mask)"
-                  />
-                  <g
-                    className="theme-rays"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                  >
-                    <line x1="12" y1="1" x2="12" y2="3.2" />
-                    <line x1="12" y1="20.8" x2="12" y2="23" />
-                    <line x1="1" y1="12" x2="3.2" y2="12" />
-                    <line x1="20.8" y1="12" x2="23" y2="12" />
-                    <line x1="4.2" y1="4.2" x2="5.8" y2="5.8" />
-                    <line x1="18.2" y1="18.2" x2="19.8" y2="19.8" />
-                    <line x1="4.2" y1="19.8" x2="5.8" y2="18.2" />
-                    <line x1="18.2" y1="5.8" x2="19.8" y2="4.2" />
-                  </g>
-                </svg>
+                {renderThemeIcon("desktop")}
               </button>
             )}
           </div>
@@ -411,32 +460,15 @@ const PillNav: React.FC<PillNavProps> = ({
               <a
                 href={item.href}
                 className={`mobile-menu-link${activeHref === item.href ? " is-active" : ""}`}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  menuOpenRef.current = false;
+                }}
               >
                 {item.label}
               </a>
             </li>
           ))}
-
-          {(languageToggle || themeToggle) && (
-            <li className="mobile-menu-controls">
-              {renderLangToggle("mobile")}
-              {themeToggle && (
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="mobile-menu-link mobile-menu-control"
-                  aria-label={
-                    theme === "dark"
-                      ? "Switch to light mode"
-                      : "Switch to dark mode"
-                  }
-                >
-                  {theme === "dark" ? "Light" : "Dark"}
-                </button>
-              )}
-            </li>
-          )}
         </ul>
       </div>
     </div>
