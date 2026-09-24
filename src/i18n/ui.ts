@@ -41,7 +41,7 @@ export const ui = {
 
     "projects.eyebrow": "// 03 — TRABAJO",
     "projects.title": "Proyectos seleccionados.",
-    "projects.subtitle": "Cuatro piezas que muestran el rango: inmobiliario, marca propia, producto y experimentación.",
+    "projects.subtitle": "Cuatro piezas que muestran el rango: inmobiliario, producto, experimentación y marca propia.",
     "projects.all": "Ver todos los proyectos",
     "projects.role": "Rol",
     "projects.year": "Año",
@@ -127,7 +127,7 @@ export const ui = {
 
     "projects.eyebrow": "// 03 — WORK",
     "projects.title": "Selected projects.",
-    "projects.subtitle": "Four pieces showing the range: real-estate, my own brand, product and experimentation.",
+    "projects.subtitle": "Four pieces showing the range: real-estate, product, experimentation and my own brand.",
     "projects.all": "View all projects",
     "projects.role": "Role",
     "projects.year": "Year",

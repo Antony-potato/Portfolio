@@ -38,8 +38,8 @@ const labels = {
 
   <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-stagger>
     {
-      featured.map((p) => (
-        <div data-stagger-child>
+      featured.map((p, i) => (
+        <div data-stagger-child class:list={[i === 0 && "lg:col-span-3"]}>
           <ProjectCard
             href={getLocalizedPath(lang, `${projectsBase}/${p.id}`)}
             title={p.data.title}
@@ -50,6 +50,8 @@ const labels = {
             client={p.data.client}
             stack={p.data.stack}
             cover={p.data.cover}
+            wide={i === 0}
+            class="h-full"
             lang={lang}
             labels={labels}
           />

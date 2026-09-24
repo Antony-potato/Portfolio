@@ -29,7 +29,7 @@ const labels = {
     />
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {
-        projects.map((p) => (
+        projects.map((p, i) => (
           <ProjectCard
             href={getLocalizedPath(lang, `/proyectos/${p.id}`)}
             title={p.data.title}
@@ -40,6 +40,8 @@ const labels = {
             client={p.data.client}
             stack={p.data.stack}
             cover={p.data.cover}
+            wide={i === 0}
+            class={i === 0 ? "lg:col-span-3" : ""}
             lang={lang}
             labels={labels}
           />

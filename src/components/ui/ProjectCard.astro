@@ -14,6 +14,9 @@ interface Props {
   stack: string[];
   cover: string;
   lang: Lang;
+  /** Tarjeta destacada: en `lg` ocupa toda la fila, portada a la izquierda y datos a la derecha. */
+  wide?: boolean;
+  class?: string;
   labels: {
     role: string;
     year: string;
@@ -32,6 +35,8 @@ const {
   client,
   stack,
   cover,
+  wide = false,
+  class: className = "",
   labels,
 } = Astro.props;
 
@@ -41,9 +46,18 @@ const stackMore = stack.length > 3 ? ` +${stack.length - 3}` : "";
 
 <a
   href={href}
-  class="group relative flex flex-col overflow-hidden border border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-900 transition-colors duration-300 hover:border-accent-500 dark:hover:border-accent-500 focus-visible:border-accent-500"
+  class:list={[
+    "group relative flex flex-col overflow-hidden border border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-900 transition-colors duration-300 hover:border-accent-500 dark:hover:border-accent-500 focus-visible:border-accent-500",
+    wide && "lg:grid lg:grid-cols-[3fr_2fr] lg:grid-rows-[auto_1fr_auto]",
+    className,
+  ]}
 >
-  <div class="flex items-center justify-between border-b border-ink-300 dark:border-ink-700 px-5 py-3">
+  <div
+    class:list={[
+      "flex items-center justify-between border-b border-ink-300 dark:border-ink-700 px-5 py-3",
+      wide && "lg:col-span-2",
+    ]}
+  >
     <Badge variant="outline">{category}</Badge>
     <Icon
       name="lucide:arrow-up-right"
@@ -51,7 +65,12 @@ const stackMore = stack.length > 3 ? ` +${stack.length - 3}` : "";
     />
   </div>
 
-  <div class="relative aspect-[16/10] overflow-hidden bg-ink-100 dark:bg-ink-800">
+  <div
+    class:list={[
+      "relative aspect-[16/10] overflow-hidden bg-ink-100 dark:bg-ink-800",
+      wide && "lg:row-span-2 lg:border-r lg:border-ink-300 lg:dark:border-ink-700",
+    ]}
+  >
     <img
       src={cover}
       alt=""
@@ -61,9 +80,18 @@ const stackMore = stack.length > 3 ? ` +${stack.length - 3}` : "";
     />
   </div>
 
-  <div class="flex flex-col gap-4 p-5">
-    <h3 class="font-display text-2xl font-bold leading-tight">{title}</h3>
-    <p class="text-sm text-ink-500 dark:text-ink-400 line-clamp-2">{summary}</p>
+  <div class:list={["flex flex-col gap-4 p-5", wide && "lg:justify-center lg:p-8"]}>
+    <h3 class:list={["font-display text-2xl font-bold leading-tight", wide && "lg:text-4xl"]}>
+      {title}
+    </h3>
+    <p
+      class:list={[
+        "text-sm text-ink-500 dark:text-ink-400 line-clamp-2",
+        wide && "lg:line-clamp-none lg:text-base",
+      ]}
+    >
+      {summary}
+    </p>
   </div>
 
   <dl class="grid grid-cols-2 border-t border-ink-300 dark:border-ink-700 text-xs">
