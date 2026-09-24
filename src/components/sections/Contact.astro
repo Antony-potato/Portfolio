@@ -62,93 +62,183 @@ const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-500 dark
       </ul>
     </div>
 
-    <form
-      id="contact-form"
-      class="lg:col-span-7 grid gap-5 reveal"
-      data-endpoint={endpoint}
-      data-whatsapp={whatsappUrl()}
-      data-sending={t("contact.form.sending")}
-      data-success={t("contact.form.success")}
-      data-error={t("contact.form.error")}
-      novalidate
-    >
-      <div class="absolute -left-[9999px]" aria-hidden="true">
-        <label>
-          No llenes esto
-          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
-        </label>
-      </div>
+    <div class="lg:col-span-7 reveal" data-contact>
+      <form
+        id="contact-form"
+        class="grid gap-5"
+        data-endpoint={endpoint}
+        data-whatsapp={whatsappUrl()}
+        data-sending={t("contact.form.sending")}
+        data-error={t("contact.form.error")}
+        novalidate
+      >
+        <div class="absolute -left-[9999px]" aria-hidden="true">
+          <label>
+            No llenes esto
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+          </label>
+        </div>
 
-      <div class="grid gap-2">
-        <label class={labelClass} for="cf-name">{t("contact.form.name")}</label>
-        <input
-          id="cf-name"
-          name="name"
-          type="text"
-          required
-          autocomplete="name"
-          placeholder={t("contact.form.name.placeholder")}
-          class={fieldClass}
-        />
-      </div>
+        <div class="grid gap-2">
+          <label class={labelClass} for="cf-name">{t("contact.form.name")}</label>
+          <input
+            id="cf-name"
+            name="name"
+            type="text"
+            required
+            autocomplete="name"
+            placeholder={t("contact.form.name.placeholder")}
+            class={fieldClass}
+          />
+        </div>
 
-      <div class="grid gap-2">
-        <label class={labelClass} for="cf-email">{t("contact.form.email")}</label>
-        <input
-          id="cf-email"
-          name="email"
-          type="email"
-          required
-          autocomplete="email"
-          placeholder={t("contact.form.email.placeholder")}
-          class={fieldClass}
-        />
-      </div>
+        <div class="grid gap-2">
+          <label class={labelClass} for="cf-email">{t("contact.form.email")}</label>
+          <input
+            id="cf-email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            placeholder={t("contact.form.email.placeholder")}
+            class={fieldClass}
+          />
+        </div>
 
-      <div class="grid gap-2">
-        <label class={labelClass} for="cf-message">{t("contact.form.message")}</label>
-        <textarea
-          id="cf-message"
-          name="message"
-          rows="5"
-          required
-          placeholder={t("contact.form.message.placeholder")}
-          class={`${fieldClass} resize-y`}></textarea>
-      </div>
+        <div class="grid gap-2">
+          <label class={labelClass} for="cf-message">{t("contact.form.message")}</label>
+          <textarea
+            id="cf-message"
+            name="message"
+            rows="5"
+            required
+            placeholder={t("contact.form.message.placeholder")}
+            class={`${fieldClass} resize-y`}></textarea>
+        </div>
 
-      <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <Button type="submit" variant="primary" size="lg">
-          <span data-btn-label>{t("contact.form.send")}</span>
-          <span aria-hidden="true">→</span>
-        </Button>
-        <p
-          data-form-status
-          role="status"
-          aria-live="polite"
-          class="text-sm text-ink-500 dark:text-ink-400 data-[state=success]:text-success data-[state=error]:text-danger"
-        >
-        </p>
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <Button type="submit" variant="primary" size="lg">
+            <span data-btn-label>{t("contact.form.send")}</span>
+            <span aria-hidden="true">→</span>
+          </Button>
+          <p
+            data-form-status
+            role="status"
+            aria-live="polite"
+            class="text-sm text-ink-500 dark:text-ink-400 data-[state=error]:text-danger"
+          >
+          </p>
+        </div>
+      </form>
+
+      <div
+        data-form-success
+        hidden
+        tabindex="-1"
+        role="status"
+        aria-live="polite"
+        class="contact-success flex min-h-[26rem] flex-col items-start justify-center gap-6 border border-ink-300 dark:border-ink-700 p-8 md:p-12 focus:outline-none"
+      >
+        <svg class="size-16 text-accent-500" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <circle class="contact-success__circle" cx="26" cy="26" r="24" stroke="currentColor" stroke-width="2"></circle>
+          <path class="contact-success__check" d="M15 27l7 7 15-15" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <div class="contact-success__text flex flex-col gap-2">
+          <p class="font-display text-3xl font-bold leading-tight">{t("contact.form.success.title")}</p>
+          <p class="text-lg text-ink-700 dark:text-ink-300">{t("contact.form.success")}</p>
+        </div>
+        <div class="contact-success__text">
+          <Button type="button" variant="secondary" size="md" class="js-contact-again">
+            {t("contact.form.again")}
+          </Button>
+        </div>
       </div>
-    </form>
+    </div>
   </div>
 </section>
 
-<script>
-  const form = document.getElementById("contact-form") as HTMLFormElement | null;
+<style>
+  .contact-success:not([hidden]) {
+    animation: success-in 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .contact-success:not([hidden]) .contact-success__circle {
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+    animation: success-draw 600ms ease-out 150ms forwards;
+  }
+  .contact-success:not([hidden]) .contact-success__check {
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+    animation: success-draw 350ms ease-out 650ms forwards;
+  }
+  .contact-success:not([hidden]) .contact-success__text {
+    animation: success-in 500ms cubic-bezier(0.16, 1, 0.3, 1) 500ms both;
+  }
 
-  if (form) {
+  @keyframes success-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes success-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-success:not([hidden]),
+    .contact-success:not([hidden]) .contact-success__circle,
+    .contact-success:not([hidden]) .contact-success__check,
+    .contact-success:not([hidden]) .contact-success__text {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+  }
+</style>
+
+<script>
+  // Con <ClientRouter /> los <script> solo corren una vez: hay que (re)enganchar
+  // el formulario en cada navegación, si no el navegador hace un submit nativo
+  // que recarga la página y la manda hasta arriba.
+  function initContactForm() {
+    const root = document.querySelector<HTMLElement>("[data-contact]");
+    const form = root?.querySelector<HTMLFormElement>("#contact-form");
+    const success = root?.querySelector<HTMLElement>("[data-form-success]");
+    if (!root || !form || !success || form.dataset.bound) return;
+    form.dataset.bound = "true";
+
     const endpoint = form.dataset.endpoint ?? "";
     const status = form.querySelector<HTMLElement>("[data-form-status]");
     const submit = form.querySelector<HTMLButtonElement>("button[type=submit]");
     const label = form.querySelector<HTMLElement>("[data-btn-label]");
     const idleLabel = label?.textContent ?? "";
 
-    const setStatus = (text: string, state: "" | "pending" | "success" | "error") => {
+    const setStatus = (text: string, state: "" | "pending" | "error") => {
       if (!status) return;
       status.textContent = text;
       if (state) status.dataset.state = state;
       else delete status.dataset.state;
     };
+
+    const showSuccess = () => {
+      form.reset();
+      setStatus("", "");
+      form.hidden = true;
+      success.hidden = false;
+      success.focus({ preventScroll: true });
+    };
+
+    success.querySelector(".js-contact-again")?.addEventListener("click", () => {
+      success.hidden = true;
+      form.hidden = false;
+      form.querySelector<HTMLInputElement>("#cf-name")?.focus();
+    });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -156,8 +246,7 @@ const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-500 dark
       // Honeypot: si está lleno, es un bot. Fingimos éxito sin enviar.
       const honeypot = form.elements.namedItem("_gotcha") as HTMLInputElement | null;
       if (honeypot?.value) {
-        setStatus(form.dataset.success ?? "", "success");
-        form.reset();
+        showSuccess();
         return;
       }
 
@@ -171,7 +260,7 @@ const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-500 dark
         const data = new FormData(form);
         const text = `Hola Antonio, soy ${data.get("name")} (${data.get("email")}).\n\n${data.get("message")}`;
         window.open(`${form.dataset.whatsapp}?text=${encodeURIComponent(text)}`, "_blank", "noopener");
-        form.reset();
+        showSuccess();
         return;
       }
 
@@ -185,8 +274,7 @@ const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-500 dark
           mode: "no-cors",
           body: new FormData(form),
         });
-        setStatus(form.dataset.success ?? "", "success");
-        form.reset();
+        showSuccess();
       } catch {
         setStatus(form.dataset.error ?? "", "error");
       } finally {
@@ -195,4 +283,6 @@ const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-500 dark
       }
     });
   }
+
+  document.addEventListener("astro:page-load", initContactForm);
 </script>

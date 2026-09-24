@@ -85,6 +85,8 @@ export const ui = {
     "contact.form.send": "Enviar mensaje",
     "contact.form.sending": "Enviando…",
     "contact.form.success": "¡Gracias! Te respondo en menos de 24 h.",
+    "contact.form.success.title": "Mensaje enviado.",
+    "contact.form.again": "Enviar otro mensaje",
     "contact.form.error": "Algo falló. Escríbeme directo a hola@antoniocortazar.dev.",
 
     "footer.rights": "Todos los derechos reservados.",
@@ -172,6 +174,8 @@ export const ui = {
     "contact.form.send": "Send message",
     "contact.form.sending": "Sending…",
     "contact.form.success": "Thanks! I'll reply within 24h.",
+    "contact.form.success.title": "Message sent.",
+    "contact.form.again": "Send another message",
     "contact.form.error": "Something failed. Email me at hola@antoniocortazar.dev.",
 
     "footer.rights": "All rights reserved.",
