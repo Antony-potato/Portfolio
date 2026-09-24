@@ -1,8 +1,10 @@
 ---
+import { Icon } from "astro-icon/components";
 import Button from "../ui/Button.astro";
 import MetadataStrip from "../ui/MetadataStrip.astro";
 import MetaBalls from "../islands/MetaBalls.tsx";
 import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
+import { whatsappUrl } from "~/lib/contact";
 
 interface Props {
   lang: Lang;
@@ -12,7 +14,6 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const projectsPath = getLocalizedPath(lang, lang === "es" ? "/proyectos" : "/projects");
-const contactPath = getLocalizedPath(lang, lang === "es" ? "/contacto" : "/contact");
 
 const stripItems = [
   { label: t("strip.available") },
@@ -44,8 +45,9 @@ const stripItems = [
           {t("hero.cta.primary")}
           <span aria-hidden="true">→</span>
         </Button>
-        <Button href={contactPath} variant="secondary" size="lg">
-          {t("hero.cta.secondary")}
+        <Button href={whatsappUrl(t("whatsapp.message"))} variant="secondary" size="lg" external>
+          <Icon name="simple-icons:whatsapp" class="size-5" aria-hidden="true" />
+          {t("whatsapp.cta")}
         </Button>
       </div>
     </div>

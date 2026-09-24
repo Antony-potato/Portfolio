@@ -30,7 +30,8 @@ export const ui = {
     "about.eyebrow": "// 01 — SOBRE MÍ",
     "about.title": "Diseño y construyo, no solo programo.",
     "about.body": "Soy Antonio Cortazar — estudiante de Ingeniería en Desarrollo de Software (Tecmilenio) con experiencia mezclando soporte técnico, diseño, ventas e ingeniería. Construyo dashboards internos, landings inmobiliarias y PWAs en producción.",
-    "about.cta": "Descargar CV",
+    "whatsapp.cta": "Háblame por WhatsApp",
+    "whatsapp.message": "Hola Antonio, vi tu portafolio y me gustaría platicar sobre un proyecto.",
 
     "stack.eyebrow": "// 02 — STACK",
     "stack.title": "Tecnologías con las que trabajo.",
@@ -116,7 +117,8 @@ export const ui = {
     "about.eyebrow": "// 01 — ABOUT",
     "about.title": "I design and build, not just code.",
     "about.body": "I'm Antonio Cortazar — software engineering student (Tecmilenio) blending tech support, design, sales and engineering. I build internal dashboards, real-estate landings and PWAs in production.",
-    "about.cta": "Download CV",
+    "whatsapp.cta": "Message me on WhatsApp",
+    "whatsapp.message": "Hi Antonio, I saw your portfolio and I'd like to talk about a project.",
 
     "stack.eyebrow": "// 02 — STACK",
     "stack.title": "Technologies I work with.",

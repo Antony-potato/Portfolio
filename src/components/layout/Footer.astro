@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { useTranslations, type Lang } from "~/i18n/utils";
+import { EMAIL, PHONE_DISPLAY, whatsappUrl } from "~/lib/contact";
 
 interface Props {
   lang: Lang;
@@ -12,9 +13,10 @@ const t = useTranslations(lang);
 const year = new Date().getFullYear();
 
 const socials = [
+  { icon: "simple-icons:whatsapp", href: whatsappUrl(t("whatsapp.message")), label: "WhatsApp" },
   { icon: "simple-icons:github", href: "https://github.com/Antony-potato", label: "GitHub" },
   { icon: "simple-icons:linkedin", href: "https://linkedin.com/in/antoniocortazar", label: "LinkedIn" },
-  { icon: "lucide:mail", href: "mailto:hola@antoniocortazar.dev", label: "Email" },
+  { icon: "lucide:mail", href: `mailto:${EMAIL}`, label: "Email" },
 ];
 ---
 
@@ -30,12 +32,20 @@ const socials = [
     <div class="flex flex-col gap-3">
       <p class="eyebrow">// {t("nav.contact")}</p>
       <a
-        href="mailto:hola@antoniocortazar.dev"
+        href={`mailto:${EMAIL}`}
         class="font-mono text-sm hover:text-accent-500 transition-colors"
       >
-        hola@antoniocortazar.dev
+        {EMAIL}
       </a>
-      <p class="font-mono text-sm text-ink-500 dark:text-ink-400">81 3511 2848</p>
+      <a
+        href={whatsappUrl(t("whatsapp.message"))}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 font-mono text-sm hover:text-accent-500 transition-colors"
+      >
+        <Icon name="simple-icons:whatsapp" class="size-4" aria-hidden="true" />
+        {PHONE_DISPLAY}
+      </a>
       <p class="font-mono text-sm text-ink-500 dark:text-ink-400">Cancún, Qroo · MX</p>
     </div>
 
@@ -48,8 +58,8 @@ const socials = [
               <a
                 href={s.href}
                 aria-label={s.label}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={s.href.startsWith("http") ? "_blank" : undefined}
+                rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
                 class="flex items-center justify-center size-10 border border-ink-300 dark:border-ink-700 rounded-sm text-ink-700 dark:text-ink-300 hover:border-accent-500 hover:text-accent-500 transition-colors"
               >
                 <Icon name={s.icon} class="size-4" />

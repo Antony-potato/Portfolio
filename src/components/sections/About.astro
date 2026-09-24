@@ -1,6 +1,8 @@
 ---
 import SectionTitle from "../ui/SectionTitle.astro";
+import { Icon } from "astro-icon/components";
 import Button from "../ui/Button.astro";
+import { whatsappUrl } from "~/lib/contact";
 import { useTranslations, type Lang } from "~/i18n/utils";
 
 interface Props {
@@ -36,9 +38,9 @@ const t = useTranslations(lang);
         {t("about.body")}
       </p>
       <div>
-        <Button href="/cv-antonio-cortazar.pdf" variant="secondary" size="md" external>
-          {t("about.cta")}
-          <span aria-hidden="true">↓</span>
+        <Button href={whatsappUrl(t("whatsapp.message"))} variant="secondary" size="md" external>
+          <Icon name="simple-icons:whatsapp" class="size-4" aria-hidden="true" />
+          {t("whatsapp.cta")}
         </Button>
       </div>
     </div>
