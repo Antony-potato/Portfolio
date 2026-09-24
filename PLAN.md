@@ -271,8 +271,9 @@ export const collections = { projects };
 - **Ángulo de venta:** muestra perfil técnico fuerte (PWA, sincronización Firebase, iOS/Android desde web, manifest, service workers).
 - **Diferenciador:** único proyecto con producto interactivo — incluir demo en vivo o GIF / video corto autoplay muted.
 
-### 6.4 CRZR — **no es proyecto, es la oferta de servicios**
-- **Tratamiento:** sección `Servicios` en el home + página dedicada `/servicios` (y `/en/services`) que actúa de puente. **No aparece en la grilla de proyectos.**
+### 6.4 CRZR — oferta de servicios **y** caso de estudio del sitio
+- **Tratamiento:** sección `Servicios` en el home + página dedicada `/servicios` (y `/en/services`) que actúa de puente.
+- **Actualización (sep 2026, decisión del usuario):** el *sitio web* de CRZR (`crzr-tech.mdx`, https://crzr-tech.vercel.app) sí aparece en la grilla de proyectos como caso de estudio de diseño + desarrollo. La marca/oferta sigue viviendo en `Servicios`.
 - **Contenido de la sección:**
   - Título: "¿Necesitas soporte técnico o desarrollo web?"
   - Sub: "CRZR es mi marca de servicios para PyMEs y particulares."

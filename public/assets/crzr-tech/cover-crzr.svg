@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-label="cRZR tech">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="1.2" fill="#fff" fill-opacity="0.12"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="1000" fill="#000"/>
+  <rect width="1600" height="1000" fill="url(#grid)"/>
+  <g fill="#fff" font-family="'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace">
+    <text x="800" y="520" text-anchor="middle" font-size="220" font-weight="700" letter-spacing="-6">cRZR<tspan font-size="64" font-weight="400" fill-opacity="0.4" dx="24">tech</tspan></text>
+    <text x="800" y="630" text-anchor="middle" font-size="36" fill-opacity="0.7" letter-spacing="10">PRODUCTO · DISEÑO · CÓDIGO</text>
+    <text x="800" y="720" text-anchor="middle" font-size="22" fill-opacity="0.4" letter-spacing="5">crzr.org — Cancún, Q. Roo</text>
+    <text x="64" y="84" font-size="18" fill-opacity="0.4" letter-spacing="6">// 01 — 06 SERVICIOS</text>
+    <text x="1536" y="936" text-anchor="end" font-size="18" fill-opacity="0.4" letter-spacing="6">NEXT.JS · REACT 19 · TAILWIND v4</text>
+  </g>
+  <g stroke="#fff" stroke-opacity="0.5" stroke-width="3" fill="none">
+    <path d="M40 140 V40 H140"/>
+    <path d="M1560 860 V960 H1460"/>
+  </g>
+</svg>

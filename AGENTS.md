@@ -281,6 +281,6 @@ Una tarea se considera completa cuando **todas** se cumplen:
 
 - **Isla:** componente con JS de cliente, renderizado fuera del flujo estático de Astro.
 - **Eyebrow:** etiqueta pequeña sobre un título (ej. `// 03 — PROYECTOS`).
-- **CRZR:** marca paralela de servicios. No es proyecto de portafolio. Aparece como CTA.
+- **CRZR:** marca paralela de servicios. Aparece como CTA. Su sitio web (`crzr-tech.mdx`) sí se muestra como proyecto por decisión del usuario (ver PLAN.md §6.4).
 - **Workstation editorial:** concepto visual del sitio (ver [DESIGN.md §1](DESIGN.md)).
 - **`prefers-reduced-motion`:** media query que indica que el usuario pidió menos animación. Respetarla siempre.
