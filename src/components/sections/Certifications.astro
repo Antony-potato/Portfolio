@@ -19,6 +19,9 @@ const certs: Cert[] = [
   { name: "AWS Academy Graduate — Data Engineering", issuer: "AWS Academy", date: "2025-12" },
   { name: "Big Data Foundations — Level 1 & 2", issuer: "IBM", date: "2026-04" },
   { name: "EF SET English C1 Advanced (67/100)", issuer: "EF SET", date: "2025-07" },
+];
+
+const courses: Cert[] = [
   { name: "Figma Avanzado", issuer: "LinkedIn Learning", date: "2025" },
 ];
 ---
@@ -26,7 +29,7 @@ const certs: Cert[] = [
 <section id="certifications" class="wrapper py-24 md:py-32">
   <SectionTitle eyebrow={t("certs.eyebrow")} title={t("certs.title")} class="reveal mb-16" />
 
-  <ul class="grid gap-px bg-ink-300 dark:bg-ink-700 border border-ink-300 dark:border-ink-700 md:grid-cols-2" data-stagger>
+  <ul class="grid gap-px bg-ink-300 dark:bg-ink-700 border border-ink-300 dark:border-ink-700 md:grid-cols-3" data-stagger>
     {
       certs.map((c, i) => (
         <li data-stagger-child class="bg-ink-50 dark:bg-ink-950 p-6 flex flex-col gap-2">
@@ -40,6 +43,19 @@ const certs: Cert[] = [
           </div>
           <p class="font-display text-lg font-bold leading-tight">{c.name}</p>
           <p class="text-sm text-ink-500 dark:text-ink-400">{c.issuer}</p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="eyebrow mt-12 mb-4">// {t("certs.courses")}</p>
+  <ul class="flex flex-col border-t border-ink-300 dark:border-ink-700">
+    {
+      courses.map((c) => (
+        <li class="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-ink-300 dark:border-ink-700 py-3">
+          <span class="font-mono text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400">{c.date}</span>
+          <span class="font-display font-bold">{c.name}</span>
+          <span class="text-sm text-ink-500 dark:text-ink-400">{c.issuer}</span>
         </li>
       ))
     }

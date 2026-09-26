@@ -19,6 +19,8 @@ const projects = defineCollection({
     featured: z.boolean().default(false),
     order: z.number().int().default(99),
     lang: z.enum(["es", "en"]).default("es"),
+    /** Borrador: no se publica en listados ni rutas. */
+    draft: z.boolean().default(false),
   }),
 });
 

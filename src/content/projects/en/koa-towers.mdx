@@ -1,0 +1,40 @@
+---
+title: "Koa Towers"
+summary: "Availability viewer for two residential towers in Cancún: a 3D-style tour between views, per-level floor plans and inventory managed from Google Sheets."
+role: "Frontend development"
+year: 2026
+client: "Onix Living"
+stack: ["Astro 6", "Vanilla JS (Web Components)", "CSS Custom Properties", "Google Sheets (CSV)", "AWS S3", "Google Maps"]
+category: "web"
+liveUrl: "https://koatowers.onixliving.mx"
+repoUrl: null
+cover: "/assets/koa-towers/hero-koa.webp"
+gallery: ["/assets/koa-towers/hero-koa.webp"]
+featured: true
+order: 2
+lang: "en"
+---
+
+## Context
+
+**Koa Towers** is a vertical residential development by Onix Living in Cancún. As with Aldea Savia, apartment availability was shared through PDFs and spreadsheets that quickly went stale. I built the project's availability site starting from the architecture I had already built for Aldea Savia, adapting it to multi-level towers.
+
+## The Challenge
+
+- **From lots to towers:** instead of lots on a plot, apartments had to be grouped by tower and by level, each level with its own floor plan.
+- **Show the towers from several angles** without loading a heavy 3D model in the browser.
+- **Keep inventory editable from a spreadsheet**, just like Aldea Savia.
+
+## What I did
+
+- **3D-style viewer between views:** the towers are explored through a drag-controlled `<canvas>` frame sequence, with video transitions between views and hotspots to enter each tower. It feels like a 3D tour without loading a 3D model.
+- **Interactive per-level floor plans:** a modal with each level's SVG plan (pan and zoom), a level selector, and a synced apartment list and detail view. Hovering the plan highlights the apartment in the list, and vice versa.
+- **Inventory from Google Sheets:** I reused Aldea Savia's data service (published CSV, 5-minute cache) and extended it to group units by level and attach each level's plan from S3.
+- **Scroll-scrub hero** on canvas, as in Aldea Savia.
+- **Supporting pages:** location with Google Maps, a media gallery, a brochure viewer and a per-apartment contact form.
+- **Astro 6 + native Web Components + CSS Custom Properties**, with styles split by module (states, controls, panel, list, responsive).
+
+## Outcome
+
+- Inventory is managed from a spreadsheet and the site updates without a redeploy.
+- Reusing Aldea Savia's architecture let me focus on what was new: the multi-view viewer and per-level plans.

@@ -17,7 +17,7 @@ export const ui = {
 
     "hero.eyebrow": "// 00 — PORTFOLIO 2026",
     "hero.title": "Construyo productos web que cierran el bucle entre diseño, código e infraestructura.",
-    "hero.subtitle": "Ingeniero en desarrollo de software — Frontend, PWA, DevOps. Basado en México.",
+    "hero.subtitle": "Ingeniero en desarrollo de software — frontend, integraciones con Firebase y optimización de sistemas. Basado en Cancún, México.",
     "hero.cta.primary": "Ver proyectos",
     "hero.cta.secondary": "Hablemos",
 
@@ -29,8 +29,9 @@ export const ui = {
 
     "about.eyebrow": "// 01 — SOBRE MÍ",
     "about.title": "Diseño y construyo, no solo programo.",
-    "about.body": "Soy Antonio Cortazar — estudiante de Ingeniería en Desarrollo de Software (Tecmilenio) con experiencia mezclando soporte técnico, diseño, ventas e ingeniería. Construyo dashboards internos, landings inmobiliarias y PWAs en producción.",
+    "about.body": "Soy Antonio Cortazar, estudiante de Ingeniería en Desarrollo de Software en Tecmilenio (egreso: mayo 2027). Vengo de mezclar soporte técnico, diseño, ventas e ingeniería. Hoy soy System Specialist en Andiani Travel; antes desarrollé dashboards internos y visores de disponibilidad inmobiliaria en Onix Living.",
     "whatsapp.cta": "Háblame por WhatsApp",
+    "about.portrait.alt": "Retrato de Antonio Cortazar",
     "whatsapp.message": "Hola Antonio, vi tu portafolio y me gustaría platicar sobre un proyecto.",
 
     "stack.eyebrow": "// 02 — STACK",
@@ -38,7 +39,9 @@ export const ui = {
     "stack.frontend": "Frontend",
     "stack.backend": "Backend",
     "stack.infra": "Infraestructura",
-    "stack.specialty": "Especialidades",
+    "stack.data": "Datos e integraciones",
+    "stack.also": "También he trabajado con",
+    "stack.also.note": "Proyectos académicos y de práctica.",
 
     "projects.eyebrow": "// 03 — TRABAJO",
     "projects.title": "Proyectos seleccionados.",
@@ -60,6 +63,7 @@ export const ui = {
     "services.title": "Desarrollo web fullstack y soporte de infraestructura.",
     "services.body": "Trabajo de extremo a extremo: del frontend a la infraestructura. Aplicaciones web modernas, sitios de ultra alto rendimiento y consultoría de TI a medida.",
     "services.cta.secondary": "Cotizar ahora",
+    "services.cta.subject": "Cotización",
     "services.item.1.title": "Aplicaciones web modernas (PWAs)",
     "services.item.1.body": "Creación de plataformas a medida, dashboards operativos centralizados y aplicaciones multiplataforma con sincronización en tiempo real.",
     "services.item.2.title": "Optimización web y sitios estáticos (SSG)",
@@ -68,7 +72,8 @@ export const ui = {
     "services.item.3.body": "Consultoría para la gestión de activos tecnológicos y despliegue de software empresarial.",
 
     "certs.eyebrow": "// 06 — CREDENCIALES",
-    "certs.title": "Certificaciones.",
+    "certs.title": "Certificaciones y cursos.",
+    "certs.courses": "Cursos",
 
     "contact.eyebrow": "// 07 — CONTACTO",
     "contact.title": "¿Construimos algo juntos?",
@@ -106,7 +111,7 @@ export const ui = {
 
     "hero.eyebrow": "// 00 — PORTFOLIO 2026",
     "hero.title": "I build web products that close the loop between design, code and infrastructure.",
-    "hero.subtitle": "Software engineer — Frontend, PWA, DevOps. Based in Mexico.",
+    "hero.subtitle": "Software engineer — frontend, Firebase integrations and systems optimization. Based in Cancún, Mexico.",
     "hero.cta.primary": "View projects",
     "hero.cta.secondary": "Let's talk",
 
@@ -118,8 +123,9 @@ export const ui = {
 
     "about.eyebrow": "// 01 — ABOUT",
     "about.title": "I design and build, not just code.",
-    "about.body": "I'm Antonio Cortazar — software engineering student (Tecmilenio) blending tech support, design, sales and engineering. I build internal dashboards, real-estate landings and PWAs in production.",
+    "about.body": "I'm Antonio Cortazar, a Software Development Engineering student at Tecmilenio (graduating May 2027). My background mixes tech support, design, sales and engineering. I'm currently a System Specialist at Andiani Travel; before that I built internal dashboards and real-estate availability viewers at Onix Living.",
     "whatsapp.cta": "Message me on WhatsApp",
+    "about.portrait.alt": "Portrait of Antonio Cortazar",
     "whatsapp.message": "Hi Antonio, I saw your portfolio and I'd like to talk about a project.",
 
     "stack.eyebrow": "// 02 — STACK",
@@ -127,7 +133,9 @@ export const ui = {
     "stack.frontend": "Frontend",
     "stack.backend": "Backend",
     "stack.infra": "Infrastructure",
-    "stack.specialty": "Specialties",
+    "stack.data": "Data & integrations",
+    "stack.also": "I've also worked with",
+    "stack.also.note": "Academic and practice projects.",
 
     "projects.eyebrow": "// 03 — WORK",
     "projects.title": "Selected projects.",
@@ -149,6 +157,7 @@ export const ui = {
     "services.title": "Fullstack web development and infrastructure support.",
     "services.body": "I work end to end: from frontend to infrastructure. Modern web apps, ultra-high-performance sites and custom IT consulting.",
     "services.cta.secondary": "Email a quote",
+    "services.cta.subject": "Quote request",
     "services.item.1.title": "Modern web apps (PWAs)",
     "services.item.1.body": "Custom platforms, centralized operational dashboards and cross-platform apps with real-time sync.",
     "services.item.2.title": "Web optimization & static sites (SSG)",
@@ -157,7 +166,8 @@ export const ui = {
     "services.item.3.body": "Consulting for technology asset management and enterprise software deployment.",
 
     "certs.eyebrow": "// 06 — CREDENTIALS",
-    "certs.title": "Certifications.",
+    "certs.title": "Certifications & courses.",
+    "certs.courses": "Courses",
 
     "contact.eyebrow": "// 07 — CONTACT",
     "contact.title": "Should we build something?",

@@ -15,46 +15,49 @@ interface Tech {
   icon: string;
 }
 
-const groups: { titleKey: "stack.frontend" | "stack.backend" | "stack.infra" | "stack.specialty"; items: Tech[] }[] = [
+type GroupKey = "stack.frontend" | "stack.data" | "stack.infra" | "stack.also";
+
+// Los tres primeros grupos están respaldados por proyectos publicados en este sitio.
+// "stack.also" es experiencia académica / de práctica y se muestra atenuada.
+const groups: { titleKey: GroupKey; items: Tech[]; muted?: boolean }[] = [
   {
     titleKey: "stack.frontend",
     items: [
       { name: "Astro", icon: "simple-icons:astro" },
       { name: "Next.js", icon: "simple-icons:nextdotjs" },
-      { name: "Vue 3", icon: "simple-icons:vuedotjs" },
       { name: "React 19", icon: "simple-icons:react" },
       { name: "TypeScript", icon: "simple-icons:typescript" },
       { name: "Tailwind CSS", icon: "simple-icons:tailwindcss" },
+      { name: "Web Components", icon: "simple-icons:webcomponentsdotorg" },
     ],
   },
   {
-    titleKey: "stack.backend",
+    titleKey: "stack.data",
     items: [
-      { name: "Node.js", icon: "simple-icons:nodedotjs" },
-      { name: "Express", icon: "simple-icons:express" },
-      { name: "Laravel", icon: "simple-icons:laravel" },
-      { name: "Spring Boot", icon: "simple-icons:springboot" },
-      { name: "PHP", icon: "simple-icons:php" },
+      { name: "Firebase · Firestore", icon: "simple-icons:firebase" },
+      { name: "Google Sheets · Apps Script", icon: "simple-icons:googlesheets" },
+      { name: "Web Push · FCM", icon: "lucide:bell-ring" },
+      { name: "AWS S3", icon: "simple-icons:amazonaws" },
     ],
   },
   {
     titleKey: "stack.infra",
     items: [
-      { name: "AWS", icon: "simple-icons:amazonaws" },
-      { name: "Docker", icon: "simple-icons:docker" },
-      { name: "Kubernetes", icon: "simple-icons:kubernetes" },
-      { name: "GitHub Actions", icon: "simple-icons:githubactions" },
       { name: "Vercel", icon: "simple-icons:vercel" },
+      { name: "CI/CD", icon: "lucide:git-pull-request-arrow" },
+      { name: "Git · GitHub", icon: "simple-icons:github" },
     ],
   },
   {
-    titleKey: "stack.specialty",
+    titleKey: "stack.also",
+    muted: true,
     items: [
-      { name: "Firebase", icon: "simple-icons:firebase" },
-      { name: "PWA", icon: "simple-icons:pwa" },
-      { name: "Microservicios", icon: "lucide:boxes" },
-      { name: "CI/CD", icon: "lucide:git-pull-request-arrow" },
-      { name: "Snipe-IT", icon: "lucide:package-search" },
+      { name: "Vue 3", icon: "simple-icons:vuedotjs" },
+      { name: "Laravel · PHP", icon: "simple-icons:laravel" },
+      { name: "Spring Boot · Java", icon: "simple-icons:springboot" },
+      { name: "Node.js · Express", icon: "simple-icons:nodedotjs" },
+      { name: "Docker", icon: "simple-icons:docker" },
+      { name: "Kubernetes", icon: "simple-icons:kubernetes" },
     ],
   },
 ];
@@ -66,8 +69,11 @@ const groups: { titleKey: "stack.frontend" | "stack.backend" | "stack.infra" | "
   <div class="grid gap-px bg-ink-300 dark:bg-ink-700 border border-ink-300 dark:border-ink-700 md:grid-cols-2 lg:grid-cols-4">
     {
       groups.map((g) => (
-        <div class="bg-ink-50 dark:bg-ink-950 p-6 flex flex-col gap-4">
-          <p class="eyebrow">// {t(g.titleKey)}</p>
+        <div class:list={["bg-ink-50 dark:bg-ink-950 p-6 flex flex-col gap-4", g.muted && "text-ink-500 dark:text-ink-400"]}>
+          <div>
+            <p class="eyebrow">// {t(g.titleKey)}</p>
+            {g.muted && <p class="mt-1 text-xs text-ink-500 dark:text-ink-400">{t("stack.also.note")}</p>}
+          </div>
           <ul class="flex flex-col gap-2">
             {g.items.map((tech) => (
               <li class="flex items-center gap-3 font-mono text-sm">

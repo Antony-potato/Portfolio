@@ -1,15 +1,14 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import SectionTitle from "~/components/ui/SectionTitle.astro";
 import ProjectCard from "~/components/ui/ProjectCard.astro";
 import { useTranslations, getLocalizedPath } from "~/i18n/utils";
+import { getProjects } from "~/lib/projects";
 
 const lang = "es" as const;
 const t = useTranslations(lang);
 
-const all = await getCollection("projects");
-const projects = all.sort((a, b) => a.data.order - b.data.order);
+const projects = await getProjects(lang);
 
 const labels = {
   role: t("projects.role"),
@@ -31,7 +30,7 @@ const labels = {
       {
         projects.map((p, i) => (
           <ProjectCard
-            href={getLocalizedPath(lang, `/proyectos/${p.id}`)}
+            href={getLocalizedPath(lang, `/proyectos/${p.slug}`)}
             title={p.data.title}
             summary={p.data.summary}
             category={p.data.category}

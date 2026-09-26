@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import SectionTitle from "../ui/SectionTitle.astro";
 import Button from "../ui/Button.astro";
+import { EMAIL } from "~/lib/contact";
 import { useTranslations, type Lang } from "~/i18n/utils";
 
 interface Props {
@@ -29,7 +30,7 @@ const services = [
       <SectionTitle eyebrow={t("services.eyebrow")} title={t("services.title")} />
       <p class="mt-8 text-lg text-ink-700 dark:text-ink-300">{t("services.body")}</p>
       <div class="mt-8 flex flex-wrap gap-4">
-        <Button href="mailto:hola@antoniocortazar.dev?subject=Cotización" variant="primary" size="lg">
+        <Button href={`mailto:${EMAIL}?subject=${encodeURIComponent(t("services.cta.subject"))}`} variant="primary" size="lg">
           {t("services.cta.secondary")}
           <span aria-hidden="true">→</span>
         </Button>

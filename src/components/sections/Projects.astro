@@ -1,9 +1,9 @@
 ---
-import { getCollection } from "astro:content";
 import SectionTitle from "../ui/SectionTitle.astro";
 import ProjectCard from "../ui/ProjectCard.astro";
 import Button from "../ui/Button.astro";
 import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
+import { getProjects } from "~/lib/projects";
 
 interface Props {
   lang: Lang;
@@ -12,10 +12,7 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const all = await getCollection("projects", ({ data }) => data.lang === lang || data.lang === "es");
-const featured = all
-  .filter((p) => p.data.featured)
-  .sort((a, b) => a.data.order - b.data.order);
+const featured = (await getProjects(lang)).filter((p) => p.data.featured);
 
 const projectsBase = lang === "es" ? "/proyectos" : "/projects";
 const allHref = getLocalizedPath(lang, projectsBase);
@@ -41,7 +38,7 @@ const labels = {
       featured.map((p, i) => (
         <div data-stagger-child class:list={[i === 0 && "lg:col-span-3"]}>
           <ProjectCard
-            href={getLocalizedPath(lang, `${projectsBase}/${p.id}`)}
+            href={getLocalizedPath(lang, `${projectsBase}/${p.slug}`)}
             title={p.data.title}
             summary={p.data.summary}
             category={p.data.category}

@@ -1,0 +1,41 @@
+---
+title: "Pocky"
+summary: "A virtual pet shared by two people: state synced through Firestore, 24/7 decay from a server-side cron, and push notifications."
+role: "Full-stack development"
+year: 2026
+client: "Personal project"
+stack: ["Next.js", "React 19", "TypeScript", "Firestore", "Zustand", "Vercel Cron", "Web Push"]
+category: "pwa"
+liveUrl: "https://pocky-next.vercel.app"
+repoUrl: "https://github.com/Antony-potato/Pocky"
+cover: "/assets/pocky/pocky-mock.webp"
+gallery: ["/assets/pocky/pocky-mock.webp"]
+featured: true
+order: 4
+lang: "en"
+---
+
+## Context
+
+**Pocky** is a Tamagotchi-style virtual pet built for two people: both take care of the same pet from their own phones and see the same state. I built it as a personal project to practice shared state, server-side logic and web notifications. The pet is drawn as animated ASCII art (bunny, cat, dog or hamster) and the background changes with the time of day.
+
+## The Challenge
+
+- **One state, two devices:** if one person feeds the pet, the other has to see it without reloading.
+- **The pet lives even when nobody opens the app:** hunger, happiness and cleanliness have to drop over time even if no phone has the app open.
+- **No duplicated logic:** the same rules have to apply in the browser and on the server without drifting apart.
+- **Notify when the pet needs something**, on both Android and iPhone, without spamming anyone.
+
+## The Solution
+
+- **Firestore as the source of truth.** The state lives in a single document. Each client subscribes with `onSnapshot` and local state is handled by **Zustand**, so any action on one phone shows up on the other.
+- **Shared pure logic (`petLogic.ts`).** The functions that compute decay, mood and needs don't depend on the browser, so I use them unchanged on the client and on the server.
+- **Vercel Cron with the Firebase Admin SDK.** A `/api/cron/tick` endpoint applies decay based on elapsed time, even when nobody has the app open. The endpoint is protected with a `CRON_SECRET` in the `Authorization` header.
+- **Push notifications on two channels:** FCM for Chrome/Android and Web Push with VAPID keys for Safari/iOS. The cron only notifies urgent needs, respects a 4-hour cooldown and cleans up expired tokens and subscriptions.
+- **PWA groundwork:** a manifest and Apple touch icons to add it to the home screen.
+
+## Outcome
+
+- State shared between two people with a minimal backend: one protected endpoint plus Firestore.
+- Game rules written once and reused between client and server.
+- **Still on the roadmap:** packaging the Android version with Capacitor, an iPhone widget and pet customization.

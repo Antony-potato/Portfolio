@@ -1,0 +1,45 @@
+---
+title: "Aldea Savia"
+summary: "Interactive availability viewer for a residential development in Tulum: SVG floor plans, a scroll-scrub hero and inventory managed from Google Sheets."
+role: "Frontend development"
+year: 2026
+client: "Onix Living"
+stack: ["Astro 6", "Vanilla JS (Web Components)", "CSS Custom Properties", "Google Sheets (CSV)", "AWS S3", "Google Maps"]
+category: "web"
+liveUrl: "https://aldeasavia.onixliving.mx"
+repoUrl: null
+cover: "/assets/aldea-savia/hero-savia.webp"
+gallery: ["/assets/aldea-savia/gallery-savia.webp"]
+featured: true
+order: 1
+lang: "en"
+---
+
+## Context
+
+**Aldea Savia** is a residential development by Onix Living in Tulum, Mexico. The sales team shared lot and unit availability through spreadsheets and PDFs that had to be regenerated every time something changed. While working at Onix I built the project's availability site: a tool for agents and buyers to explore the development and see what's available.
+
+## The Challenge
+
+- **Let the admin team update inventory without touching code:** changing a lot's status, price or details had to be as simple as editing a spreadsheet.
+- **Work in the field:** agents use it on their phones at the construction site, on unreliable mobile connections.
+- **Smooth touch navigation:** floor plans with zoom and pan, plus a visual tour of the development, without heavy frameworks.
+- **Stay on brand:** earthy palette and editorial typography, maps included.
+
+## What I did
+
+- **Architected and built the whole site** in **Astro 6** as a static site, with all interactivity in **native Web Components** (vanilla JS). The only production npm dependency is Astro, plus its sitemap integration.
+- **Inventory from Google Sheets:** the site reads the published sheet as CSV on load and caches it for 5 minutes, so a change in the sheet shows up on the site within minutes, with no redeploy. A status service derives each lot's availability from its units.
+- **Availability viewer with two modes:**
+  - **Static:** stop-based navigation (overview → phase → lot) with SVG hotspots and labels automatically placed at each shape's center.
+  - **Interactive:** a side panel with pan-and-zoom SVG plans, a level selector, and a unit list and detail view synced with the map.
+- **Scroll-scrub hero:** a 107-frame sequence drawn on `<canvas>` that advances with scroll and transitions into the viewer.
+- **Assets on AWS S3:** hero frames, transitions and SVG plans.
+- **Supporting pages:** location with a custom vector Google Map, a media gallery, a brochure viewer and a contact form that posts to Google Sheets through Apps Script.
+- **Design system with CSS Custom Properties:** color tokens, fluid type with `clamp()` and a documented `z-index` scale.
+
+## Outcome
+
+- The admin team updates availability from a spreadsheet and the site reflects it within minutes, with no technical involvement.
+- The site is served as static files and only loads the interactivity each page needs.
+- I later reused the same architecture (viewer, Sheets service and pan/zoom engine) for Koa Towers.
