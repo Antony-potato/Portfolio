@@ -3,6 +3,7 @@ import { Icon } from "astro-icon/components";
 import SectionTitle from "../ui/SectionTitle.astro";
 import Button from "../ui/Button.astro";
 import { useTranslations, type Lang } from "~/i18n/utils";
+import { EMAIL, whatsappUrl } from "~/lib/contact";
 
 interface Props {
   lang: Lang;
@@ -18,46 +19,43 @@ const services = [
 ] as const;
 ---
 
-<section
-  id="services"
-  class="relative isolate border-y border-ink-300 dark:border-ink-700 bg-ink-100 dark:bg-ink-900 py-24 md:py-32"
->
-  <div class="absolute inset-0 -z-10 grid-lines opacity-50 pointer-events-none" aria-hidden="true"></div>
+<section id="services" class="inverse relative overflow-clip py-16 md:py-24">
+  <div class="wrapper">
+    <SectionTitle
+      index="04"
+      label={t("services.label")}
+      title={t("services.title")}
+      description={t("services.body")}
+    />
 
-  <div class="wrapper grid gap-16 lg:grid-cols-12 items-start">
-    <div class="lg:col-span-5 reveal">
-      <SectionTitle eyebrow={t("services.eyebrow")} title={t("services.title")} />
-      <p class="mt-8 text-lg text-ink-700 dark:text-ink-300">{t("services.body")}</p>
-      <div class="mt-8 flex flex-wrap gap-4">
-        <Button href="mailto:hola@antoniocortazar.dev?subject=Cotización" variant="primary" size="lg">
-          {t("services.cta.secondary")}
-          <span aria-hidden="true">→</span>
-        </Button>
-      </div>
-    </div>
-
-    <ul class="lg:col-span-7 grid gap-4" data-stagger>
+    <ol class="mt-10 border-t border-line md:mt-16">
       {
         services.map((s, i) => (
-          <li
-            data-stagger-child
-            class="flex gap-6 border border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-950 p-6"
-          >
-            <div class="flex size-12 shrink-0 items-center justify-center border border-ink-300 dark:border-ink-700 text-accent-500">
-              <Icon name={s.icon} class="size-5" />
-            </div>
-            <div class="flex flex-col gap-2">
-              <div class="flex items-baseline gap-3">
-                <span class="font-mono text-xs uppercase tracking-wider text-ink-400 dark:text-ink-500">
-                  0{i + 1}
-                </span>
-                <h3 class="font-display text-xl font-bold">{t(s.titleKey)}</h3>
-              </div>
-              <p class="text-ink-700 dark:text-ink-300">{t(s.bodyKey)}</p>
-            </div>
+          <li class="group grid grid-cols-[auto_1fr] gap-x-6 gap-y-4 border-b border-line py-8 md:grid-cols-12 md:gap-6 md:py-12">
+            <span class="font-display text-[clamp(3rem,6vw,6rem)] leading-[0.8] font-extrabold tracking-[-0.06em] text-accent-ink md:col-span-2">
+              0{i + 1}
+            </span>
+            <h3 class="self-end text-[clamp(1.5rem,2.8vw,2.75rem)] leading-[1] tracking-[-0.04em] md:col-span-5 md:self-start">
+              {t(s.titleKey)}
+            </h3>
+            <p class="col-span-2 max-w-md text-muted md:col-span-4 md:col-start-8">{t(s.bodyKey)}</p>
+            <span class="hidden size-10 place-items-center justify-self-end rounded-full border border-line transition-colors duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-ink-950 md:col-span-1 md:grid">
+              <Icon name={s.icon} class="size-4" aria-hidden="true" />
+            </span>
           </li>
         ))
       }
-    </ul>
+    </ol>
+
+    <div class="mt-10 flex flex-wrap gap-3 md:mt-12">
+      <Button href={`mailto:${EMAIL}?subject=${lang === "es" ? "Cotización" : "Quote"}`} size="lg" magnetic>
+        {t("services.cta.secondary")}
+        <Icon name="lucide:arrow-right" class="size-4" aria-hidden="true" />
+      </Button>
+      <Button href={whatsappUrl(t("whatsapp.message"))} variant="secondary" size="lg" external>
+        <Icon name="simple-icons:whatsapp" class="size-4" aria-hidden="true" />
+        WhatsApp
+      </Button>
+    </div>
   </div>
 </section>

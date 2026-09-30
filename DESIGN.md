@@ -1,9 +1,32 @@
 # DESIGN.md — Línea visual del portafolio
 
-> **Versión:** 1.0 — 2026-05-27
+> **Versión:** 2.0 — 2026-09-30 (rediseño `feat/awwwards-redesign`)
 > **Tono:** editorial-brutalista con calidez lo-fi.
 > **Inspiración directa:** ChainGPT Labs (estructura), Teenage Engineering TP-7 (tipografía y metadata), WorldQuant Foundry (animaciones), arte lo-fi anime (atmósfera del hero).
 > Cualquier decisión visual nueva se compara contra este documento antes de mergear.
+
+---
+
+## 0. Cambios v2.0 (manda sobre lo de abajo si hay conflicto)
+
+Paleta y tipografía base **no cambian** (crema + ink + naranja, Geist / Geist Mono). Lo que cambia:
+
+| Tema | v2.0 |
+|---|---|
+| Tokens | Colores semánticos por tema: `bg-bg`, `text-fg`, `text-muted`, `border-line`, `bg-surface`, `text-accent-ink` (naranja legible AA para texto chico). Se definen en `global.css` y cambian solos con `.theme-dark`. |
+| Bloque invertido | Clase `.inverse` (no `.invert`: Tailwind ya la usa como `filter: invert`). Intercambia tokens: oscuro en tema claro, crema en tema oscuro. Se usa en Servicios y en el menú móvil. |
+| Hero | Nombre gigante (`min(20vw, 31svh)`) + cursor naranja parpadeante. Fondo: **metaballs con dithering Bayer 1-bit** en WebGL puro (`src/lib/hero-gl.ts`, sin React ni ogl), render a 1/4 de resolución con `image-rendering: pixelated`. Se pausa fuera de viewport; con reduced-motion pinta un frame estático. |
+| Botones | Pill (`rounded-full`) con relleno que sube en hover (`.btn-fill`) y texto que rueda (`.roll`). Reemplaza el radio 4 px de §5.4. |
+| Navbar | Sin React. Índices 01–04, reloj en vivo de Cancún, toggle de tema con revelado circular (View Transitions API), CTA "Hablemos". Móvil: `<dialog>` nativo fullscreen. Se oculta al bajar, vuelve al subir. |
+| Home | 6 secciones: 01 Sobre mí · 02 Proyectos · 03 Clientes · 04 Servicios · 05 Certificaciones · 06 Contacto. Se quitaron Experiencia y Stack (el stack vive en cada proyecto). Espaciado entre secciones `py-16 md:py-24`. |
+| Proyectos (home) | Cards apiladas: `position: sticky` + GSAP escala la card de abajo al cubrirla. Barra sticky arriba con proyecto actual, contador y línea de progreso. |
+| Clientes | "Gracias por su confianza.": rejilla de 3 celdas (Onix Living, Andiani Travel, "¿Tu empresa aquí?"). Logos en `public/clients/*.svg` usados como `mask` → toman el color del tema. |
+| Certificaciones | Banda en movimiento con tipografía gigante + ícono del emisor + cuadro naranja (el diseño que antes usaba el Stack). Cada nombre es link al certificado; se pausa con hover/foco; con reduced-motion es scroll horizontal. Datos y links en `Certifications.astro`. |
+| Índice de proyectos | Filas gigantes; con mouse, la portada flota junto al cursor. |
+| Caso de estudio | Título gigante, tabla de specs, portada con clip-reveal + parallax, índice lateral sticky con scroll-spy, h2 numerados por contador CSS, "siguiente proyecto" gigante con portada que se revela en hover. |
+| Motion | Todo en `src/lib/animations.ts` dentro de `gsap.matchMedia()` (se revierte solo en `astro:before-swap` y con reduced-motion). Atributos: `data-reveal="lines|up"`, `data-stagger`, `data-line`, `data-clip`, `data-parallax`, `data-scrub-words`, `data-count`, `data-magnetic`, `data-stack-card`. Lenis y ScrollTrigger comparten el ticker de GSAP. |
+| Transiciones de página | Cortina `clip-path` sobre `::view-transition-new(root)`; el nav queda fijo (`view-transition-name: site-nav`). |
+| Grano | Una capa de ruido SVG estática (`body::after`, 4.5 % de opacidad). |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import { useTranslations, type Lang } from "~/i18n/utils";
+import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
 import { EMAIL, PHONE_DISPLAY, whatsappUrl } from "~/lib/contact";
 
 interface Props {
@@ -9,70 +9,79 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-
+const es = lang === "es";
 const year = new Date().getFullYear();
+const home = getLocalizedPath(lang, "/");
+
+const nav = [
+  { href: getLocalizedPath(lang, es ? "/proyectos" : "/projects"), label: t("nav.projects") },
+  { href: `${home === "/" ? "" : home}/#about`, label: t("nav.about") },
+  { href: getLocalizedPath(lang, es ? "/servicios" : "/services"), label: t("nav.services") },
+  { href: getLocalizedPath(lang, es ? "/contacto" : "/contact"), label: t("nav.contact") },
+];
 
 const socials = [
-  { icon: "simple-icons:whatsapp", href: whatsappUrl(t("whatsapp.message")), label: "WhatsApp" },
-  { icon: "simple-icons:github", href: "https://github.com/Antony-potato", label: "GitHub" },
-  { icon: "simple-icons:linkedin", href: "https://linkedin.com/in/antoniocortazar", label: "LinkedIn" },
-  { icon: "lucide:mail", href: `mailto:${EMAIL}`, label: "Email" },
+  { href: "https://github.com/Antony-potato", label: "GitHub" },
+  { href: "https://linkedin.com/in/antoniocortazar", label: "LinkedIn" },
+  { href: whatsappUrl(t("whatsapp.message")), label: "WhatsApp" },
 ];
+
+const colTitle = "font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted";
 ---
 
-<footer class="border-t border-ink-300 dark:border-ink-700 mt-32">
-  <div class="wrapper py-16 grid gap-12 md:grid-cols-3">
-    <div class="flex flex-col gap-4">
-      <p class="eyebrow">// ANTONIO CORTÁZAR · {year}</p>
-      <p class="text-2xl font-display font-bold leading-tight">
+<footer class="relative overflow-clip border-t border-line">
+  <div class="wrapper grid gap-12 pt-16 pb-10 md:grid-cols-12 md:gap-6">
+    <div class="flex flex-col gap-5 md:col-span-5">
+      <p class={colTitle}>// Antonio Cortazar — {year}</p>
+      <p class="max-w-sm font-display text-3xl font-bold leading-[1.05] tracking-[-0.03em] text-balance">
         {t("footer.tagline")}
       </p>
     </div>
 
-    <div class="flex flex-col gap-3">
-      <p class="eyebrow">// {t("nav.contact")}</p>
-      <a
-        href={`mailto:${EMAIL}`}
-        class="font-mono text-sm hover:text-accent-500 transition-colors"
-      >
-        {EMAIL}
+    <div class="flex flex-col gap-3 md:col-span-3">
+      <p class={colTitle}>{t("nav.contact")}</p>
+      <a href={`mailto:${EMAIL}`} class="link-line w-fit">{EMAIL}</a>
+      <a href={whatsappUrl(t("whatsapp.message"))} target="_blank" rel="noopener noreferrer" class="link-line w-fit tabular-nums">
+        +52 {PHONE_DISPLAY}
       </a>
-      <a
-        href={whatsappUrl(t("whatsapp.message"))}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 font-mono text-sm hover:text-accent-500 transition-colors"
-      >
-        <Icon name="simple-icons:whatsapp" class="size-4" aria-hidden="true" />
-        {PHONE_DISPLAY}
-      </a>
-      <p class="font-mono text-sm text-ink-500 dark:text-ink-400">Cancún, Qroo · MX</p>
+      <p class="text-muted">Cancún, Q. Roo — MX</p>
     </div>
 
-    <div class="flex flex-col gap-3">
-      <p class="eyebrow">// SOCIAL</p>
-      <ul class="flex gap-4">
+    <div class="grid grid-cols-2 gap-6 md:col-span-4">
+      <div class="flex flex-col gap-3">
+        <p class={colTitle}>{t("footer.nav")}</p>
+        {nav.map((n) => <a href={n.href} class="link-line w-fit">{n.label}</a>)}
+      </div>
+      <div class="flex flex-col gap-3">
+        <p class={colTitle}>{t("footer.social")}</p>
         {
           socials.map((s) => (
-            <li>
-              <a
-                href={s.href}
-                aria-label={s.label}
-                target={s.href.startsWith("http") ? "_blank" : undefined}
-                rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                class="flex items-center justify-center size-10 border border-ink-300 dark:border-ink-700 rounded-sm text-ink-700 dark:text-ink-300 hover:border-accent-500 hover:text-accent-500 transition-colors"
-              >
-                <Icon name={s.icon} class="size-4" />
-              </a>
-            </li>
+            <a href={s.href} target="_blank" rel="noopener noreferrer" class="link-line inline-flex w-fit items-center gap-1">
+              {s.label}
+              <Icon name="lucide:arrow-up-right" class="size-3.5" aria-hidden="true" />
+            </a>
           ))
         }
-      </ul>
+      </div>
     </div>
   </div>
 
-  <div class="wrapper flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-t border-ink-300 dark:border-ink-700 py-6 font-mono text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400">
+  <div class="wrapper flex flex-wrap items-center justify-between gap-4 border-t border-line py-5 font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted">
     <p>© {year} Antonio Cortazar · {t("footer.rights")}</p>
-    <p>v0.1 · Astro 6 · Tailwind 4</p>
+    <p class="hidden sm:block">Astro 6 · GSAP · WebGL</p>
+    <a href="#main" class="group inline-flex items-center gap-2 text-fg">
+      {t("footer.top")}
+      <Icon name="lucide:arrow-up" class="size-3.5 transition-transform duration-500 group-hover:-translate-y-1" aria-hidden="true" />
+    </a>
+  </div>
+
+  <!-- Wordmark gigante, cortado por el borde inferior (TE TP-7) -->
+  <div class="pointer-events-none select-none" aria-hidden="true">
+    <p
+      data-wordmark
+      class="wrapper -mb-[0.2em] font-display text-[23vw] font-extrabold leading-[0.8] tracking-[-0.065em] text-fg xl:text-[min(23vw,25rem)]"
+    >
+      Cortazar<span class="text-accent">.</span>
+    </p>
   </div>
 </footer>

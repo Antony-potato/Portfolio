@@ -1,52 +1,8 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "~/layouts/BaseLayout.astro";
-import SectionTitle from "~/components/ui/SectionTitle.astro";
-import ProjectCard from "~/components/ui/ProjectCard.astro";
-import { useTranslations, getLocalizedPath } from "~/i18n/utils";
-
-const lang = "es" as const;
-const t = useTranslations(lang);
-
-const all = await getCollection("projects");
-const projects = all.sort((a, b) => a.data.order - b.data.order);
-
-const labels = {
-  role: t("projects.role"),
-  year: t("projects.year"),
-  stack: t("projects.stack"),
-  client: t("projects.client"),
-};
+import ProjectIndex from "~/components/sections/ProjectIndex.astro";
 ---
 
-<BaseLayout title="Proyectos" description="Trabajo seleccionado de Antonio Cortazar.">
-  <section class="wrapper py-24 md:py-32">
-    <SectionTitle
-      eyebrow={t("projects.eyebrow")}
-      title={t("projects.title")}
-      description={t("projects.subtitle")}
-      class="mb-16"
-    />
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {
-        projects.map((p, i) => (
-          <ProjectCard
-            href={getLocalizedPath(lang, `/proyectos/${p.id}`)}
-            title={p.data.title}
-            summary={p.data.summary}
-            category={p.data.category}
-            role={p.data.role}
-            year={p.data.year}
-            client={p.data.client}
-            stack={p.data.stack}
-            cover={p.data.cover}
-            wide={i === 0}
-            class={i === 0 ? "lg:col-span-3" : ""}
-            lang={lang}
-            labels={labels}
-          />
-        ))
-      }
-    </div>
-  </section>
+<BaseLayout title="Proyectos" description="Trabajo seleccionado de Antonio Cortazar: plataformas inmobiliarias, PWAs y sitios de marca.">
+  <ProjectIndex lang="es" />
 </BaseLayout>

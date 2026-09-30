@@ -1,8 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
 import Button from "../ui/Button.astro";
-import MetadataStrip from "../ui/MetadataStrip.astro";
-import MetaBalls from "../islands/MetaBalls.tsx";
 import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
 import { whatsappUrl } from "~/lib/contact";
 
@@ -12,63 +10,104 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-
 const projectsPath = getLocalizedPath(lang, lang === "es" ? "/proyectos" : "/projects");
 
-const stripItems = [
-  { label: t("strip.available") },
-  { label: t("strip.year") },
-  { label: t("strip.location") },
-  { label: t("strip.role") },
-  { label: t("strip.signal") },
+const specs = [
+  { label: t("hero.spec.role"), value: t("hero.role") },
+  { label: t("hero.spec.base"), value: t("hero.spec.base.value") },
+  { label: t("hero.spec.focus"), value: "Frontend · PWA · DevOps" },
 ];
 ---
 
-<section class="relative isolate overflow-hidden border-b border-ink-300 dark:border-ink-700">
-  <div class="absolute inset-0 -z-20 grid-lines pointer-events-none" aria-hidden="true"></div>
-  <MetaBalls client:visible opacity={0.55} count={6} />
+<section data-hero class="relative isolate flex min-h-svh flex-col overflow-clip">
+  <!-- Metaballs con dithering 1-bit (ver lib/hero-gl.ts) -->
+  <div data-gl-wrap class="absolute inset-0 -z-10" aria-hidden="true">
+    <canvas data-gl class="pixelated size-full dark:opacity-80"></canvas>
+  </div>
 
-  <div class="wrapper relative z-10 grid gap-16 py-24 md:py-32 lg:grid-cols-12 lg:gap-8">
-    <div class="lg:col-span-9 flex flex-col gap-8">
-      <p class="eyebrow">{t("hero.eyebrow")}</p>
-
-      <h1 class="font-display font-black leading-[0.95] tracking-[-0.04em] text-[clamp(2.75rem,8vw,7rem)] text-balance">
-        {t("hero.title")}
-      </h1>
-
-      <p class="max-w-2xl text-lg md:text-xl text-ink-500 dark:text-ink-400">
-        {t("hero.subtitle")}
+  <div data-hero-inner class="wrapper flex flex-1 flex-col pt-[calc(var(--nav-h)+1.25rem)]">
+    <div data-intro class="flex items-start justify-between gap-6">
+      <p data-intro-up class="eyebrow bg-bg py-1 text-fg">// 00 — {t("hero.eyebrow")}</p>
+      <p data-intro-up class="tag bg-bg">
+        <span class="pulse-dot"></span>
+        {t("hero.spec.status.value")}
       </p>
+    </div>
 
-      <div class="flex flex-wrap items-center gap-4">
-        <Button href={projectsPath} variant="primary" size="lg">
+    <div data-intro class="mt-auto grid gap-6 pt-10 lg:grid-cols-12 lg:items-end lg:gap-8">
+      <p
+        data-intro-up
+        class="max-w-xl text-[clamp(1.25rem,2vw,1.75rem)] leading-[1.35] font-medium tracking-[-0.015em] lg:col-span-6 lg:col-start-7"
+      >
+        <span class="bg-bg box-decoration-clone px-1.5">{t("hero.title")}</span>
+      </p>
+      <div data-intro-up class="flex flex-wrap gap-3 lg:col-span-6 lg:col-start-7 lg:-mt-2">
+        <Button href={projectsPath} size="lg" magnetic>
           {t("hero.cta.primary")}
-          <span aria-hidden="true">→</span>
+          <Icon name="lucide:arrow-down-right" class="size-4" aria-hidden="true" />
         </Button>
-        <Button href={whatsappUrl(t("whatsapp.message"))} variant="secondary" size="lg" external>
-          <Icon name="simple-icons:whatsapp" class="size-5" aria-hidden="true" />
-          {t("whatsapp.cta")}
+        <Button href={whatsappUrl(t("whatsapp.message"))} variant="secondary" size="lg" external class="bg-bg">
+          <Icon name="simple-icons:whatsapp" class="size-4" aria-hidden="true" />
+          WhatsApp
         </Button>
       </div>
     </div>
 
-    <aside class="lg:col-span-3 flex lg:flex-col gap-6 lg:gap-4 lg:border-l lg:border-ink-300 dark:lg:border-ink-700 lg:pl-6">
-      <div>
-        <p class="eyebrow">// ROLE</p>
-        <p class="mt-1 font-mono text-sm">Software Engineer</p>
-      </div>
-      <div>
-        <p class="eyebrow">// LOCATION</p>
-        <p class="mt-1 font-mono text-sm">Cancún, Qroo · MX</p>
-      </div>
-      <div>
-        <p class="eyebrow">// VERSION</p>
-        <p class="mt-1 font-mono text-sm">v0.1 — 2026</p>
-      </div>
-    </aside>
+    <h1
+      data-intro
+      class="mt-8 -ml-[0.05em] text-[clamp(4rem,min(20vw,31svh),23rem)] leading-[0.8] font-extrabold tracking-[-0.065em] md:mt-6"
+    >
+      <span data-hero-line class="block">Antonio</span>
+      <span data-hero-line class="block whitespace-nowrap">
+        Cortazar<span class="hero-cursor" aria-hidden="true"></span>
+      </span>
+      <span class="sr-only"> — {t("hero.role")}</span>
+    </h1>
   </div>
 
-  <div class="wrapper pb-8">
-    <MetadataStrip items={stripItems} />
+  <div data-intro class="relative mt-6 border-t border-line bg-bg md:mt-8">
+    <span data-intro-line class="absolute inset-x-0 -top-px h-px bg-fg"></span>
+    <div class="wrapper grid grid-cols-2 gap-x-6 gap-y-4 py-4 md:grid-cols-4 md:py-5">
+      <dl class="contents">
+        {
+          specs.map((s) => (
+            <div data-intro-up class="flex flex-col gap-1">
+              <dt class="eyebrow">{s.label}</dt>
+              <dd class="text-sm font-medium">{s.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <div data-intro-up class="flex items-center justify-end gap-3 self-end" aria-hidden="true">
+        <span class="eyebrow">{t("hero.scroll")}</span>
+        <span class="scroll-cue h-6 w-px overflow-hidden bg-line"><span></span></span>
+      </div>
+    </div>
   </div>
 </section>
+
+<style>
+  .hero-cursor {
+    display: inline-block;
+    width: 0.3em;
+    height: 0.62em;
+    margin-left: 0.08em;
+    background: var(--color-accent-500);
+    animation: blink 1.1s steps(1) infinite;
+  }
+  .scroll-cue span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--fg);
+    animation: cue 1.8s var(--ease-in-out-quart) infinite;
+  }
+  @keyframes cue {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
+</style>

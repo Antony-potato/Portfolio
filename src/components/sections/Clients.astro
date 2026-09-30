@@ -1,0 +1,113 @@
+---
+import { Icon } from "astro-icon/components";
+import SectionTitle from "../ui/SectionTitle.astro";
+import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const base = lang === "es" ? "/proyectos" : "/projects";
+
+const clients = [
+  {
+    name: "Onix Living",
+    logo: "/clients/onix-living.svg",
+    ratio: "1500 / 262",
+    role: t("clients.onix.role"),
+    period: t("clients.onix.period"),
+    body: t("clients.onix.body"),
+    links: [
+      { label: "Aldea Savia", href: getLocalizedPath(lang, `${base}/aldea-savia`) },
+      { label: "Koa Towers", href: getLocalizedPath(lang, `${base}/koa-towers`) },
+    ],
+  },
+  {
+    name: "Andiani Travel",
+    logo: "/clients/andiani.svg",
+    ratio: "1870 / 252",
+    role: t("clients.andiani.role"),
+    period: t("clients.andiani.period"),
+    body: t("clients.andiani.body"),
+    links: [{ label: "andianitravel.com", href: "https://andianitravel.com", external: true }],
+  },
+];
+---
+
+<section id="clients" class="wrapper py-16 md:py-24">
+  <SectionTitle index="03" label={t("clients.label")} title={t("clients.title")} description={t("clients.subtitle")} />
+
+  <ul class="mt-10 grid gap-px overflow-hidden rounded-md border border-line bg-line md:mt-16 lg:grid-cols-3" data-reveal="up">
+    {
+      clients.map((c, i) => (
+        <li class="group flex min-h-[24rem] flex-col gap-10 bg-bg p-6 md:min-h-[30rem] md:p-8">
+          <div class="flex items-center justify-between font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted">
+            <span class="text-fg">0{i + 1}</span>
+            <span>{c.period}</span>
+          </div>
+
+          <span
+            role="img"
+            aria-label={c.name}
+            class="logo-mask h-8 max-w-full text-fg transition-colors duration-500 group-hover:text-accent md:h-10"
+            style={`--logo: url(${c.logo}); aspect-ratio: ${c.ratio}`}
+          />
+
+          <div class="mt-auto flex flex-col gap-4">
+            <span class="tag w-fit">{c.role}</span>
+            <p class="max-w-md text-muted">{c.body}</p>
+            <ul class="flex flex-wrap gap-x-5 gap-y-2 border-t border-line pt-4 text-sm font-medium">
+              {c.links.map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    target={"external" in l ? "_blank" : undefined}
+                    rel={"external" in l ? "noopener noreferrer" : undefined}
+                    class="link-line inline-flex items-center gap-1"
+                  >
+                    {l.label}
+                    <Icon name={"external" in l ? "lucide:arrow-up-right" : "lucide:arrow-right"} class="size-3.5" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+      ))
+    }
+
+    <!-- Tercera celda: invitación, cierra la rejilla y convierte -->
+    <li class="bg-surface">
+      <a
+        href={getLocalizedPath(lang, lang === "es" ? "/contacto" : "/contact")}
+        class="group flex h-full min-h-[18rem] flex-col justify-between gap-10 p-6 md:min-h-[30rem] md:p-8"
+      >
+        <span class="flex items-center justify-between font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted">
+          <span>03</span>
+          <span class="pulse-dot"></span>
+        </span>
+        <span class="flex flex-col gap-4">
+          <span class="text-[clamp(2.25rem,3.6vw,3.5rem)] leading-[0.95] font-extrabold tracking-[-0.05em]">
+            {t("clients.cta.title")}
+          </span>
+          <span class="max-w-xs text-muted">{t("clients.cta.body")}</span>
+        </span>
+        <span class="grid size-12 place-items-center rounded-full border border-line transition-colors duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-ink-950">
+          <Icon name="lucide:arrow-right" class="size-5 transition-transform duration-500 group-hover:-rotate-45" aria-hidden="true" />
+        </span>
+      </a>
+    </li>
+  </ul>
+</section>
+
+<style>
+  /* El SVG del logo se usa como máscara: toma el color del tema (currentColor) */
+  .logo-mask {
+    display: block;
+    background: currentColor;
+    -webkit-mask: var(--logo) left center / contain no-repeat;
+    mask: var(--logo) left center / contain no-repeat;
+  }
+</style>

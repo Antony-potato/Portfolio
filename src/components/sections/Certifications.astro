@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import SectionTitle from "../ui/SectionTitle.astro";
 import { useTranslations, type Lang } from "~/i18n/utils";
 
@@ -9,39 +10,67 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-interface Cert {
-  name: string;
-  issuer: string;
-  date: string;
-}
-
-const certs: Cert[] = [
-  { name: "AWS Academy Graduate — Data Engineering", issuer: "AWS Academy", date: "2025-12" },
-  { name: "Big Data Foundations — Level 1 & 2", issuer: "IBM", date: "2026-04" },
-  { name: "EF SET English C1 Advanced (67/100)", issuer: "EF SET", date: "2025-07" },
-  { name: "Figma Avanzado", issuer: "LinkedIn Learning", date: "2025" },
+// placeholder: cambia cada `url: "#"` por el link público del certificado (Credly, PDF, etc.)
+// `short` es lo que se ve en la banda; `name` + `issuer` van al lector de pantalla.
+const certs = [
+  { short: "AWS Data Engineering", name: "AWS Academy Graduate — Data Engineering", issuer: "AWS Academy", icon: "simple-icons:amazonwebservices", url: "#" },
+  { short: "Big Data Foundations L1", name: "Big Data Foundations — Level 1", issuer: "IBM", icon: "simple-icons:ibm", url: "#" },
+  { short: "English C1", name: "EF SET English C1 Advanced (67/100)", issuer: "EF SET", icon: "lucide:languages", url: "#" },
+  { short: "Spark L1", name: "Spark — Level 1", issuer: "IBM", icon: "simple-icons:apachespark", url: "#" },
+  { short: "Cisco Learn-A-Thon", name: "Networking Academy Learn-A-Thon 2024", issuer: "Cisco", icon: "simple-icons:cisco", url: "#" },
+  { short: "Big Data Foundations L2", name: "Big Data Foundations — Level 2", issuer: "IBM", icon: "simple-icons:ibm", url: "#" },
+  { short: lang === "es" ? "Figma Avanzado" : "Advanced Figma", name: "Figma Avanzado", issuer: "LinkedIn Learning", icon: "simple-icons:figma", url: "#" },
+  { short: "Hadoop L1", name: "Hadoop Foundations — Level 1", issuer: "IBM", icon: "simple-icons:apachehadoop", url: "#" },
+  { short: "Big Data 101", name: "Big Data 101", issuer: "IBM · Cognitive Class", icon: "simple-icons:ibm", url: "#" },
+  { short: "Innovation Meet Up", name: "Innovation Meet Up", issuer: "Universidad Tecmilenio", icon: "lucide:graduation-cap", url: "#" },
 ];
 ---
 
-<section id="certifications" class="wrapper py-24 md:py-32">
-  <SectionTitle eyebrow={t("certs.eyebrow")} title={t("certs.title")} class="reveal mb-16" />
+<section id="certifications" class="py-16 md:py-24">
+  <SectionTitle index="05" label={t("certs.label")} title={t("certs.title")} class="wrapper" />
 
-  <ul class="grid gap-px bg-ink-300 dark:bg-ink-700 border border-ink-300 dark:border-ink-700 md:grid-cols-2" data-stagger>
-    {
-      certs.map((c, i) => (
-        <li data-stagger-child class="bg-ink-50 dark:bg-ink-950 p-6 flex flex-col gap-2">
-          <div class="flex items-baseline gap-3">
-            <span class="font-mono text-xs uppercase tracking-wider text-ink-400 dark:text-ink-500">
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <p class="font-mono text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400">
-              {c.date}
-            </p>
-          </div>
-          <p class="font-display text-lg font-bold leading-tight">{c.name}</p>
-          <p class="text-sm text-ink-500 dark:text-ink-400">{c.issuer}</p>
-        </li>
-      ))
-    }
-  </ul>
+  <!-- Banda CSS pura, duplicada para loop continuo. Se pausa con hover/foco para poder abrir cada certificado. -->
+  <div class="marquee mt-10 overflow-hidden border-y border-line py-6 md:mt-16 md:py-8">
+    <div class="marquee-track flex w-max">
+      {
+        [0, 1].map((copy) => (
+          <ul class="flex shrink-0 items-center" aria-hidden={copy === 1 ? "true" : undefined}>
+            {certs.map((c) => (
+              <li class="flex items-center pr-[0.9em] font-display text-[clamp(2.5rem,7vw,6.5rem)] leading-none font-extrabold tracking-[-0.055em] whitespace-nowrap">
+                <a
+                  href={c.url}
+                  tabindex={copy === 1 ? -1 : undefined}
+                  target={c.url.startsWith("http") ? "_blank" : undefined}
+                  rel={c.url.startsWith("http") ? "noopener noreferrer" : undefined}
+                  aria-label={`${c.name} — ${c.issuer}`}
+                  class="group flex items-center gap-[0.35em] transition-colors duration-300 hover:text-accent"
+                >
+                  <Icon name={c.icon} class="size-[0.55em] text-muted transition-colors duration-300 group-hover:text-accent" />
+                  {c.short}
+                  <Icon name="lucide:arrow-up-right" class="size-[0.4em] text-muted transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-accent" />
+                </a>
+                <span class="ml-[0.55em] size-[0.14em] bg-accent" aria-hidden="true" />
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
 </section>
+
+<style>
+  .marquee-track {
+    animation: marquee 70s linear infinite;
+  }
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+  /* Sin animación: la banda se vuelve scroll horizontal normal */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      overflow-x: auto;
+    }
+  }
+</style>

@@ -23,3 +23,18 @@ export function getLocalizedPath(lang: Lang, path: string): string {
 export function getAlternateLang(lang: Lang): Lang {
   return lang === "es" ? "en" : "es";
 }
+
+// Segmentos de ruta que cambian de nombre entre idiomas
+const routes = { proyectos: "projects", servicios: "services", contacto: "contact" } as const;
+
+/** Ruta equivalente en el otro idioma: /proyectos/pocky ↔ /en/projects/pocky */
+export function getAlternatePath(lang: Lang, pathname: string): string {
+  const other = getAlternateLang(lang);
+  const bare = lang === defaultLang ? pathname : pathname.replace(/^\/en(?=\/|$)/, "") || "/";
+  const [, first = "", ...rest] = bare.split("/");
+  const seg =
+    other === "en"
+      ? (routes[first as keyof typeof routes] ?? first)
+      : (Object.keys(routes).find((es) => routes[es as keyof typeof routes] === first) ?? first);
+  return getLocalizedPath(other, ["", seg, ...rest].join("/").replace(/\/$/, "") || "/");
+}

@@ -1,9 +1,8 @@
 ---
-import BaseLayout from "./BaseLayout.astro";
-import Badge from "~/components/ui/Badge.astro";
-import Eyebrow from "~/components/ui/Eyebrow.astro";
-import Button from "~/components/ui/Button.astro";
+import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
+import BaseLayout from "./BaseLayout.astro";
+import Button from "~/components/ui/Button.astro";
 import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
 
 interface Props {
@@ -15,124 +14,161 @@ interface Props {
   stack: string[];
   category: string;
   cover: string;
+  gallery?: string[] | undefined;
   liveUrl?: string | null | undefined;
   repoUrl?: string | null | undefined;
-  prevSlug?: string | undefined;
-  nextSlug?: string | undefined;
-  nextTitle?: string | undefined;
+  index: number;
+  total: number;
+  headings: MarkdownHeading[];
+  next?: { slug: string; title: string; cover: string } | undefined;
   lang: Lang;
 }
 
-const {
-  title,
-  summary,
-  role,
-  year,
-  client,
-  stack,
-  category,
-  cover,
-  liveUrl,
-  repoUrl,
-  nextSlug,
-  nextTitle,
-  lang,
-} = Astro.props;
+const { title, summary, role, year, client, stack, category, cover, gallery = [], liveUrl, repoUrl, index, total, headings, next, lang } =
+  Astro.props;
 
 const t = useTranslations(lang);
-const projectsBase = lang === "es" ? "/proyectos" : "/projects";
-const backHref = getLocalizedPath(lang, projectsBase);
-const nextHref = nextSlug ? getLocalizedPath(lang, `${projectsBase}/${nextSlug}`) : null;
+const base = lang === "es" ? "/proyectos" : "/projects";
+const pad = (n: number) => String(n).padStart(2, "0");
+const toc = headings.filter((h) => h.depth === 2);
+const extra = gallery.filter((src) => src !== cover);
+
+const specs = [
+  { label: t("projects.role"), value: role },
+  { label: t("projects.client"), value: client ?? "—" },
+  { label: t("projects.year"), value: String(year) },
+  { label: t("projects.category"), value: category.toUpperCase() },
+];
 ---
 
 <BaseLayout title={title} description={summary} type="article" image={cover}>
-  <article class="pb-32">
-    <header class="border-b border-ink-300 dark:border-ink-700">
-      <div class="wrapper py-12">
-        <a
-          href={backHref}
-          class="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400 hover:text-accent-500 mb-8"
-        >
-          <Icon name="lucide:arrow-left" class="size-3" />
-          {projectsBase === "/proyectos" ? "Proyectos" : "Projects"}
+  <article>
+    <header data-hero class="wrapper pt-[calc(var(--nav-h)+2.5rem)] md:pt-[calc(var(--nav-h)+4rem)]">
+      <div data-intro class="eyebrow flex items-center justify-between gap-4">
+        <a href={getLocalizedPath(lang, base)} class="group inline-flex items-center gap-2 text-fg">
+          <Icon name="lucide:arrow-left" class="size-3.5 transition-transform duration-500 group-hover:-translate-x-1" aria-hidden="true" />
+          <span class="roll"><span>{t("projects.back")}</span><span aria-hidden="true">{t("projects.back")}</span></span>
         </a>
+        <span>{t("projects.case")} {pad(index)} / {pad(total)}</span>
+      </div>
 
-        <div class="grid gap-12 lg:grid-cols-12 lg:gap-8 items-end">
-          <div class="lg:col-span-8 flex flex-col gap-6">
-            <div class="flex items-center gap-3">
-              <Badge variant="accent">{category}</Badge>
-              <Eyebrow class="m-0">{year}</Eyebrow>
-            </div>
-            <h1 class="font-display font-black leading-[0.95] tracking-[-0.03em] text-[clamp(2.5rem,7vw,5.5rem)] text-balance">
-              {title}
-            </h1>
-            <p class="max-w-2xl text-lg md:text-xl text-ink-500 dark:text-ink-400">{summary}</p>
+      <h1 data-intro class="mt-12 -ml-[0.04em] text-[clamp(3.25rem,13.5vw,15rem)] leading-[0.82] font-extrabold tracking-[-0.065em] md:mt-16">
+        <span data-hero-line class="block">{title}</span>
+      </h1>
+
+      <div data-intro class="relative mt-10 grid gap-10 pt-6 md:mt-14 lg:grid-cols-12 lg:gap-6">
+        <span data-intro-line class="absolute inset-x-0 top-0 h-px bg-line"></span>
+        <div data-intro-up class="flex flex-col gap-8 lg:col-span-5">
+          <p class="text-xl leading-snug tracking-[-0.01em] md:text-2xl">{summary}</p>
+          <div class="flex flex-wrap gap-3">
+            {
+              liveUrl && (
+                <Button href={liveUrl} external magnetic>
+                  {t("projects.live")}
+                  <Icon name="lucide:arrow-up-right" class="size-4" aria-hidden="true" />
+                </Button>
+              )
+            }
+            {
+              repoUrl && (
+                <Button href={repoUrl} variant="secondary" external>
+                  <Icon name="simple-icons:github" class="size-4" aria-hidden="true" />
+                  {t("projects.repo")}
+                </Button>
+              )
+            }
           </div>
-
-          <aside class="lg:col-span-4">
-            <dl class="grid grid-cols-2 gap-px bg-ink-300 dark:bg-ink-700 border border-ink-300 dark:border-ink-700">
-              <div class="bg-ink-50 dark:bg-ink-950 p-4">
-                <dt class="eyebrow">{t("projects.role")}</dt>
-                <dd class="mt-1 font-mono text-sm">{role}</dd>
-              </div>
-              <div class="bg-ink-50 dark:bg-ink-950 p-4">
-                <dt class="eyebrow">{t("projects.client")}</dt>
-                <dd class="mt-1 font-mono text-sm">{client ?? "—"}</dd>
-              </div>
-              <div class="bg-ink-50 dark:bg-ink-950 p-4 col-span-2">
-                <dt class="eyebrow">{t("projects.stack")}</dt>
-                <dd class="mt-1 font-mono text-sm">{stack.join(" · ")}</dd>
-              </div>
-            </dl>
-
-            <div class="mt-4 flex flex-wrap gap-2">
-              {
-                liveUrl && (
-                  <Button href={liveUrl} variant="primary" size="sm" external>
-                    {t("projects.live")} <Icon name="lucide:arrow-up-right" class="size-3" />
-                  </Button>
-                )
-              }
-              {
-                repoUrl && (
-                  <Button href={repoUrl} variant="secondary" size="sm" external>
-                    {t("projects.repo")} <Icon name="simple-icons:github" class="size-3" />
-                  </Button>
-                )
-              }
-            </div>
-          </aside>
         </div>
+        <dl data-intro-up class="grid grid-cols-2 gap-x-6 self-start border-t border-line lg:col-span-6 lg:col-start-7 lg:border-t-0">
+          {
+            specs.map((s) => (
+              <div class="flex flex-col gap-1 border-b border-line py-3">
+                <dt class="eyebrow">{s.label}</dt>
+                <dd class="font-medium">{s.value}</dd>
+              </div>
+            ))
+          }
+          <div class="col-span-2 flex flex-col gap-1 border-b border-line py-3">
+            <dt class="eyebrow">{t("projects.stack")}</dt>
+            <dd class="font-medium">{stack.join(" · ")}</dd>
+          </div>
+        </dl>
       </div>
     </header>
 
-    <div class="wrapper py-12">
-      <div class="aspect-[16/9] overflow-hidden border border-ink-300 dark:border-ink-700 bg-ink-100 dark:bg-ink-900">
+    <figure class="wrapper mt-14 md:mt-20">
+      <div data-clip class="relative aspect-[4/3] overflow-hidden rounded-md bg-surface md:aspect-[16/9]">
         <img
+          data-parallax="6"
           src={cover}
           alt={title}
+          width="1920"
+          height="1080"
           loading="eager"
+          fetchpriority="high"
           decoding="async"
-          class="size-full object-cover"
+          class="absolute inset-0 size-full scale-[1.12] object-cover"
         />
       </div>
-    </div>
+    </figure>
 
-    <div class="wrapper">
-      <div class="prose prose-lg dark:prose-invert max-w-3xl mx-auto py-12">
+    <div class="wrapper grid gap-12 py-24 md:py-36 lg:grid-cols-12 lg:gap-6">
+      {
+        toc.length > 0 && (
+          <aside class="hidden lg:col-span-3 lg:block">
+            <nav class="sticky top-[calc(var(--nav-h)+2rem)]" aria-label={t("projects.toc")}>
+              <p class="eyebrow">{t("projects.toc")}</p>
+              <ol class="mt-4 border-t border-line" data-toc>
+                {toc.map((h, i) => (
+                  <li>
+                    <a
+                      href={`#${h.slug}`}
+                      class="flex gap-4 border-b border-line py-3 text-sm text-muted transition-colors hover:text-fg aria-[current=true]:text-fg"
+                    >
+                      <span class="font-mono text-xs">{pad(i + 1)}</span>
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          </aside>
+        )
+      }
+      <div class="prose lg:col-span-7 lg:col-start-5">
         <slot />
       </div>
     </div>
 
     {
-      nextHref && nextTitle && (
-        <nav class="wrapper py-16 border-t border-ink-300 dark:border-ink-700" aria-label="Project navigation">
-          <a
-            href={nextHref}
-            class="group flex flex-col gap-2 items-end text-right hover:text-accent-500 transition-colors"
-          >
-            <Eyebrow>{t("projects.next")} →</Eyebrow>
-            <span class="font-display text-3xl md:text-5xl font-bold">{nextTitle}</span>
+      extra.length > 0 && (
+        <div class="wrapper grid gap-6 pb-24 md:pb-36">
+          {extra.map((src) => (
+            <div data-clip class="relative aspect-[16/9] overflow-hidden rounded-md bg-surface">
+              <img data-parallax="5" src={src} alt="" loading="lazy" decoding="async" class="absolute inset-0 size-full scale-[1.1] object-cover" />
+            </div>
+          ))}
+        </div>
+      )
+    }
+
+    {
+      next && (
+        <nav aria-label={t("projects.next")} class="border-t border-line">
+          <a href={getLocalizedPath(lang, `${base}/${next.slug}`)} class="group wrapper relative flex flex-col gap-8 py-16 md:py-28">
+            <span class="eyebrow flex items-center gap-4">
+              <span class="text-fg">{t("projects.next")}</span>
+              <span class="h-px flex-1 origin-left bg-line transition-transform duration-1000 ease-(--ease-out-expo) group-hover:bg-fg" />
+              <Icon name="lucide:arrow-right" class="size-4 text-fg transition-transform duration-500 group-hover:translate-x-1" aria-hidden="true" />
+            </span>
+            <span class="flex items-end justify-between gap-6">
+              <span class="text-[clamp(3rem,12vw,13rem)] leading-[0.82] font-extrabold tracking-[-0.065em] transition-transform duration-700 ease-(--ease-out-expo) group-hover:translate-x-3">
+                {next.title}
+              </span>
+              <span class="next-cover hidden aspect-[16/10] w-[min(26rem,30vw)] shrink-0 overflow-hidden rounded-md md:block">
+                <img src={next.cover} alt="" loading="lazy" decoding="async" class="size-full scale-110 object-cover transition-transform duration-1000 ease-(--ease-out-expo) group-hover:scale-100" />
+              </span>
+            </span>
           </a>
         </nav>
       )
@@ -141,65 +177,132 @@ const nextHref = nextSlug ? getLocalizedPath(lang, `${projectsBase}/${nextSlug}`
 </BaseLayout>
 
 <style is:global>
+  .next-cover {
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 900ms var(--ease-in-out-quart);
+  }
+  .group:hover .next-cover,
+  .group:focus-visible .next-cover {
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* Prosa del caso de estudio — h2 numerados con contador CSS */
   .prose {
-    color: var(--fg);
+    max-width: 68ch;
+    counter-reset: section;
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: color-mix(in srgb, var(--fg) 82%, var(--bg));
+  }
+  .prose > * + * {
+    margin-top: 1.25em;
   }
   .prose h2 {
-    font-family: var(--font-sans);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    font-size: 2rem;
+    counter-increment: section;
+    color: var(--fg);
+    font-size: clamp(2rem, 3.6vw, 3.25rem);
+    line-height: 1;
+    letter-spacing: -0.045em;
+    margin-top: 3.5em;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+  .prose h2:first-child {
+    margin-top: 0;
+  }
+  .prose h2::before {
+    content: counter(section, decimal-leading-zero) " —";
+    display: block;
+    margin-bottom: 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .prose h2 + * {
+    margin-top: 1.5rem;
   }
   .prose h3 {
-    font-family: var(--font-sans);
-    font-weight: 700;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
     font-size: 1.5rem;
+    margin-top: 2em;
   }
-  .prose p,
   .prose ul,
   .prose ol {
-    margin-bottom: 1.25rem;
-    line-height: 1.7;
+    display: grid;
+    gap: 0.75rem;
+    padding-left: 0;
   }
   .prose ul {
     list-style: none;
-    padding-left: 0;
   }
   .prose ul li {
     position: relative;
     padding-left: 1.5rem;
   }
   .prose ul li::before {
-    content: "→";
+    content: "";
     position: absolute;
     left: 0;
-    color: var(--color-accent-500);
+    top: 0.72em;
+    width: 0.4rem;
+    height: 0.4rem;
+    background: var(--color-accent-500);
+  }
+  .prose ul ul {
+    margin-top: 0.75rem;
+  }
+  .prose ol {
+    list-style: decimal-leading-zero inside;
+  }
+  .prose ol li::marker {
     font-family: var(--font-mono);
+    font-size: 0.8em;
+    color: var(--muted);
   }
   .prose strong {
-    color: var(--color-accent-600);
+    color: var(--fg);
+    font-weight: 600;
   }
-  :root.theme-dark .prose strong {
-    color: var(--color-accent-400);
+  .prose em {
+    font-style: italic;
   }
   .prose code {
     font-family: var(--font-mono);
-    background: color-mix(in srgb, var(--fg) 6%, transparent);
+    font-size: 0.85em;
+    background: var(--surface);
     padding: 0.125rem 0.375rem;
     border-radius: 0.25rem;
-    font-size: 0.875em;
   }
   .prose a {
-    color: var(--color-accent-600);
+    color: var(--fg);
     text-decoration: underline;
+    text-decoration-color: var(--color-accent-500);
     text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-  }
-  :root.theme-dark .prose a {
-    color: var(--color-accent-400);
+    text-underline-offset: 4px;
   }
 </style>
+
+<script>
+  // Scroll-spy del índice lateral
+  let spy: IntersectionObserver | null = null;
+  document.addEventListener("astro:page-load", () => {
+    spy?.disconnect();
+    const links = document.querySelectorAll<HTMLAnchorElement>("[data-toc] a");
+    if (!links.length) return;
+    const byId = new Map([...links].map((a) => [decodeURIComponent(a.hash.slice(1)), a]));
+    spy = new IntersectionObserver(
+      (entries) => {
+        const hit = entries.find((e) => e.isIntersecting);
+        if (!hit) return;
+        links.forEach((a) => a.removeAttribute("aria-current"));
+        byId.get(hit.target.id)?.setAttribute("aria-current", "true");
+      },
+      { rootMargin: "0px 0px -70% 0px" },
+    );
+    byId.forEach((_, id) => {
+      const el = document.getElementById(id);
+      if (el) spy?.observe(el);
+    });
+  });
+</script>

@@ -4,7 +4,7 @@ import { Font } from "astro:assets";
 import "~/styles/global.css";
 import Navbar from "~/components/layout/Navbar.astro";
 import Footer from "~/components/layout/Footer.astro";
-import { getLangFromUrl } from "~/i18n/utils";
+import { getLangFromUrl, getAlternatePath } from "~/i18n/utils";
 import { SITE, buildTitle, type SeoProps } from "~/lib/seo";
 
 type Props = SeoProps;
@@ -18,20 +18,22 @@ const {
   type = "website",
 } = Astro.props;
 
+const site = Astro.site ?? SITE.url;
 const fullTitle = buildTitle(title);
-const ogImageUrl = new URL(image, Astro.site ?? SITE.url).toString();
-
+const ogImageUrl = new URL(image, site).toString();
 const alternates = [
-  { hreflang: "es", href: new URL(Astro.url.pathname.replace(/^\/en(\/|$)/, "/"), Astro.site ?? SITE.url).toString() },
-  { hreflang: "en", href: new URL(`/en${Astro.url.pathname.replace(/^\/en/, "")}`, Astro.site ?? SITE.url).toString() },
+  { hreflang: lang, href: new URL(Astro.url.pathname, site).toString() },
+  { hreflang: lang === "es" ? "en" : "es", href: new URL(getAlternatePath(lang, Astro.url.pathname), site).toString() },
 ];
 
-const themeInit = `(() => {
+// Tema + flag de motion antes del primer paint (y tras cada navegación del ClientRouter)
+const headInit = `(() => {
   const apply = () => {
-    try {
-      const saved = localStorage.getItem("theme");
-      document.documentElement.classList.toggle("theme-dark", saved === "dark");
-    } catch (e) {}
+    const d = document.documentElement;
+    let saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    d.classList.toggle("theme-dark", saved === "dark");
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("motion");
   };
   apply();
   document.addEventListener("astro:after-swap", apply);
@@ -44,6 +46,7 @@ const themeInit = `(() => {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#f4f2ed" />
 
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -71,7 +74,7 @@ const themeInit = `(() => {
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-mono" />
 
-    <script is:inline set:html={themeInit} />
+    <script is:inline set:html={headInit} />
 
     <ClientRouter />
   </head>
@@ -86,18 +89,13 @@ const themeInit = `(() => {
       import { initLenis, destroyLenis } from "~/lib/lenis";
       import { initAnimations, teardownAnimations } from "~/lib/animations";
 
-      const boot = () => {
+      document.addEventListener("astro:page-load", () => {
         initLenis();
         initAnimations();
-      };
-
-      boot();
-
-      document.addEventListener("astro:after-swap", () => {
+      });
+      document.addEventListener("astro:before-swap", () => {
         teardownAnimations();
         destroyLenis();
-        if (!window.location.hash) window.scrollTo(0, 0);
-        boot();
       });
     </script>
   </body>

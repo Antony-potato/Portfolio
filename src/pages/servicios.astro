@@ -1,12 +1,17 @@
 ---
 import BaseLayout from "~/layouts/BaseLayout.astro";
+import PageHeader from "~/components/ui/PageHeader.astro";
 import Services from "~/components/sections/Services.astro";
 import Contact from "~/components/sections/Contact.astro";
+import { useTranslations } from "~/i18n/utils";
 
 const lang = "es" as const;
+const t = useTranslations(lang);
 ---
 
 <BaseLayout title="Servicios" description="Desarrollo web fullstack, optimización de sitios y soporte de infraestructura TI.">
+  <PageHeader index="04" label={t("services.label")} title={t("nav.services")} description={t("services.body")} />
+  <div class="h-10 md:h-16"></div>
   <Services lang={lang} />
   <Contact lang={lang} />
 </BaseLayout>

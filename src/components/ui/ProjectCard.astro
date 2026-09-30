@@ -1,10 +1,10 @@
 ---
 import { Icon } from "astro-icon/components";
-import Badge from "./Badge.astro";
-import type { Lang } from "~/i18n/utils";
 
 interface Props {
   href: string;
+  index: number;
+  total: number;
   title: string;
   summary: string;
   category: string;
@@ -13,113 +13,65 @@ interface Props {
   client?: string | undefined;
   stack: string[];
   cover: string;
-  lang: Lang;
-  /** Tarjeta destacada: en `lg` ocupa toda la fila, portada a la izquierda y datos a la derecha. */
-  wide?: boolean;
-  class?: string;
-  labels: {
-    role: string;
-    year: string;
-    stack: string;
-    client: string;
-  };
+  labels: { role: string; client: string; stack: string; view: string };
 }
 
-const {
-  href,
-  title,
-  summary,
-  category,
-  role,
-  year,
-  client,
-  stack,
-  cover,
-  wide = false,
-  class: className = "",
-  labels,
-} = Astro.props;
-
-const stackPreview = stack.slice(0, 3).join(" · ");
-const stackMore = stack.length > 3 ? ` +${stack.length - 3}` : "";
+const { href, index, total, title, summary, category, role, year, client, stack, cover, labels } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, "0");
+const cell = "flex flex-col gap-1 border-line py-3";
 ---
 
 <a
   href={href}
-  class:list={[
-    "group relative flex flex-col overflow-hidden border border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-900 transition-colors duration-300 hover:border-accent-500 dark:hover:border-accent-500 focus-visible:border-accent-500",
-    wide && "lg:grid lg:grid-cols-[3fr_2fr] lg:grid-rows-[auto_1fr_auto]",
-    className,
-  ]}
+  class="group relative grid origin-top overflow-hidden rounded-md border border-line bg-surface transition-colors duration-500 hover:border-fg lg:h-[min(74vh,44rem)] lg:grid-cols-12 lg:grid-rows-[auto_1fr]"
 >
-  <div
-    class:list={[
-      "flex items-center justify-between border-b border-ink-300 dark:border-ink-700 px-5 py-3",
-      wide && "lg:col-span-2",
-    ]}
-  >
-    <Badge variant="outline">{category}</Badge>
-    <Icon
-      name="lucide:arrow-up-right"
-      class="size-4 text-ink-500 dark:text-ink-400 transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-accent-500"
-    />
+  <div class="flex items-center justify-between gap-4 border-b border-line px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-[0.08em] md:px-6 lg:col-span-12">
+    <span>{pad(index)} <span class="text-muted">/ {pad(total)}</span></span>
+    <span class="text-muted">{category} — {year}</span>
+    <span class="grid size-7 place-items-center rounded-full border border-line transition-colors duration-500 group-hover:border-accent group-hover:bg-accent group-hover:text-ink-950">
+      <Icon name="lucide:arrow-up-right" class="size-3.5 transition-transform duration-500 group-hover:rotate-45" aria-hidden="true" />
+    </span>
   </div>
 
-  <div
-    class:list={[
-      "relative aspect-[16/10] overflow-hidden bg-ink-100 dark:bg-ink-800",
-      wide && "lg:row-span-2 lg:border-r lg:border-ink-300 lg:dark:border-ink-700",
-    ]}
-  >
+  <div class="relative aspect-[16/10] overflow-hidden bg-bg lg:col-span-7 lg:col-start-6 lg:row-start-2 lg:aspect-auto lg:border-l lg:border-line">
     <img
       src={cover}
       alt=""
+      width="1920"
+      height="1080"
       loading="lazy"
       decoding="async"
-      class="size-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+      class="absolute inset-0 size-full object-cover transition-transform duration-[1400ms] ease-(--ease-out-expo) group-hover:scale-[1.045]"
     />
   </div>
 
-  <div class:list={["flex flex-col gap-4 p-5", wide && "lg:justify-center lg:p-8"]}>
-    <h3 class:list={["font-display text-2xl font-bold leading-tight", wide && "lg:text-4xl"]}>
-      {title}
-    </h3>
-    <p
-      class:list={[
-        "text-sm text-ink-500 dark:text-ink-400 line-clamp-2",
-        wide && "lg:line-clamp-none lg:text-base",
-      ]}
-    >
-      {summary}
-    </p>
+  <div class="flex flex-col gap-5 p-4 md:p-6 lg:col-span-5 lg:col-start-1 lg:row-start-2 lg:p-8">
+    <h3 class="text-[clamp(2.25rem,4.4vw,4.75rem)] leading-[0.9] tracking-[-0.055em]">{title}</h3>
+    <p class="line-clamp-2 max-w-md text-muted md:line-clamp-3">{summary}</p>
+
+    <dl class="mt-auto grid grid-cols-2 border-t border-line text-sm">
+      <div class={`${cell} border-r pr-3`}>
+        <dt class="eyebrow">{labels.role}</dt>
+        <dd>{role}</dd>
+      </div>
+      <div class={`${cell} pl-3`}>
+        <dt class="eyebrow">{labels.client}</dt>
+        <dd>{client ?? "—"}</dd>
+      </div>
+      <div class={`${cell} col-span-2 border-t`}>
+        <dt class="eyebrow">{labels.stack}</dt>
+        <dd class="truncate">{stack.slice(0, 3).join(" · ")}{stack.length > 3 && <span class="text-muted"> +{stack.length - 3}</span>}</dd>
+      </div>
+    </dl>
+
+    <span class="inline-flex items-center gap-2 text-sm font-medium">
+      <span class="roll">
+        <span>{labels.view}</span>
+        <span aria-hidden="true">{labels.view}</span>
+      </span>
+      <Icon name="lucide:arrow-right" class="size-4 transition-transform duration-500 group-hover:translate-x-1" aria-hidden="true" />
+    </span>
   </div>
 
-  <dl class="grid grid-cols-2 border-t border-ink-300 dark:border-ink-700 text-xs">
-    <div class="border-r border-ink-300 dark:border-ink-700 px-5 py-3">
-      <dt class="font-mono uppercase tracking-wider text-ink-400 dark:text-ink-500">
-        {labels.stack}
-      </dt>
-      <dd class="mt-1 font-mono text-ink-950 dark:text-ink-100">
-        {stackPreview}{stackMore}
-      </dd>
-    </div>
-    <div class="px-5 py-3">
-      <dt class="font-mono uppercase tracking-wider text-ink-400 dark:text-ink-500">
-        {labels.year}
-      </dt>
-      <dd class="mt-1 font-mono text-ink-950 dark:text-ink-100">{year}</dd>
-    </div>
-    <div class="border-t border-r border-ink-300 dark:border-ink-700 px-5 py-3">
-      <dt class="font-mono uppercase tracking-wider text-ink-400 dark:text-ink-500">
-        {labels.role}
-      </dt>
-      <dd class="mt-1 font-mono text-ink-950 dark:text-ink-100">{role}</dd>
-    </div>
-    <div class="border-t border-ink-300 dark:border-ink-700 px-5 py-3">
-      <dt class="font-mono uppercase tracking-wider text-ink-400 dark:text-ink-500">
-        {labels.client}
-      </dt>
-      <dd class="mt-1 font-mono text-ink-950 dark:text-ink-100">{client ?? "—"}</dd>
-    </div>
-  </dl>
+  <div data-shade class="pointer-events-none absolute inset-0 bg-ink-950 opacity-0" aria-hidden="true"></div>
 </a>

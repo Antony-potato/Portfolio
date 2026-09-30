@@ -1,8 +1,8 @@
 ---
-import { useTranslations, getLocalizedPath, getAlternateLang, type Lang } from "~/i18n/utils";
+import { Icon } from "astro-icon/components";
+import { useTranslations, getLocalizedPath, getAlternateLang, getAlternatePath, type Lang } from "~/i18n/utils";
 import { languages } from "~/i18n/ui";
-import PillNav from "../islands/PillNav.tsx";
-import "../islands/PillNav.css";
+import { EMAIL, whatsappUrl } from "~/lib/contact";
 
 interface Props {
   lang: Lang;
@@ -10,98 +10,363 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
+const es = lang === "es";
 
 const home = getLocalizedPath(lang, "/");
-
+const contactHref = getLocalizedPath(lang, es ? "/contacto" : "/contact");
 const items = [
-  { href: home, label: t("nav.home") },
-  { href: getLocalizedPath(lang, lang === "es" ? "/proyectos" : "/projects"), label: t("nav.projects") },
-  { href: getLocalizedPath(lang, lang === "es" ? "/servicios" : "/services"), label: t("nav.services") },
-  { href: getLocalizedPath(lang, lang === "es" ? "/contacto" : "/contact"), label: t("nav.contact") },
+  { href: getLocalizedPath(lang, es ? "/proyectos" : "/projects"), label: t("nav.projects") },
+  { href: `${home === "/" ? "" : home}/#about`, label: t("nav.about") },
+  { href: getLocalizedPath(lang, es ? "/servicios" : "/services"), label: t("nav.services") },
+  { href: contactHref, label: t("nav.contact") },
 ];
 
-const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
-const activeItem = items.find((i) => (i.href.replace(/\/$/, "") || "/") === currentPath);
-const activeHref = activeItem?.href ?? home;
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (href: string) => !href.includes("#") && (path === href || path.startsWith(`${href}/`));
 
 const other = getAlternateLang(lang);
-const pathWithoutLang =
-  lang === "es" ? Astro.url.pathname : Astro.url.pathname.replace(/^\/en(\/|$)/, "/");
-const targetHref = getLocalizedPath(other, pathWithoutLang);
+const altHref = getAlternatePath(lang, Astro.url.pathname);
 ---
 
 <a
   href="#main"
-  class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-accent-500 focus:text-ink-950 focus:px-4 focus:py-2 focus:rounded-sm"
+  class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-accent focus:px-4 focus:py-2 focus:text-ink-950"
 >
-  Skip to content
+  {t("nav.skip")}
 </a>
 
-<div class="floating-nav">
-  <PillNav
-    logo="/logo-ac.svg"
-    logoAlt="Antonio Cortazar"
-    items={items}
-    activeHref={activeHref}
-    baseColor="var(--pill-base)"
-    pillColor="var(--pill-bg-color)"
-    pillTextColor="var(--pill-text-color)"
-    hoveredPillTextColor="var(--pill-hover-text)"
-    languageToggle={{
-      currentCode: languages[lang],
-      targetHref,
-      ariaLabel: `Switch language to ${languages[other]}`,
-    }}
-    themeToggle
-    client:load
-  />
-</div>
+<header data-nav class="site-nav fixed inset-x-0 top-0 z-50">
+  <div class="wrapper flex h-(--nav-h) items-center justify-between gap-6">
+    <a href={home} class="group flex items-center gap-3" aria-label={`Antonio Cortazar — ${t("nav.home")}`}>
+      <img
+        src="/logo-ac.svg"
+        alt=""
+        width="28"
+        height="28"
+        class="size-7 transition-transform duration-700 ease-(--ease-out-expo) group-hover:rotate-[-12deg] dark:invert"
+      />
+      <span class="font-mono text-[0.6875rem] uppercase leading-[1.15] tracking-[0.08em]">
+        Antonio<br />Cortazar
+      </span>
+    </a>
+
+    <nav aria-label={es ? "Principal" : "Main"} class="hidden lg:block">
+      <ul class="flex items-center gap-7">
+        {
+          items.map((item, i) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                class="nav-link flex items-baseline gap-1.5 text-sm font-medium"
+              >
+                <span class="font-mono text-[0.625rem] text-muted">0{i + 1}</span>
+                <span class="roll">
+                  <span>{item.label}</span>
+                  <span aria-hidden="true">{item.label}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <p class="hidden items-center gap-2 font-mono text-[0.6875rem] uppercase tracking-[0.08em] xl:flex">
+        <span class="text-muted">CUN</span>
+        <time data-clock class="tabular-nums" aria-label={t("nav.clock")}>--:--:--</time>
+      </p>
+
+      <a
+        href={altHref}
+        hreflang={other}
+        lang={other}
+        class="flex h-9 items-center gap-1 px-2 font-mono text-[0.6875rem] uppercase tracking-[0.08em]"
+        aria-label={`${languages[other]} — ${other === "en" ? "English" : "Español"}`}
+      >
+        <span>{languages[lang]}</span>
+        <span class="text-muted">/</span>
+        <span class="text-muted transition-colors hover:text-fg">{languages[other]}</span>
+      </a>
+
+      <button
+        type="button"
+        data-theme-toggle
+        class="grid size-9 place-items-center rounded-full border border-line transition-colors hover:border-fg"
+        aria-label={t("nav.theme")}
+      >
+        <svg viewBox="0 0 20 20" class="theme-icon size-4" aria-hidden="true">
+          <circle cx="10" cy="10" r="8.25" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+          <path d="M10 1.75a8.25 8.25 0 0 1 0 16.5z" fill="currentColor"></path>
+        </svg>
+      </button>
+
+      <a
+        href={contactHref}
+        data-magnetic="0.25"
+        class="btn-fill hidden h-9 items-center gap-2 rounded-full bg-fg px-4 text-sm font-medium text-bg sm:inline-flex [--fill:var(--color-accent-500)] [--fill-ink:var(--color-ink-950)]"
+      >
+        <span>{t("hero.cta.secondary")}</span>
+        <span class="size-1.5 rounded-full bg-accent"></span>
+      </a>
+
+      <button
+        type="button"
+        data-menu-open
+        aria-haspopup="dialog"
+        aria-controls="site-menu"
+        class="flex h-9 items-center gap-2 rounded-full border border-line px-3.5 text-sm font-medium lg:hidden"
+      >
+        {t("nav.menu")}
+        <span class="flex flex-col gap-[3px]" aria-hidden="true">
+          <span class="block h-px w-3.5 bg-current"></span>
+          <span class="block h-px w-3.5 bg-current"></span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog id="site-menu" data-menu class="menu inverse" aria-label={t("nav.menu")}>
+  <div class="wrapper flex min-h-full flex-col pb-8">
+    <div class="flex h-(--nav-h) items-center justify-between">
+      <span class="eyebrow">// {t("nav.menu")}</span>
+      <button
+        type="button"
+        data-menu-close
+        class="flex h-9 items-center gap-2 rounded-full border border-line px-3.5 text-sm font-medium"
+      >
+        {t("nav.close")}
+        <Icon name="lucide:x" class="size-3.5" aria-hidden="true" />
+      </button>
+    </div>
+
+    <nav aria-label={t("nav.menu")} class="mt-8">
+      <ol class="border-t border-line">
+        {
+          items.map((item, i) => (
+            <li class="overflow-clip border-b border-line">
+              <a
+                href={item.href}
+                data-menu-link
+                aria-current={isActive(item.href) ? "page" : undefined}
+                class="menu-link flex items-baseline justify-between py-3"
+                style={`--i:${i}`}
+              >
+                <span class="font-display text-[clamp(2.75rem,13vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.045em]">
+                  {item.label}
+                </span>
+                <span class="font-mono text-xs text-muted">0{i + 1}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <div class="menu-foot mt-auto grid grid-cols-2 gap-6 pt-12 font-mono text-xs uppercase tracking-[0.08em]">
+      <div class="flex flex-col gap-2">
+        <span class="text-muted">// {t("nav.contact")}</span>
+        <a href={`mailto:${EMAIL}`} class="normal-case tracking-normal">{EMAIL}</a>
+        <a href={whatsappUrl(t("whatsapp.message"))} target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>
+      </div>
+      <div class="flex flex-col items-end gap-2 text-right">
+        <span class="text-muted">CUN</span>
+        <time data-clock class="tabular-nums">--:--:--</time>
+        <a href={altHref} hreflang={other} lang={other}>{languages[lang]} / <span class="text-muted">{languages[other]}</span></a>
+      </div>
+    </div>
+  </div>
+</dialog>
 
 <style is:global>
-  :root {
-    --pill-base: #0a0a0b;
-    --pill-bg-color: #f4f2ed;
-    --pill-text-color: #0a0a0b;
-    --pill-hover-text: #f4f2ed;
+  .site-nav {
+    view-transition-name: site-nav;
+    transition:
+      transform 600ms var(--ease-in-out-quart),
+      background-color 400ms ease,
+      border-color 400ms ease;
+    border-bottom: 1px solid transparent;
+  }
+  .theme-vt .site-nav {
+    view-transition-name: none;
+  }
+  .site-nav[data-scrolled] {
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    border-bottom-color: var(--line);
+  }
+  .site-nav[data-hidden] {
+    transform: translateY(-100%);
   }
 
-  :root.theme-dark {
-    --pill-base: #f4f2ed;
-    --pill-bg-color: #0a0a0b;
-    --pill-text-color: #f4f2ed;
-    --pill-hover-text: #0a0a0b;
+  .nav-link[aria-current="page"] > span:first-child {
+    color: var(--accent-ink);
   }
 
-  .floating-nav {
+  .theme-icon {
+    transition: transform 900ms var(--ease-in-out-quart);
+  }
+  .theme-dark .theme-icon {
+    transform: rotate(180deg);
+  }
+
+  /* Menú móvil: <dialog> nativo = focus trap, Esc e inert gratis */
+  .menu {
     position: fixed;
-    top: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 50;
-    pointer-events: none;
-    max-width: calc(100vw - 2rem);
-    transition: transform 0.35s ease;
-    will-change: transform;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow-y: auto;
   }
-
-  .floating-nav.is-hidden {
-    transform: translateX(-50%) translateY(calc(-100% - 1.5rem));
+  .menu::backdrop {
+    background: transparent;
   }
-
-  .floating-nav > * {
-    pointer-events: auto;
+  .menu[open] {
+    animation: menu-in 800ms var(--ease-in-out-quart) both;
   }
-
-  @media (max-width: 768px) {
-    .floating-nav {
-      left: 1rem;
-      right: 1rem;
-      transform: none;
-      max-width: none;
+  .menu[data-closing] {
+    animation: menu-out 550ms var(--ease-in-out-quart) both;
+  }
+  .menu[open] .menu-link {
+    animation: menu-link 1000ms var(--ease-out-expo) both;
+    animation-delay: calc(250ms + var(--i) * 70ms);
+  }
+  .menu[open] .menu-foot {
+    animation: menu-fade 800ms ease both 600ms;
+  }
+  .menu-link[aria-current="page"] > span:first-child {
+    color: var(--color-accent-500);
+  }
+  @keyframes menu-in {
+    from {
+      clip-path: inset(0 0 100% 0);
     }
-
-    .floating-nav.is-hidden {
-      transform: translateY(calc(-100% - 1.5rem));
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes menu-out {
+    to {
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+  @keyframes menu-link {
+    from {
+      transform: translateY(105%);
+    }
+  }
+  @keyframes menu-fade {
+    from {
+      opacity: 0;
     }
   }
 </style>
+
+<script>
+  import { getLenis } from "~/lib/lenis";
+
+  // Reloj — hora local de Cancún (se re-consulta cada tick, sobrevive a las navegaciones)
+  const clock = new Intl.DateTimeFormat("es-MX", {
+    timeZone: "America/Cancun",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  });
+  const tickClock = () => {
+    const now = clock.format(new Date());
+    document.querySelectorAll("[data-clock]").forEach((el) => (el.textContent = now));
+  };
+  setInterval(tickClock, 1000);
+
+  // Nav: fondo al bajar, se esconde al hacer scroll hacia abajo y vuelve al subir
+  let lastY = 0;
+  addEventListener(
+    "scroll",
+    () => {
+      const nav = document.querySelector("[data-nav]");
+      const y = scrollY;
+      nav?.toggleAttribute("data-scrolled", y > 24);
+      nav?.toggleAttribute("data-hidden", y > lastY && y > 320);
+      lastY = y;
+    },
+    { passive: true },
+  );
+
+  // Tema con revelado circular desde el botón (View Transitions API)
+  function toggleTheme(button: HTMLElement) {
+    const root = document.documentElement;
+    const dark = !root.classList.contains("theme-dark");
+    const apply = () => {
+      root.classList.toggle("theme-dark", dark);
+      button.setAttribute("aria-pressed", String(dark));
+      try {
+        localStorage.setItem("theme", dark ? "dark" : "light");
+      } catch {}
+    };
+    if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) return apply();
+
+    const r = button.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+    const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    root.classList.add("theme-vt");
+    const vt = document.startViewTransition(apply);
+    vt.ready.then(() =>
+      root.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+        { duration: 900, easing: "cubic-bezier(0.76, 0, 0.24, 1)", pseudoElement: "::view-transition-new(root)" },
+      ),
+    );
+    vt.finished.finally(() => root.classList.remove("theme-vt"));
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    tickClock();
+    lastY = scrollY;
+
+    const toggle = document.querySelector<HTMLElement>("[data-theme-toggle]");
+    toggle?.setAttribute("aria-pressed", String(document.documentElement.classList.contains("theme-dark")));
+    toggle?.addEventListener("click", () => toggleTheme(toggle));
+
+    const menu = document.querySelector<HTMLDialogElement>("[data-menu]");
+    if (!menu) return;
+    const close = () => {
+      if (!menu.open || menu.dataset.closing !== undefined) return;
+      menu.dataset.closing = "";
+      menu.addEventListener(
+        "animationend",
+        () => {
+          delete menu.dataset.closing;
+          menu.close();
+        },
+        { once: true },
+      );
+    };
+    document.querySelector("[data-menu-open]")?.addEventListener("click", () => {
+      menu.showModal();
+      getLenis()?.stop();
+    });
+    menu.querySelector("[data-menu-close]")?.addEventListener("click", close);
+    menu.addEventListener("cancel", (e) => {
+      e.preventDefault();
+      close();
+    });
+    menu.addEventListener("close", () => getLenis()?.start());
+    // Al navegar, el dialog se va con la página; solo liberamos el scroll
+    menu.querySelectorAll("[data-menu-link]").forEach((a) =>
+      a.addEventListener("click", () => {
+        getLenis()?.start();
+        if ((a as HTMLAnchorElement).hash) close();
+      }),
+    );
+  });
+</script>

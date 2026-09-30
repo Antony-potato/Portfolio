@@ -1,60 +1,86 @@
 ---
 import { Icon } from "astro-icon/components";
-import SectionTitle from "../ui/SectionTitle.astro";
 import Button from "../ui/Button.astro";
 import { useTranslations, type Lang } from "~/i18n/utils";
 import { EMAIL, whatsappUrl } from "~/lib/contact";
 
 interface Props {
   lang: Lang;
+  /** h1 + animación de intro cuando la sección abre la página (/contacto) */
+  as?: "h1" | "h2";
 }
 
-const { lang } = Astro.props;
+const { lang, as: Heading = "h2" } = Astro.props;
 const t = useTranslations(lang);
+const isPage = Heading === "h1";
 
 // Google Apps Script web app URL. Define PUBLIC_CONTACT_SHEET_URL en tu .env
 const endpoint = import.meta.env.PUBLIC_CONTACT_SHEET_URL ?? "";
 
-const waHref = whatsappUrl(t("whatsapp.message"));
-
 const channels = [
-  { icon: "lucide:mail", label: t("contact.email"), href: `mailto:${EMAIL}` },
-  { icon: "simple-icons:linkedin", label: t("contact.linkedin"), href: "https://linkedin.com/in/antoniocortazar" },
-  { icon: "simple-icons:github", label: t("contact.github"), href: "https://github.com/Antony-potato" },
+  { label: "LinkedIn", href: "https://linkedin.com/in/antoniocortazar" },
+  { label: "GitHub", href: "https://github.com/Antony-potato" },
 ];
 
-const fieldClass =
-  "w-full border border-ink-300 dark:border-ink-700 bg-ink-50 dark:bg-ink-950 px-4 py-3 text-base text-ink-950 dark:text-ink-100 placeholder:text-ink-400 dark:placeholder:text-ink-500 transition-colors focus:outline-none focus:border-accent-500 focus-visible:outline-2 focus-visible:outline-accent-500 focus-visible:outline-offset-0";
-const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-500 dark:text-ink-400";
+const fields = [
+  { id: "cf-name", name: "name", type: "text" as const, autocomplete: "name", label: t("contact.form.name"), placeholder: t("contact.form.name.placeholder") },
+  { id: "cf-email", name: "email", type: "email" as const, autocomplete: "email", label: t("contact.form.email"), placeholder: t("contact.form.email.placeholder") },
+];
+const labelClass = "font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted";
+const inputClass =
+  "w-full bg-transparent text-xl tracking-[-0.01em] outline-none placeholder:text-muted/60 md:text-2xl";
 ---
 
-<section id="contact" class="wrapper py-24 md:py-32">
-  <div class="grid gap-16 lg:grid-cols-12">
-    <div class="lg:col-span-5 reveal">
-      <SectionTitle eyebrow={t("contact.eyebrow")} title={t("contact.title")} />
-      <p class="mt-8 text-lg text-ink-700 dark:text-ink-300 max-w-xl">{t("contact.body")}</p>
+<section
+  id="contact"
+  data-hero={isPage ? "" : undefined}
+  class:list={["wrapper pb-16 md:pb-24", isPage ? "pt-[calc(var(--nav-h)+3rem)] md:pt-[calc(var(--nav-h)+5rem)]" : "pt-16 md:pt-24"]}
+>
+  <div data-intro={isPage ? "" : undefined} class="eyebrow flex items-center gap-4">
+    <span class="text-fg">06</span>
+    <span data-line={isPage ? undefined : ""} data-intro-line={isPage ? "" : undefined} class="h-px flex-1 bg-line"></span>
+    <span>{t("contact.label")}</span>
+  </div>
 
-      <Button href={waHref} variant="primary" size="lg" external class="mt-8">
-        <Icon name="simple-icons:whatsapp" class="size-5" aria-hidden="true" />
-        {t("whatsapp.cta")}
-      </Button>
+  <Heading
+    data-reveal={isPage ? undefined : "lines"}
+    data-intro={isPage ? "" : undefined}
+    class="mt-8 max-w-[14ch] text-[clamp(3.25rem,10.5vw,11rem)] leading-[0.84] font-extrabold tracking-[-0.065em] md:mt-10"
+  >
+    {isPage ? <span data-hero-line class="block">{t("contact.title")}</span> : t("contact.title")}
+  </Heading>
 
-      <ul class="mt-10 grid gap-3" data-stagger>
+  <div class="mt-12 grid gap-14 md:mt-16 lg:grid-cols-12 lg:gap-6">
+    <div class="flex flex-col gap-10 lg:col-span-5" data-reveal="up">
+      <p class="max-w-md text-xl leading-snug text-muted">{t("contact.body")}</p>
+
+      <a
+        href={`mailto:${EMAIL}`}
+        class="group flex w-fit items-center gap-3 text-[clamp(1.35rem,2.4vw,2.25rem)] font-semibold tracking-[-0.035em]"
+      >
+        <span class="link-line">{EMAIL}</span>
+        <Icon name="lucide:arrow-up-right" class="size-[0.8em] text-accent transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden="true" />
+      </a>
+
+      <div>
+        <Button href={whatsappUrl(t("whatsapp.message"))} size="lg" external magnetic>
+          <Icon name="simple-icons:whatsapp" class="size-4" aria-hidden="true" />
+          {t("whatsapp.cta")}
+        </Button>
+      </div>
+
+      <ul class="border-t border-line">
         {
           channels.map((c) => (
-            <li data-stagger-child>
+            <li>
               <a
                 href={c.href}
-                target={c.href.startsWith("http") ? "_blank" : undefined}
-                rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                class="group inline-flex items-center gap-3 text-ink-700 dark:text-ink-300 hover:text-accent-500 dark:hover:text-accent-400 transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex items-center justify-between border-b border-line py-4 font-medium"
               >
-                <Icon name={c.icon} class="size-5" />
-                <span class="font-display font-semibold">{c.label}</span>
-                <Icon
-                  name="lucide:arrow-up-right"
-                  class="size-4 transition-transform duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                />
+                <span class="transition-transform duration-500 ease-(--ease-out-expo) group-hover:translate-x-2">{c.label}</span>
+                <Icon name="lucide:arrow-up-right" class="size-4 text-muted transition-colors group-hover:text-accent" aria-hidden="true" />
               </a>
             </li>
           ))
@@ -62,10 +88,10 @@ const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-500 dark
       </ul>
     </div>
 
-    <div class="lg:col-span-7 reveal" data-contact>
+    <div class="lg:col-span-6 lg:col-start-7" data-contact data-reveal="up">
       <form
         id="contact-form"
-        class="grid gap-5"
+        class="relative"
         data-endpoint={endpoint}
         data-whatsapp={whatsappUrl()}
         data-sending={t("contact.form.sending")}
@@ -79,53 +105,47 @@ const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-500 dark
           </label>
         </div>
 
-        <div class="grid gap-2">
-          <label class={labelClass} for="cf-name">{t("contact.form.name")}</label>
-          <input
-            id="cf-name"
-            name="name"
-            type="text"
-            required
-            autocomplete="name"
-            placeholder={t("contact.form.name.placeholder")}
-            class={fieldClass}
-          />
+        <div class="border-t border-line">
+          {
+            fields.map((f, i) => (
+              <div class="field grid gap-2 border-b border-line py-5">
+                <label class={labelClass} for={f.id}>
+                  0{i + 1} — {f.label}
+                </label>
+                <input
+                  id={f.id}
+                  name={f.name}
+                  type={f.type}
+                  required
+                  autocomplete={f.autocomplete}
+                  placeholder={f.placeholder}
+                  class={inputClass}
+                />
+              </div>
+            ))
+          }
+          <div class="field grid gap-2 border-b border-line py-5">
+            <label class={labelClass} for="cf-message">03 — {t("contact.form.message")}</label>
+            <textarea
+              id="cf-message"
+              name="message"
+              rows="4"
+              required
+              placeholder={t("contact.form.message.placeholder")}
+              class={`${inputClass} resize-y`}></textarea>
+          </div>
         </div>
 
-        <div class="grid gap-2">
-          <label class={labelClass} for="cf-email">{t("contact.form.email")}</label>
-          <input
-            id="cf-email"
-            name="email"
-            type="email"
-            required
-            autocomplete="email"
-            placeholder={t("contact.form.email.placeholder")}
-            class={fieldClass}
-          />
-        </div>
-
-        <div class="grid gap-2">
-          <label class={labelClass} for="cf-message">{t("contact.form.message")}</label>
-          <textarea
-            id="cf-message"
-            name="message"
-            rows="5"
-            required
-            placeholder={t("contact.form.message.placeholder")}
-            class={`${fieldClass} resize-y`}></textarea>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-          <Button type="submit" variant="primary" size="lg">
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <Button type="submit" size="lg" roll={false}>
             <span data-btn-label>{t("contact.form.send")}</span>
-            <span aria-hidden="true">→</span>
+            <Icon name="lucide:arrow-right" class="size-4" aria-hidden="true" />
           </Button>
           <p
             data-form-status
             role="status"
             aria-live="polite"
-            class="text-sm text-ink-500 dark:text-ink-400 data-[state=error]:text-danger"
+            class="text-sm text-muted data-[state=error]:text-danger"
           >
           </p>
         </div>
@@ -137,18 +157,18 @@ const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-500 dark
         tabindex="-1"
         role="status"
         aria-live="polite"
-        class="contact-success flex min-h-[26rem] flex-col items-start justify-center gap-6 border border-ink-300 dark:border-ink-700 p-8 md:p-12 focus:outline-none"
+        class="contact-success flex min-h-[26rem] flex-col items-start justify-center gap-6 rounded-md border border-line bg-surface p-8 focus:outline-none md:p-12"
       >
-        <svg class="size-16 text-accent-500" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+        <svg class="size-16 text-accent" viewBox="0 0 52 52" fill="none" aria-hidden="true">
           <circle class="contact-success__circle" cx="26" cy="26" r="24" stroke="currentColor" stroke-width="2"></circle>
           <path class="contact-success__check" d="M15 27l7 7 15-15" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
         <div class="contact-success__text flex flex-col gap-2">
-          <p class="font-display text-3xl font-bold leading-tight">{t("contact.form.success.title")}</p>
-          <p class="text-lg text-ink-700 dark:text-ink-300">{t("contact.form.success")}</p>
+          <p class="font-display text-4xl leading-none font-extrabold tracking-[-0.04em]">{t("contact.form.success.title")}</p>
+          <p class="text-lg text-muted">{t("contact.form.success")}</p>
         </div>
         <div class="contact-success__text">
-          <Button type="button" variant="secondary" size="md" class="js-contact-again">
+          <Button type="button" variant="secondary" class="js-contact-again">
             {t("contact.form.again")}
           </Button>
         </div>
@@ -158,6 +178,14 @@ const labelClass = "font-mono text-xs uppercase tracking-wider text-ink-500 dark
 </section>
 
 <style>
+  /* Foco visible: la línea inferior se vuelve naranja y más gruesa */
+  .field {
+    transition: box-shadow 400ms var(--ease-out-expo);
+  }
+  .field:focus-within {
+    box-shadow: inset 0 -2px 0 var(--color-accent-500);
+  }
+
   .contact-success:not([hidden]) {
     animation: success-in 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }

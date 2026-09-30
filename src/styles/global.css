@@ -2,7 +2,6 @@
 
 /* ====================================================================
    Tokens — ver DESIGN.md §2 y §3
-   Tailwind v4 expone cada token como utilidad (bg-accent-500, etc.)
    ==================================================================== */
 @theme {
   /* Neutrales */
@@ -18,70 +17,86 @@
   --color-ink-900: #111114;
   --color-ink-950: #0a0a0b;
 
-  /* Acento principal — naranja TE / ChainGPT */
-  --color-accent-50: #fff4eb;
+  /* Acento — naranja TE / ChainGPT */
   --color-accent-100: #ffe1cf;
-  --color-accent-200: #ffc299;
   --color-accent-300: #ffa366;
   --color-accent-400: #ff8a4d;
   --color-accent-500: #ff6a1a;
   --color-accent-600: #e25510;
   --color-accent-700: #b8420a;
-  --color-accent-800: #8a3208;
-  --color-accent-900: #5a2105;
 
-  /* Glow secundarios (WebGL, decoración del hero) */
-  --color-glow-cyan: #4cc9ff;
-  --color-glow-magenta: #ff3d8a;
-
-  /* Semánticos */
   --color-success: #2fbf71;
-  --color-warning: #f2b134;
   --color-danger: #ef4444;
 
   /* Tipografía */
   --font-sans: "Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, "JetBrains Mono", monospace;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
   --font-display: var(--font-sans);
 
-  /* Escala tipográfica */
-  --text-eyebrow: 0.75rem;
-  --text-eyebrow--line-height: 1.2;
-  --text-display: clamp(3.5rem, 12vw, 9rem);
-  --text-display--line-height: 0.9;
-
-  /* Easings */
+  /* Easings (DESIGN.md §6.1) */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
-
-  /* Spacing extra */
-  --spacing-section-mobile: 5rem;
-  --spacing-section-tablet: 7.5rem;
-  --spacing-section: 10rem;
 }
 
-/* ====================================================================
-   Dark mode toggle — la clase `theme-dark` la setea ThemeToggle island
-   ==================================================================== */
+/* Colores semánticos que cambian con el tema: bg-bg, text-fg, text-muted, border-line… */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-surface: var(--surface);
+  --color-accent: var(--color-accent-500);
+  --color-accent-ink: var(--accent-ink);
+}
+
 @custom-variant dark (&:where(.theme-dark, .theme-dark *));
 
 /* ====================================================================
-   Base — resets y defaults
+   Base
    ==================================================================== */
 @layer base {
   :root {
-    color-scheme: light dark;
+    color-scheme: light;
     --bg: var(--color-ink-50);
+    --surface: var(--color-ink-100);
     --fg: var(--color-ink-950);
     --muted: var(--color-ink-500);
-    --border: var(--color-ink-300);
+    --line: #cdc9c1;
+    /* naranja legible como texto pequeño (AA sobre crema) */
+    --accent-ink: var(--color-accent-700);
+    --nav-h: 3.75rem;
+    --gutter: clamp(1rem, 3vw, 2.5rem);
   }
 
   :root.theme-dark {
+    color-scheme: dark;
     --bg: var(--color-ink-950);
+    --surface: var(--color-ink-900);
     --fg: var(--color-ink-100);
     --muted: var(--color-ink-400);
-    --border: var(--color-ink-700);
+    --line: var(--color-ink-700);
+    --accent-ink: var(--color-accent-400);
+  }
+
+  /* Bloque invertido (Servicios, menú): intercambia los tokens localmente.
+     No se llama .invert porque Tailwind ya usa ese nombre (filter: invert). */
+  .inverse {
+    --bg: var(--color-ink-950);
+    --surface: var(--color-ink-900);
+    --fg: var(--color-ink-100);
+    --muted: var(--color-ink-400);
+    --line: var(--color-ink-700);
+    --accent-ink: var(--color-accent-400);
+    background: var(--bg);
+    color: var(--fg);
+  }
+  :root.theme-dark .inverse {
+    --bg: var(--color-ink-50);
+    --surface: var(--color-ink-100);
+    --fg: var(--color-ink-950);
+    --muted: var(--color-ink-500);
+    --line: #cdc9c1;
+    --accent-ink: var(--color-accent-700);
   }
 
   html {
@@ -90,13 +105,25 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
     min-height: 100dvh;
     line-height: 1.6;
     overflow-x: clip;
+    background: var(--bg);
+  }
+
+  /* Grano lo-fi — una sola capa, estática, sin blend (barata en móvil) */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   ::selection {
@@ -104,11 +131,10 @@
     color: var(--color-ink-950);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1, h2, h3, h4 {
     font-family: var(--font-display);
-    color: var(--fg);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    letter-spacing: -0.03em;
+    line-height: 1;
     font-weight: 800;
     text-wrap: balance;
   }
@@ -122,10 +148,32 @@
     text-decoration: none;
   }
 
+  [id] {
+    scroll-margin-top: calc(var(--nav-h) + 1rem);
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-accent-500);
-    outline-offset: 2px;
+    outline-offset: 3px;
     border-radius: 2px;
+  }
+
+  /* Lenis */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-stopped {
+    overflow: clip;
+  }
+  .lenis.lenis-smooth iframe {
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html:not(.lenis) {
+      scroll-behavior: smooth;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -135,60 +183,235 @@
       animation-duration: 0.001ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.001ms !important;
-      scroll-behavior: auto !important;
     }
   }
 }
 
 /* ====================================================================
-   Utilidades — patrones recurrentes
+   Componentes — patrones compartidos
    ==================================================================== */
 @layer components {
   .wrapper {
     width: 100%;
-    max-width: 90rem;
+    max-width: 110rem;
     margin-inline: auto;
-    padding-inline: clamp(1rem, 4vw, 4rem);
+    padding-inline: var(--gutter);
   }
 
   .eyebrow {
     font-family: var(--font-mono);
-    font-size: var(--text-eyebrow);
+    font-size: 0.75rem;
+    line-height: 1.2;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--muted);
     font-weight: 500;
   }
 
-  .grid-lines {
-    background-image:
-      linear-gradient(to right, var(--border) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
-    background-size: 8rem 8rem;
-    opacity: 0.25;
+  /* Etiqueta tipo packaging TE: [ LABEL ] */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--fg);
   }
 
-  .text-balance {
-    text-wrap: balance;
+  /* Punto de "disponible" con pulso */
+  .pulse-dot {
+    position: relative;
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: var(--color-accent-500);
+  }
+  .pulse-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    animation: pulse 1.8s var(--ease-out-expo) infinite;
   }
 
-  /* Reveal — usado por GSAP ScrollTrigger */
-  .reveal {
-    opacity: 0;
-    transform: translateY(24px);
-    will-change: transform, opacity;
+  /* Subrayado que se dibuja en hover */
+  .link-line {
+    background: linear-gradient(currentColor, currentColor) no-repeat 100% 100% / 0 1px;
+    transition: background-size 500ms var(--ease-out-expo);
   }
-  .reveal.is-visible {
-    opacity: 1;
+  .link-line:hover,
+  .link-line:focus-visible {
+    background-position: 0 100%;
+    background-size: 100% 1px;
+  }
+
+  /* Texto que "rueda" en hover (botones y links de nav) */
+  .roll {
+    position: relative;
+    display: inline-flex;
+    overflow: hidden;
+    line-height: 1.2;
+    gap: inherit;
+  }
+  .roll > span {
+    display: flex;
+    align-items: center;
+    gap: inherit;
+    transition: transform 550ms var(--ease-out-expo);
+  }
+  .roll > span + span {
+    position: absolute;
+    inset: 0;
+    transform: translateY(105%);
+  }
+  :is(a, button):hover > .roll > span:first-child,
+  :is(a, button):focus-visible > .roll > span:first-child,
+  .roll:hover > span:first-child {
+    transform: translateY(-105%);
+  }
+  :is(a, button):hover > .roll > span + span,
+  :is(a, button):focus-visible > .roll > span + span,
+  .roll:hover > span + span {
     transform: translateY(0);
-    transition:
-      opacity 800ms var(--ease-out-expo),
-      transform 800ms var(--ease-out-expo);
   }
-  @media (prefers-reduced-motion: reduce) {
-    .reveal {
-      opacity: 1;
-      transform: none;
-    }
+
+  /* Máscara para reveals de líneas (SplitText) */
+  .line-mask {
+    padding-block: 0.1em 0.16em;
+    margin-block: -0.1em -0.16em;
+  }
+  /* text-indent se hereda: las palabras partidas no deben re-aplicarlo */
+  [data-scrub-words] div {
+    text-indent: 0;
+  }
+
+  /* Marcas de registro "+" en esquinas (planos de ingeniería) */
+  .crosshair {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--fg), var(--fg)) center / 1px 100% no-repeat,
+      linear-gradient(var(--fg), var(--fg)) center / 100% 1px no-repeat;
+    opacity: 0.5;
+  }
+
+  /* Relleno que sube en hover (botones). --fill / --fill-ink por variante */
+  .btn-fill {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .btn-fill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--fill, var(--fg));
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    transform: translateY(101%);
+    transition:
+      transform 700ms var(--ease-out-expo),
+      border-radius 700ms var(--ease-out-expo);
+  }
+  .btn-fill:hover::before,
+  .btn-fill:focus-visible::before {
+    transform: translateY(0);
+    border-radius: 0;
+  }
+  .btn-fill:hover,
+  .btn-fill:focus-visible {
+    color: var(--fill-ink, var(--bg));
+    border-color: var(--fill, var(--fg));
+  }
+
+  .pixelated {
+    image-rendering: pixelated;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Failsafe: si el JS de intro nunca corre, el hero aparece igual */
+@keyframes intro-failsafe {
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+.motion [data-intro] {
+  opacity: 0;
+  animation: intro-failsafe 0s 2.5s forwards;
+}
+.motion.intro-ready [data-intro] {
+  animation: none;
+}
+
+/* ====================================================================
+   Transiciones de página (View Transitions API vía <ClientRouter />)
+   ==================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: 600ms var(--ease-in-out-quart) both vt-out;
+  }
+  ::view-transition-new(root) {
+    animation: 900ms var(--ease-in-out-quart) both vt-in;
+  }
+  /* El nav se queda quieto entre páginas */
+  ::view-transition-group(site-nav),
+  ::view-transition-old(site-nav),
+  ::view-transition-new(site-nav) {
+    animation: none;
+  }
+  /* El cambio de tema anima desde JS (círculo), no con la cortina */
+  .theme-vt::view-transition-old(root),
+  .theme-vt::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0.35;
+    transform: translateY(-6vh) scale(0.97);
+  }
+}
+@keyframes vt-in {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
   }
 }

@@ -1,23 +1,35 @@
 ---
+import { Icon } from "astro-icon/components";
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import Button from "~/components/ui/Button.astro";
-import { useTranslations, getLangFromUrl } from "~/i18n/utils";
+import { useTranslations, getLangFromUrl, getLocalizedPath } from "~/i18n/utils";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
 
 <BaseLayout title="404">
-  <section class="wrapper min-h-[70vh] flex flex-col items-center justify-center gap-8 text-center py-32">
-    <p class="eyebrow">// 404 — NOT FOUND</p>
-    <h1 class="font-display font-black text-[clamp(5rem,18vw,12rem)] leading-none tracking-[-0.05em]">
-      404
-    </h1>
-    <p class="text-2xl font-display font-bold">{t("404.title")}</p>
-    <p class="max-w-md text-ink-500 dark:text-ink-400">{t("404.body")}</p>
-    <Button href={lang === "es" ? "/" : "/en"} variant="primary" size="md">
-      {t("404.cta")}
-      <span aria-hidden="true">→</span>
-    </Button>
+  <section data-hero class="relative isolate flex min-h-svh flex-col justify-end overflow-clip">
+    <div data-gl-wrap class="absolute inset-0 -z-10" aria-hidden="true">
+      <canvas data-gl class="pixelated size-full dark:opacity-80"></canvas>
+    </div>
+    <div class="wrapper pb-10">
+      <div data-intro class="flex flex-col items-start gap-6">
+        <p data-intro-up class="eyebrow bg-bg py-1 text-fg">// 404 — Not found</p>
+        <p data-intro-up class="text-2xl font-bold tracking-[-0.03em] md:text-4xl">
+          <span class="bg-bg box-decoration-clone px-1.5">{t("404.title")}</span>
+        </p>
+        <p data-intro-up class="max-w-md text-muted"><span class="bg-bg box-decoration-clone px-1.5">{t("404.body")}</span></p>
+        <div data-intro-up>
+          <Button href={getLocalizedPath(lang, "/")} size="lg" magnetic>
+            {t("404.cta")}
+            <Icon name="lucide:arrow-right" class="size-4" aria-hidden="true" />
+          </Button>
+        </div>
+      </div>
+      <h1 data-intro class="mt-8 -ml-[0.05em] text-[clamp(8rem,42vw,40rem)] leading-[0.78] font-extrabold tracking-[-0.07em]">
+        <span data-hero-line class="block">404</span>
+      </h1>
+    </div>
   </section>
 </BaseLayout>

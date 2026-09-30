@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
 import SectionTitle from "../ui/SectionTitle.astro";
 import ProjectCard from "../ui/ProjectCard.astro";
 import Button from "../ui/Button.astro";
@@ -13,35 +14,53 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const all = await getCollection("projects", ({ data }) => data.lang === lang || data.lang === "es");
-const featured = all
-  .filter((p) => p.data.featured)
-  .sort((a, b) => a.data.order - b.data.order);
+const featured = all.filter((p) => p.data.featured).sort((a, b) => a.data.order - b.data.order);
 
 const projectsBase = lang === "es" ? "/proyectos" : "/projects";
-const allHref = getLocalizedPath(lang, projectsBase);
-
 const labels = {
   role: t("projects.role"),
-  year: t("projects.year"),
-  stack: t("projects.stack"),
   client: t("projects.client"),
+  stack: t("projects.stack"),
+  view: t("projects.view"),
 };
 ---
 
-<section id="projects" class="wrapper py-24 md:py-32">
+<section id="projects" class="py-16 md:py-24">
   <SectionTitle
-    eyebrow={t("projects.eyebrow")}
+    index="02"
+    label={t("projects.label")}
     title={t("projects.title")}
     description={t("projects.subtitle")}
-    class="reveal mb-16"
+    class="wrapper"
   />
 
-  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-stagger>
-    {
-      featured.map((p, i) => (
-        <div data-stagger-child class:list={[i === 0 && "lg:col-span-3"]}>
+  <div class="mt-10 md:mt-16">
+    <!-- Barra sticky: proyecto actual + progreso mientras las cards se apilan -->
+    <div data-stack-bar class="sticky top-0 z-30 border-y border-line bg-bg/85 backdrop-blur-md">
+      <div class="wrapper flex h-12 items-center justify-between gap-4 font-mono text-[0.6875rem] uppercase tracking-[0.08em]">
+        <span class="shrink-0 text-muted">02 — {t("projects.label")}</span>
+        <span data-stack-title class="truncate">{featured[0]?.data.title}</span>
+        <span class="shrink-0 tabular-nums">
+          <span data-stack-count>01</span><span class="text-muted"> / {String(featured.length).padStart(2, "0")}</span>
+        </span>
+      </div>
+      <span data-stack-progress class="absolute inset-x-0 -bottom-px h-0.5 origin-left bg-accent" style="transform: scaleX(0)"></span>
+    </div>
+
+    <!-- Cards apiladas: sticky nativo + escala con scroll (animations.ts → stackCards) -->
+    <ol class="wrapper mt-6">
+      {
+        featured.map((p, i) => (
+          <li
+            data-stack-card
+            data-title={p.data.title}
+            class="sticky mb-5 md:mb-8"
+            style={`top: calc(3rem + 0.75rem + ${i} * 0.85rem)`}
+          >
           <ProjectCard
             href={getLocalizedPath(lang, `${projectsBase}/${p.id}`)}
+            index={i + 1}
+            total={featured.length}
             title={p.data.title}
             summary={p.data.summary}
             category={p.data.category}
@@ -50,20 +69,18 @@ const labels = {
             client={p.data.client}
             stack={p.data.stack}
             cover={p.data.cover}
-            wide={i === 0}
-            class="h-full"
-            lang={lang}
             labels={labels}
           />
-        </div>
+        </li>
       ))
     }
+    </ol>
   </div>
 
-  <div class="mt-12 flex justify-center">
-    <Button href={allHref} variant="secondary" size="md">
+  <div class="wrapper mt-10 flex justify-center md:mt-12">
+    <Button href={getLocalizedPath(lang, projectsBase)} variant="secondary" size="lg" magnetic>
       {t("projects.all")}
-      <span aria-hidden="true">→</span>
+      <Icon name="lucide:arrow-right" class="size-4" aria-hidden="true" />
     </Button>
   </div>
 </section>
