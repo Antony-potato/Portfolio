@@ -4,7 +4,7 @@ import Button from "../ui/Button.astro";
 import SplitTitle from "~/components/ui/SplitTitle.astro";
 import { useTranslations, type Lang } from "~/i18n/utils";
 import { EMAIL, whatsappUrl } from "~/lib/contact";
-import { CV_PATH, hasCv } from "~/lib/cv";
+import { cvPath } from "~/lib/cv";
 
 interface Props {
   lang: Lang;
@@ -15,6 +15,7 @@ interface Props {
 const { lang, as: Heading = "h2" } = Astro.props;
 const t = useTranslations(lang);
 const isPage = Heading === "h1";
+const cv = cvPath(lang);
 
 // Google Apps Script web app URL. Define PUBLIC_CONTACT_SHEET_URL en tu .env
 const endpoint = import.meta.env.PUBLIC_CONTACT_SHEET_URL ?? "";
@@ -22,7 +23,7 @@ const endpoint = import.meta.env.PUBLIC_CONTACT_SHEET_URL ?? "";
 const channels = [
   { label: "LinkedIn", href: "https://linkedin.com/in/antoniocortazar" },
   { label: "GitHub", href: "https://github.com/Antony-potato" },
-  ...(hasCv ? [{ label: t("cv.download"), href: CV_PATH }] : []),
+  ...(cv ? [{ label: t("cv.download"), href: cv }] : []),
 ];
 
 const fields = [

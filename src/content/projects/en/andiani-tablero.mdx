@@ -1,14 +1,18 @@
 ---
 title: "Andiani Tablero"
-summary: "Internal real-time operations platform for 250+ vacation rentals: cleaning, maintenance, guests, finance and team, with an AI agent."
-role: "Fullstack Developer"
+summary: "Audit and hardening of the real-time internal operations platform of a ~260-property vacation rental manager. Database consumption −75%."
+role: "Lead Developer"
 year: 2026
 client: "Andiani Travel"
-stack: ["React 18", "TypeScript", "Firebase", "Cloud Functions", "Tailwind CSS", "PWA"]
+stack: ["React", "TypeScript", "Firebase", "Cloud Functions", "Tailwind CSS", "GitHub Actions"]
 category: "dashboard"
 liveUrl: null
 repoUrl: null
 cover: "../../../assets/projects/andiani-tablero/cover.webp"
+metrics:
+  - { label: "Database consumption", value: "−75%" }
+  - { label: "Properties", value: "~260" }
+  - { label: "Cloud Functions", value: "150+" }
 featured: true
 order: 2
 lang: "en"
@@ -16,36 +20,32 @@ lang: "en"
 
 ## Context
 
-**Andiani** manages more than 250 vacation rentals across Mexico. Behind every stay there's cleaning, maintenance, guest messages, owner payouts and a team spread across several cities. The dashboard ("tablero") is the internal tool where all of that operation lives in one place, in real time.
+**Andiani** manages about 260 vacation rentals across Mexico. Its daily operation (cleaning, maintenance, guest messages, finance and team) lives in a real-time internal platform.
 
-We built it as a team of two: the owner, who defines how the business runs, and me, in charge of the technical side. Since June 2026 I've made more than 2,000 commits to the project.
+When I joined in July 2026, the platform was already in production, but it had been built entirely with AI-assisted generation and no architecture review: 160+ collections and 150+ server functions. As lead developer, my job was to make it secure, efficient and maintainable without stopping the operation.
 
 *Since it's an internal tool, the images in this case study are illustrative and show no real data.*
 
 ## The Challenge
 
-- **Everything in one place:** operations, guests, finance and team had to live in the same platform, including an in-house message inbox to replace the third-party tool in use.
-- **Per-person permissions:** each team member sees and edits only what they're responsible for (finance, HR, operations), and that rule is enforced on the server, not just in the UI.
-- **Real time, in the field:** cleaning and maintenance work from their phones; a change has to show up instantly on every screen.
-- **Guest support around the clock:** Guesty, WhatsApp and Meta conversations in a single inbox, with an agent that can reply.
+- **Auditing in production:** understand a large system nobody had reviewed and decide what to fix first, without disrupting the team that uses it every day.
+- **Security:** access rules were far too permissive.
+- **Cost and performance:** database consumption kept growing unchecked.
+- **Maintainability:** a monolithic backend, with no CI/CD or monitoring.
 
 ## The Solution
 
-- **Modules per area:** property operations, cleaning and maintenance, guest inbox, finance and treasury, owners, human resources, KPIs and training.
-- **Andi, an AI agent:** answers guests from the inbox and runs on its own backend, separate from the rest.
-- **Installable field portal (PWA):** the cleaning and maintenance crew works from their phones, no app store needed.
-- **Team gamification:** points, a weekly ranking and per-person KPIs to recognize good work.
-- **Owner NPS survey:** a public link to rate the service, with results in the dashboard.
-- **Architecture:** React 18 + strict TypeScript + Tailwind on Vite, real-time Firestore, 100+ Cloud Functions and Google sign-in restricted to the company domain, with permissions enforced by Firestore rules.
+- **Audit and prioritization:** documented the technical debt and prioritized the critical findings: permissive security rules, a monolithic backend and no CI/CD or monitoring.
+- **Server-side security:** a four-level cascading authorization model, materialized in a permissions mirror written only by the server, validated by declarative rules and covered by automated tests against the emulator.
+- **Database −75%:** traced consumption down to its root cause (fan-out listeners, unwindowed queries and N+1 amplifiers in functions) and cut it 75% with precomputed aggregates and redesigned queries.
+- **Domain backend and CI/CD:** modularized the backend by domain, set up CI/CD in GitHub Actions for the frontend, backend and auxiliary processes, and documented architecture decisions versioned alongside the code.
 
-## Engineering
+## Beyond the dashboard
 
-- **Three levels of tests:** pure logic with `node --test`, store and components with Vitest, and Firestore rules against the emulator.
-- **CI ratchets that only go down:** max lines per file, max bundle weight per screen, minimum coverage and ESLint warnings. If something grows, the code gets fixed; the number doesn't go up.
-- **Demo mode:** seeded in-memory data to build and test screens without touching production.
+As System Specialist I also run the company's PMS (Guesty) and its integrations. I implemented the team's VoIP telephony with Twilio SIP and Poly phones, with call routing managed from the platform itself, and an AI guest-support agent that classifies messages, escalates to a human and runs in suggestion mode before automating.
 
 ## Result
 
-- The dashboard is in production and is the Andiani team's day-to-day tool.
-- The in-house inbox replaced the third-party messaging tool and is integrated with the rest of the operation.
-- More than 2,000 commits of my own since June 2026, with CI guarding quality on every change.
+- A production platform the team uses every day, now with permissions enforced on the server and covered by automated tests.
+- 75% less database consumption.
+- A modular backend with CI/CD and documented architecture decisions, ready to keep growing.

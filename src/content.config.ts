@@ -20,6 +20,8 @@ const projects = defineCollection({
       gallery: z.array(image()).optional(),
       /** Cifras medidas (p. ej. Lighthouse); solo datos verificables */
       metrics: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
+      /** De dónde salen las cifras (p. ej. "Lighthouse móvil · sep 2026"); si falta, "Cifras clave" */
+      metricsNote: z.string().optional(),
       featured: z.boolean().default(false),
       order: z.number().int().default(99),
       lang: z.enum(["es", "en"]).default("es"),

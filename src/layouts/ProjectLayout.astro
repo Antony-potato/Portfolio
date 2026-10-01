@@ -19,6 +19,7 @@ interface Props {
   cover: ImageMetadata;
   gallery?: ImageMetadata[] | undefined;
   metrics?: { label: string; value: string }[] | undefined;
+  metricsNote?: string | undefined;
   slug: string;
   liveUrl?: string | null | undefined;
   repoUrl?: string | null | undefined;
@@ -29,7 +30,7 @@ interface Props {
   lang: Lang;
 }
 
-const { title, summary, role, year, client, stack, category, cover, gallery = [], metrics = [], slug, liveUrl, repoUrl, index, total, headings, next, lang } =
+const { title, summary, role, year, client, stack, category, cover, gallery = [], metrics = [], metricsNote, slug, liveUrl, repoUrl, index, total, headings, next, lang } =
   Astro.props;
 
 const t = useTranslations(lang);
@@ -118,7 +119,7 @@ const specs = [
           {
             metrics.length > 0 && (
               <div class="col-span-2 flex flex-col gap-3 border-b border-line py-3">
-                <dt class="eyebrow">{t("projects.metrics")}</dt>
+                <dt class="eyebrow">{metricsNote ?? t("projects.metrics")}</dt>
                 <dd class="flex flex-wrap gap-x-8 gap-y-3">
                   {metrics.map((m) => (
                     <span class="flex items-baseline gap-2">

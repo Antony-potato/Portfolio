@@ -4,7 +4,7 @@ import { Icon } from "astro-icon/components";
 import portrait from "~/assets/portrait.webp";
 import Button from "../ui/Button.astro";
 import { whatsappUrl } from "~/lib/contact";
-import { CV_PATH, hasCv } from "~/lib/cv";
+import { cvPath } from "~/lib/cv";
 import { useTranslations, type Lang } from "~/i18n/utils";
 
 interface Props {
@@ -13,6 +13,7 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
+const cv = cvPath(lang);
 
 // Solo cifras verificables en el propio sitio
 const stats = [
@@ -71,8 +72,8 @@ const stats = [
             {t("whatsapp.cta")}
           </Button>
           {
-            hasCv && (
-              <Button href={CV_PATH} variant="secondary" external>
+            cv && (
+              <Button href={cv} variant="secondary" external>
                 <Icon name="lucide:download" class="size-4" aria-hidden="true" />
                 {t("cv.download")}
               </Button>
