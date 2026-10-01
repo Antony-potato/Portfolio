@@ -23,9 +23,9 @@
 
 | Capa | Tecnología | Versión mínima |
 |---|---|---|
-| Runtime | **Node.js** | **22 LTS** (Astro 6 lo exige) |
+| Runtime | **Node.js** | **22 LTS** (Astro 7 lo exige: >=22.12) |
 | Package manager | **npm** | 10+ |
-| Framework | **Astro** | **6.3.x** |
+| Framework | **Astro** | **7.3.x** (sep 2026: subido desde 6.x por vulnerabilidades) |
 | Estilos | **Tailwind CSS** | **4.3.x** (via `@tailwindcss/vite`) |
 | Lenguaje | **TypeScript** | 5.6+ en modo `strict` |
 | Contenido | Astro Content Collections (`zod`) | nativo |
@@ -41,7 +41,7 @@
 - jQuery, Bootstrap, Material UI.
 - Cualquier UI kit pesado (Chakra, MUI, Ant Design).
 - Framer Motion (GSAP cubre el caso de uso).
-- Google Fonts en runtime — usar Fonts API de Astro 6 con autohospedaje.
+- Google Fonts en runtime — usar Fonts API de Astro con autohospedaje.
 - CSS-in-JS (styled-components, emotion).
 - Analytics invasivo (Google Analytics, FB Pixel). Si se requiere, usar **Plausible** o **Umami**.
 
@@ -245,7 +245,7 @@ docs(design): document button variants
 
 ## 12. Seguridad
 
-- CSP via Astro 6 CSP API — política inicial estricta, permitir solo lo necesario.
+- CSP via la CSP API de Astro — política inicial estricta, permitir solo lo necesario.
 - Sin scripts inline excepto los firmados por Astro.
 - Formulario de contacto: validar input + protección antispam (honeypot + rate limit). Si usa un servicio externo (Formspree, Resend), documentar key en `.env`.
 - Dependencias: `npm audit` antes de cada deploy. Vulnerabilidades high/critical bloquean merge.
