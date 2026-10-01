@@ -7,6 +7,7 @@ import Clients from "~/components/sections/Clients.astro";
 import Services from "~/components/sections/Services.astro";
 import Certifications from "~/components/sections/Certifications.astro";
 import Contact from "~/components/sections/Contact.astro";
+import { personJsonLd } from "~/lib/seo";
 
 const lang = "en" as const;
 ---
@@ -15,6 +16,7 @@ const lang = "en" as const;
   title="Antonio Cortazar — Software Engineer"
   description="Antonio Cortazar Jimenez portfolio. I build web and mobile products with Astro, React, Tailwind, AWS and Firebase."
 >
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
   <Hero lang={lang} />
   <About lang={lang} />
   <Projects lang={lang} />

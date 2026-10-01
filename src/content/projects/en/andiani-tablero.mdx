@@ -1,0 +1,51 @@
+---
+title: "Andiani Tablero"
+summary: "Internal real-time operations platform for 250+ vacation rentals: cleaning, maintenance, guests, finance and team, with an AI agent."
+role: "Fullstack Developer"
+year: 2026
+client: "Andiani Travel"
+stack: ["React 18", "TypeScript", "Firebase", "Cloud Functions", "Tailwind CSS", "PWA"]
+category: "dashboard"
+liveUrl: null
+repoUrl: null
+cover: "../../../assets/projects/andiani-tablero/cover.webp"
+featured: true
+order: 2
+lang: "en"
+---
+
+## Context
+
+**Andiani** manages more than 250 vacation rentals across Mexico. Behind every stay there's cleaning, maintenance, guest messages, owner payouts and a team spread across several cities. The dashboard ("tablero") is the internal tool where all of that operation lives in one place, in real time.
+
+We built it as a team of two: the owner, who defines how the business runs, and me, in charge of the technical side. Since June 2026 I've made more than 2,000 commits to the project.
+
+*Since it's an internal tool, the images in this case study are illustrative and show no real data.*
+
+## The Challenge
+
+- **Everything in one place:** operations, guests, finance and team had to live in the same platform, including an in-house message inbox to replace the third-party tool in use.
+- **Per-person permissions:** each team member sees and edits only what they're responsible for (finance, HR, operations), and that rule is enforced on the server, not just in the UI.
+- **Real time, in the field:** cleaning and maintenance work from their phones; a change has to show up instantly on every screen.
+- **Guest support around the clock:** Guesty, WhatsApp and Meta conversations in a single inbox, with an agent that can reply.
+
+## The Solution
+
+- **Modules per area:** property operations, cleaning and maintenance, guest inbox, finance and treasury, owners, human resources, KPIs and training.
+- **Andi, an AI agent:** answers guests from the inbox and runs on its own backend, separate from the rest.
+- **Installable field portal (PWA):** the cleaning and maintenance crew works from their phones, no app store needed.
+- **Team gamification:** points, a weekly ranking and per-person KPIs to recognize good work.
+- **Owner NPS survey:** a public link to rate the service, with results in the dashboard.
+- **Architecture:** React 18 + strict TypeScript + Tailwind on Vite, real-time Firestore, 100+ Cloud Functions and Google sign-in restricted to the company domain, with permissions enforced by Firestore rules.
+
+## Engineering
+
+- **Three levels of tests:** pure logic with `node --test`, store and components with Vitest, and Firestore rules against the emulator.
+- **CI ratchets that only go down:** max lines per file, max bundle weight per screen, minimum coverage and ESLint warnings. If something grows, the code gets fixed; the number doesn't go up.
+- **Demo mode:** seeded in-memory data to build and test screens without touching production.
+
+## Result
+
+- The dashboard is in production and is the Andiani team's day-to-day tool.
+- The in-house inbox replaced the third-party messaging tool and is integrated with the rest of the operation.
+- More than 2,000 commits of my own since June 2026, with CI guarding quality on every change.

@@ -12,7 +12,7 @@ let glCleanup: (() => void) | null = null;
 
 export function initAnimations(): void {
   const canvas = document.querySelector<HTMLCanvasElement>("[data-gl]");
-  // isConnected: si el usuario navegó antes de que cargara el chunk, no arrancar sobre un canvas huérfano
+  // isConnected: si el usuario ya navegó a otra página, no arrancar sobre un canvas huérfano
   if (canvas) import("./hero-gl").then((m) => canvas.isConnected && (glCleanup = m.initHeroGL(canvas)));
 
   mm = gsap.matchMedia();
@@ -20,10 +20,9 @@ export function initAnimations(): void {
     { motion: "(prefers-reduced-motion: no-preference)", fine: "(hover: hover) and (pointer: fine)" },
     (ctx) => {
       const { motion, fine } = ctx.conditions as { motion: boolean; fine: boolean };
-      document.documentElement.classList.add("intro-ready");
       if (!motion) return;
 
-      intro();
+      heroScroll();
       reveals();
       scrubs();
       stackCards();
@@ -39,19 +38,11 @@ export function teardownAnimations(): void {
   glCleanup = null;
 }
 
-/* ── Intro del hero: caracteres suben desde su máscara ─────────────── */
-function intro() {
+/* ── Hero al hacer scroll (el intro de entrada es CSS: ver global.css) ── */
+function heroScroll() {
   const hero = document.querySelector("[data-hero]");
   if (!hero) return;
   const $ = (sel: string) => hero.querySelectorAll(sel);
-  const split = SplitText.create($("[data-hero-line]"), { type: "chars,lines", mask: "lines", linesClass: "line" });
-  const tl = gsap.timeline({ defaults: { ease: EASE } }).set($("[data-intro]"), { opacity: 1 });
-  tl.from(split.chars, { yPercent: 135, duration: 1.3, stagger: 0.03 }, 0.15);
-  if ($("[data-gl]").length) tl.from($("[data-gl]"), { opacity: 0, scale: 1.1, duration: 2.2 }, 0);
-  if ($("[data-intro-up]").length)
-    tl.from($("[data-intro-up]"), { y: 24, opacity: 0, duration: 1, stagger: 0.07 }, 0.55);
-  if ($("[data-intro-line]").length)
-    tl.from($("[data-intro-line]"), { scaleX: 0, transformOrigin: "left", duration: 1.4, stagger: 0.1 }, 0.35);
 
   // Salida: el contenido se hunde y el canvas crece al hacer scroll
   const st = { trigger: hero, start: "top top", end: "bottom top", scrub: true };
@@ -69,6 +60,7 @@ function reveals() {
       type: "lines",
       mask: "lines",
       linesClass: "line",
+      aria: "none",
       autoSplit: true,
       onSplit: (self) =>
         gsap.from(self.lines, {
@@ -133,11 +125,12 @@ function scrubs() {
   q("[data-scrub-words]").forEach((el) =>
     SplitText.create(el, {
       type: "words",
+      aria: "none",
       autoSplit: true,
       onSplit: (self) =>
         gsap.fromTo(
           self.words,
-          { opacity: 0.14 },
+          { opacity: 0.45 },
           {
             opacity: 1,
             ease: "none",

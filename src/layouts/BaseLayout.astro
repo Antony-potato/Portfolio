@@ -33,7 +33,6 @@ const headInit = `(() => {
     let saved = null;
     try { saved = localStorage.getItem("theme"); } catch (e) {}
     d.classList.toggle("theme-dark", saved === "dark");
-    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("motion");
   };
   apply();
   document.addEventListener("astro:after-swap", apply);
@@ -47,6 +46,12 @@ const headInit = `(() => {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#f4f2ed" />
+    {
+      // Analítica sin cookies (Umami). Solo se carga si existe PUBLIC_UMAMI_WEBSITE_ID en el .env
+      import.meta.env.PUBLIC_UMAMI_WEBSITE_ID && (
+        <script is:inline defer src="https://cloud.umami.is/script.js" data-website-id={import.meta.env.PUBLIC_UMAMI_WEBSITE_ID} />
+      )
+    }
 
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -72,11 +77,12 @@ const headInit = `(() => {
     <link rel="alternate icon" href="/favicon.ico" sizes="32x32" />
 
     <Font cssVariable="--font-sans" preload />
-    <Font cssVariable="--font-mono" />
+    <Font cssVariable="--font-mono" preload />
 
     <script is:inline set:html={headInit} />
 
     <ClientRouter />
+    <slot name="head" />
   </head>
   <body>
     <Navbar lang={lang} />
@@ -86,16 +92,27 @@ const headInit = `(() => {
     <Footer lang={lang} />
 
     <script>
-      import { initLenis, destroyLenis } from "~/lib/lenis";
-      import { initAnimations, teardownAnimations } from "~/lib/animations";
+      // El motion (GSAP + Lenis + WebGL) se carga cuando el navegador queda libre: la primera
+      // pintura y el intro (CSS) no lo esperan. Safari no tiene requestIdleCallback.
+      const idle = (fn: () => void) =>
+        "requestIdleCallback" in window ? requestIdleCallback(fn, { timeout: 1200 }) : setTimeout(fn, 150);
+      const load = () => Promise.all([import("~/lib/lenis"), import("~/lib/animations")]);
+      let page = 0;
 
       document.addEventListener("astro:page-load", () => {
-        initLenis();
-        initAnimations();
+        const current = ++page;
+        idle(async () => {
+          const [lenis, anim] = await load();
+          if (current !== page) return; // ya se navegó a otra página
+          lenis.initLenis();
+          anim.initAnimations();
+        });
       });
-      document.addEventListener("astro:before-swap", () => {
-        teardownAnimations();
-        destroyLenis();
+      document.addEventListener("astro:before-swap", async () => {
+        page++;
+        const [lenis, anim] = await load();
+        anim.teardownAnimations();
+        lenis.destroyLenis();
       });
     </script>
   </body>

@@ -60,7 +60,8 @@
     --bg: var(--color-ink-50);
     --surface: var(--color-ink-100);
     --fg: var(--color-ink-950);
-    --muted: var(--color-ink-500);
+    /* un punto más oscuro que ink-500: AA (4.5:1) también sobre --surface */
+    --muted: #5f5f69;
     --line: #cdc9c1;
     /* naranja legible como texto pequeño (AA sobre crema) */
     --accent-ink: var(--color-accent-700);
@@ -94,7 +95,7 @@
     --bg: var(--color-ink-50);
     --surface: var(--color-ink-100);
     --fg: var(--color-ink-950);
-    --muted: var(--color-ink-500);
+    --muted: #5f5f69;
     --line: #cdc9c1;
     --accent-ink: var(--color-accent-700);
   }
@@ -362,20 +363,68 @@
   }
 }
 
-/* Failsafe: si el JS de intro nunca corre, el hero aparece igual */
-@keyframes intro-failsafe {
-  to {
-    opacity: 1;
-    visibility: visible;
+/* ====================================================================
+   Intro de página — CSS puro: arranca con la primera pintura, sin esperar al JS (LCP)
+   ==================================================================== */
+.split-word {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: top;
+  padding-block: 0.1em 0.16em;
+  margin-block: -0.1em -0.16em;
+}
+.split-char {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .split-char {
+    animation: char-in 1.3s var(--ease-out-expo) both;
+    animation-delay: calc(120ms + var(--i, 0) * 30ms);
+  }
+  [data-intro-up] {
+    animation: intro-up 1s var(--ease-out-expo) both;
+    animation-delay: calc(450ms + var(--d, 0) * 70ms);
+  }
+  [data-intro-line] {
+    transform-origin: left center;
+    animation: intro-line 1.4s var(--ease-out-expo) both 300ms;
   }
 }
-.motion [data-intro] {
+
+/* El canvas aparece cuando el WebGL ya pintó su primer frame (hero-gl.ts añade .is-on) */
+[data-gl] {
   opacity: 0;
-  animation: intro-failsafe 0s 2.5s forwards;
+  transform: scale(1.08);
+  transition:
+    opacity 1.6s var(--ease-out-expo),
+    transform 2.2s var(--ease-out-expo);
 }
-.motion.intro-ready [data-intro] {
-  animation: none;
+[data-gl].is-on {
+  opacity: var(--gl-opacity, 1);
+  transform: none;
 }
+.theme-dark [data-gl] {
+  --gl-opacity: 0.8;
+}
+
+@keyframes char-in {
+  from {
+    transform: translateY(135%);
+  }
+}
+@keyframes intro-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@keyframes intro-line {
+  from {
+    transform: scaleX(0);
+  }
+}
+
 
 /* ====================================================================
    Transiciones de página (View Transitions API vía <ClientRouter />)

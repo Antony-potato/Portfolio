@@ -1,11 +1,12 @@
 ---
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
 import ProjectLayout from "~/layouts/ProjectLayout.astro";
+import { getProjects, projectSlug } from "~/lib/projects";
 
 export async function getStaticPaths() {
-  const sorted = (await getCollection("projects")).sort((a, b) => a.data.order - b.data.order);
+  const sorted = await getProjects("en");
   return sorted.map((entry, i) => ({
-    params: { slug: entry.id },
+    params: { slug: projectSlug(entry) },
     props: { entry, index: i + 1, total: sorted.length, nextEntry: sorted[(i + 1) % sorted.length] },
   }));
 }
@@ -16,10 +17,11 @@ const { Content, headings } = await render(entry);
 
 <ProjectLayout
   {...entry.data}
+  slug={projectSlug(entry)}
   index={index}
   total={total}
   headings={headings}
-  next={nextEntry && { slug: nextEntry.id, title: nextEntry.data.title, cover: nextEntry.data.cover }}
+  next={nextEntry && { slug: projectSlug(nextEntry), title: nextEntry.data.title, cover: nextEntry.data.cover }}
   lang="en"
 >
   <Content />

@@ -1,7 +1,10 @@
 ---
+import { Picture } from "astro:assets";
 import { Icon } from "astro-icon/components";
+import portrait from "~/assets/portrait.webp";
 import Button from "../ui/Button.astro";
 import { whatsappUrl } from "~/lib/contact";
+import { CV_PATH, hasCv } from "~/lib/cv";
 import { useTranslations, type Lang } from "~/i18n/utils";
 
 interface Props {
@@ -13,7 +16,7 @@ const t = useTranslations(lang);
 
 // Solo cifras verificables en el propio sitio
 const stats = [
-  { value: "04", count: 4, label: t("about.stat.cases") },
+  { value: "05", count: 5, label: t("about.stat.cases") },
   { value: "02", count: 2, label: t("about.stat.clients") },
   { value: "10", count: 10, label: t("about.stat.certs") },
   { value: "C1", label: t("about.stat.english") },
@@ -37,14 +40,14 @@ const stats = [
   <div class="mt-14 grid gap-12 md:mt-20 lg:grid-cols-12 lg:gap-6">
     <figure class="group lg:col-span-5">
       <div data-clip class="relative aspect-[4/5] overflow-hidden bg-surface">
-        <img
+        <Picture
           data-parallax="7"
-          src="/assets/portrait.webp"
+          src={portrait}
+          formats={["avif", "webp"]}
+          widths={[400, 640, 900]}
+          sizes="(min-width: 1024px) 40vw, 100vw"
           alt={lang === "es" ? "Antonio Cortazar sentado frente a una galería de arte" : "Antonio Cortazar sitting in front of an art gallery wall"}
-          width="808"
-          height="1080"
           loading="lazy"
-          decoding="async"
           class="absolute inset-0 size-full scale-[1.16] object-cover grayscale contrast-[1.08] transition-[filter] duration-1000 group-hover:grayscale-0"
         />
         <span class="crosshair top-3 left-3"></span>
@@ -62,11 +65,19 @@ const stats = [
           {t("about.title")}
         </h2>
         <p data-reveal="up" class="mt-6 max-w-xl text-lg text-muted">{t("about.body")}</p>
-        <div data-reveal="up" class="mt-8">
+        <div data-reveal="up" class="mt-8 flex flex-wrap gap-3">
           <Button href={whatsappUrl(t("whatsapp.message"))} variant="secondary" external>
             <Icon name="simple-icons:whatsapp" class="size-4" aria-hidden="true" />
             {t("whatsapp.cta")}
           </Button>
+          {
+            hasCv && (
+              <Button href={CV_PATH} variant="secondary" external>
+                <Icon name="lucide:download" class="size-4" aria-hidden="true" />
+                {t("cv.download")}
+              </Button>
+            )
+          }
         </div>
       </div>
 

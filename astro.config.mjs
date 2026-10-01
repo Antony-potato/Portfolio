@@ -3,7 +3,6 @@ import { defineConfig, fontProviders } from "astro/config";
 
 import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
-import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import icon from "astro-icon";
 
@@ -12,6 +11,9 @@ export default defineConfig({
   site: "https://antoniocortazar.dev",
   trailingSlash: "never",
   prefetch: true,
+
+  // CSS inline en cada página: quita la petición que bloqueaba el render (~1 s en móvil)
+  build: { inlineStylesheets: "always" },
 
   i18n: {
     defaultLocale: "es",
@@ -50,7 +52,6 @@ export default defineConfig({
 
   integrations: [
     mdx(),
-    react(),
     sitemap({
       i18n: {
         defaultLocale: "es",

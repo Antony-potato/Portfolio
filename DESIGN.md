@@ -21,10 +21,14 @@ Paleta y tipografía base **no cambian** (crema + ink + naranja, Geist / Geist M
 | Home | 6 secciones: 01 Sobre mí · 02 Proyectos · 03 Clientes · 04 Servicios · 05 Certificaciones · 06 Contacto. Se quitaron Experiencia y Stack (el stack vive en cada proyecto). Espaciado entre secciones `py-16 md:py-24`. |
 | Proyectos (home) | Cards apiladas: `position: sticky` + GSAP escala la card de abajo al cubrirla. Barra sticky arriba con proyecto actual, contador y línea de progreso. |
 | Clientes | "Gracias por su confianza.": rejilla de 3 celdas (Onix Living, Andiani Travel, "¿Tu empresa aquí?"). Logos en `public/clients/*.svg` usados como `mask` → toman el color del tema. |
+| Casos de estudio | 5 (se sumó Andiani Tablero, herramienta interna: portada ilustrativa, sin datos reales). Galería con captura de escritorio + captura móvil en marco de teléfono. Métricas Lighthouse medidas. |
+| SEO | OG 1200×630 por página en `public/og/`; JSON-LD `Person` en home y `CreativeWork` por proyecto. |
 | Certificaciones | Banda en movimiento con tipografía gigante + ícono del emisor + cuadro naranja (el diseño que antes usaba el Stack). Cada nombre es link al certificado; se pausa con hover/foco; con reduced-motion es scroll horizontal. Datos y links en `Certifications.astro`. |
 | Índice de proyectos | Filas gigantes; con mouse, la portada flota junto al cursor. |
 | Caso de estudio | Título gigante, tabla de specs, portada con clip-reveal + parallax, índice lateral sticky con scroll-spy, h2 numerados por contador CSS, "siguiente proyecto" gigante con portada que se revela en hover. |
 | Motion | Todo en `src/lib/animations.ts` dentro de `gsap.matchMedia()` (se revierte solo en `astro:before-swap` y con reduced-motion). Atributos: `data-reveal="lines|up"`, `data-stagger`, `data-line`, `data-clip`, `data-parallax`, `data-scrub-words`, `data-count`, `data-magnetic`, `data-stack-card`. Lenis y ScrollTrigger comparten el ticker de GSAP. |
+| Rendimiento | Intro de títulos en CSS puro (letras partidas en el build con `SplitTitle.astro`), sin esperar al JS. GSAP + Lenis + WebGL se cargan en `requestIdleCallback` (JS inicial ≈ 6 KB gz). CSS inline. Sin GPU real (SwiftShader/llvmpipe) el hero pinta un frame fijo. |
+| Contraste | `--muted` en tema claro es `#5f5f69` (un punto más oscuro que ink-500) para cumplir AA también sobre `--surface`. |
 | Transiciones de página | Cortina `clip-path` sobre `::view-transition-new(root)`; el nav queda fijo (`view-transition-name: site-nav`). |
 | Grano | Una capa de ruido SVG estática (`body::after`, 4.5 % de opacidad). |
 

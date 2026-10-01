@@ -64,7 +64,11 @@ export function initHeroGL(canvas: HTMLCanvasElement): () => void {
   const uRes = u("uRes"), uTime = u("uTime"), uMouse = u("uMouse"), uMouseOn = u("uMouseOn");
   gl.uniform3f(u("uColor"), 1, 0.416, 0.102); // accent-500 #ff6a1a
 
-  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Sin GPU real (SwiftShader, llvmpipe) el shader corre en CPU y bloquea el hilo principal:
+  // en ese caso, igual que con reduced-motion, se pinta un solo frame fijo (DESIGN.md §10).
+  const dbg = gl.getExtension("WEBGL_debug_renderer_info");
+  const renderer = String(gl.getParameter(dbg ? dbg.UNMASKED_RENDERER_WEBGL : gl.RENDERER));
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches || /swiftshader|llvmpipe|software/i.test(renderer);
   const px = matchMedia("(pointer: coarse)").matches ? 3 : 4;
   const mouse = { x: 0, y: 0, tx: 0, ty: 0, on: 0, ton: 0 };
   let raf = 0;
@@ -112,6 +116,11 @@ export function initHeroGL(canvas: HTMLCanvasElement): () => void {
     visible = !!entry?.isIntersecting;
     if (visible && !raf && !still) raf = requestAnimationFrame(loop);
   });
+
+  // Primer frame ya con tamaño real; luego el fade-in (CSS: [data-gl].is-on)
+  resize();
+  draw(performance.now());
+  requestAnimationFrame(() => canvas.classList.add("is-on"));
 
   if (!still) {
     io.observe(canvas);

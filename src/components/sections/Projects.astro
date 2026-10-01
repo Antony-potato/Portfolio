@@ -1,10 +1,10 @@
 ---
-import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 import SectionTitle from "../ui/SectionTitle.astro";
 import ProjectCard from "../ui/ProjectCard.astro";
 import Button from "../ui/Button.astro";
 import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
+import { getProjects, projectSlug } from "~/lib/projects";
 
 interface Props {
   lang: Lang;
@@ -13,8 +13,7 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const all = await getCollection("projects", ({ data }) => data.lang === lang || data.lang === "es");
-const featured = all.filter((p) => p.data.featured).sort((a, b) => a.data.order - b.data.order);
+const featured = (await getProjects(lang)).filter((p) => p.data.featured);
 
 const projectsBase = lang === "es" ? "/proyectos" : "/projects";
 const labels = {
@@ -58,7 +57,7 @@ const labels = {
             style={`top: calc(3rem + 0.75rem + ${i} * 0.85rem)`}
           >
           <ProjectCard
-            href={getLocalizedPath(lang, `${projectsBase}/${p.id}`)}
+            href={getLocalizedPath(lang, `${projectsBase}/${projectSlug(p)}`)}
             index={i + 1}
             total={featured.length}
             title={p.data.title}

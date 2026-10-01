@@ -1,8 +1,9 @@
 ---
-import { getCollection } from "astro:content";
+import { Picture, getImage } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import PageHeader from "../ui/PageHeader.astro";
 import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
+import { getProjects, projectSlug } from "~/lib/projects";
 
 interface Props {
   lang: Lang;
@@ -11,7 +12,9 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const base = lang === "es" ? "/proyectos" : "/projects";
-const projects = (await getCollection("projects")).sort((a, b) => a.data.order - b.data.order);
+const projects = await getProjects(lang);
+// La preview flotante cambia de src en JS: necesita una URL ya optimizada
+const previews = await Promise.all(projects.map((p) => getImage({ src: p.data.cover, width: 900, format: "webp" })));
 const pad = (n: number) => String(n).padStart(2, "0");
 ---
 
@@ -36,19 +39,20 @@ const pad = (n: number) => String(n).padStart(2, "0");
       projects.map((p, i) => (
         <li>
           <a
-            href={getLocalizedPath(lang, `${base}/${p.id}`)}
-            data-cover={p.data.cover}
+            href={getLocalizedPath(lang, `${base}/${projectSlug(p)}`)}
+            data-cover={previews[i]?.src}
             class="group relative isolate grid grid-cols-[auto_1fr_auto] items-center gap-x-4 gap-y-4 border-b border-line py-6 md:grid-cols-12 md:gap-6 md:py-9"
           >
             <span class="absolute inset-0 -z-10 origin-bottom scale-y-0 bg-surface transition-transform duration-700 ease-(--ease-out-expo) group-hover:scale-y-100" aria-hidden="true" />
-            <img
+            <Picture
               src={p.data.cover}
               alt=""
-              width="1920"
-              height="1080"
+              formats={["avif", "webp"]}
+              widths={[400, 800]}
+              sizes="100vw"
               loading="lazy"
-              decoding="async"
-              class="col-span-3 aspect-[16/10] w-full rounded-md object-cover md:hidden"
+              pictureAttributes={{ class: "col-span-3 md:hidden" }}
+              class="aspect-[16/10] w-full rounded-md object-cover"
             />
             <span class="font-mono text-xs text-muted md:col-span-1">{pad(i + 1)}</span>
             <span class="text-[clamp(2.25rem,6vw,5.75rem)] leading-[0.9] font-extrabold tracking-[-0.055em] transition-transform duration-700 ease-(--ease-out-expo) md:col-span-5 md:group-hover:translate-x-4">
@@ -74,6 +78,6 @@ const pad = (n: number) => String(n).padStart(2, "0");
     style="opacity:0;transform:scale(.8)"
     aria-hidden="true"
   >
-    <img src={projects[0]?.data.cover} alt="" class="aspect-[16/10] w-full object-cover" />
+    <img src={previews[0]?.src} alt="" class="aspect-[16/10] w-full object-cover" />
   </div>
 </section>

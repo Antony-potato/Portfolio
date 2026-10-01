@@ -1,8 +1,10 @@
 ---
 import { Icon } from "astro-icon/components";
 import Button from "../ui/Button.astro";
+import SplitTitle from "~/components/ui/SplitTitle.astro";
 import { useTranslations, type Lang } from "~/i18n/utils";
 import { EMAIL, whatsappUrl } from "~/lib/contact";
+import { CV_PATH, hasCv } from "~/lib/cv";
 
 interface Props {
   lang: Lang;
@@ -20,6 +22,7 @@ const endpoint = import.meta.env.PUBLIC_CONTACT_SHEET_URL ?? "";
 const channels = [
   { label: "LinkedIn", href: "https://linkedin.com/in/antoniocortazar" },
   { label: "GitHub", href: "https://github.com/Antony-potato" },
+  ...(hasCv ? [{ label: t("cv.download"), href: CV_PATH }] : []),
 ];
 
 const fields = [
@@ -36,7 +39,7 @@ const inputClass =
   data-hero={isPage ? "" : undefined}
   class:list={["wrapper pb-16 md:pb-24", isPage ? "pt-[calc(var(--nav-h)+3rem)] md:pt-[calc(var(--nav-h)+5rem)]" : "pt-16 md:pt-24"]}
 >
-  <div data-intro={isPage ? "" : undefined} class="eyebrow flex items-center gap-4">
+  <div class="eyebrow flex items-center gap-4">
     <span class="text-fg">06</span>
     <span data-line={isPage ? undefined : ""} data-intro-line={isPage ? "" : undefined} class="h-px flex-1 bg-line"></span>
     <span>{t("contact.label")}</span>
@@ -44,10 +47,9 @@ const inputClass =
 
   <Heading
     data-reveal={isPage ? undefined : "lines"}
-    data-intro={isPage ? "" : undefined}
     class="mt-8 max-w-[14ch] text-[clamp(3.25rem,10.5vw,11rem)] leading-[0.84] font-extrabold tracking-[-0.065em] md:mt-10"
   >
-    {isPage ? <span data-hero-line class="block">{t("contact.title")}</span> : t("contact.title")}
+    {isPage ? <Fragment><SplitTitle text={t("contact.title")} /><span class="sr-only">{t("contact.title")}</span></Fragment> : t("contact.title")}
   </Heading>
 
   <div class="mt-12 grid gap-14 md:mt-16 lg:grid-cols-12 lg:gap-6">

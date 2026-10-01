@@ -1,0 +1,15 @@
+---
+// Título partido en letras en el build: el intro corre con CSS desde la primera pintura,
+// sin esperar al JS (mejor LCP). Solo visual: el texto accesible va en un .sr-only aparte.
+interface Props {
+  text: string;
+  /** desfase en letras, para encadenar líneas */
+  offset?: number;
+}
+
+const { text, offset = 0 } = Astro.props;
+let i = offset;
+const words = text.split(" ").map((w) => [...w].map((c) => ({ c, i: i++ })));
+---
+
+<span aria-hidden="true">{words.map((w, wi) => <Fragment><span class="split-word">{w.map(({ c, i }) => <span class="split-char" style={`--i:${i}`}>{c}</span>)}</span>{wi < words.length - 1 && " "}</Fragment>)}</span>

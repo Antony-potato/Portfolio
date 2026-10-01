@@ -1,4 +1,6 @@
 ---
+import SplitTitle from "./SplitTitle.astro";
+
 interface Props {
   index: string;
   label: string;
@@ -12,19 +14,19 @@ const { index, label, title, sup, description } = Astro.props;
 ---
 
 <header data-hero class="wrapper pt-[calc(var(--nav-h)+3rem)] pb-4 md:pt-[calc(var(--nav-h)+5rem)]">
-  <div data-intro class="eyebrow flex items-center gap-4">
+  <div class="eyebrow flex items-center gap-4">
     <span class="text-fg">{index}</span>
     <span data-intro-line class="h-px flex-1 bg-line"></span>
     <span>{label}</span>
   </div>
-  <h1 data-intro class="mt-10 -ml-[0.04em] text-[clamp(3.75rem,17vw,19rem)] leading-[0.8] font-extrabold tracking-[-0.065em] md:mt-14">
-    <span data-hero-line class="block">
-      {title}{sup && <sup class="ml-[0.1em] align-top font-mono text-[max(0.75rem,0.13em)] font-medium tracking-normal text-accent-ink">{sup}</sup>}
+  <h1 class="mt-10 -ml-[0.04em] text-[clamp(3.75rem,17vw,19rem)] leading-[0.8] font-extrabold tracking-[-0.065em] md:mt-14">
+    <span class="block">
+      <SplitTitle text={title} /><span class="sr-only">{title}</span>{sup && <sup aria-hidden="true" class="ml-[0.1em] align-top font-mono text-[max(0.75rem,0.13em)] font-medium tracking-normal text-accent-ink">{sup}</sup>}
     </span>
   </h1>
   {
     description && (
-      <div data-intro class="mt-8 md:mt-12">
+      <div class="mt-8 md:mt-12">
         <p data-intro-up class="max-w-xl text-lg leading-snug text-muted md:text-xl">{description}</p>
       </div>
     )

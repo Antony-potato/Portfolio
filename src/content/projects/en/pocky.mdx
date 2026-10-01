@@ -1,0 +1,40 @@
+---
+title: "Pocky"
+summary: "Virtual pet PWA with real-time sync across devices. Runs on iOS and Android straight from the web."
+role: "Fullstack Developer"
+year: 2025
+client: "Personal project"
+stack: ["React", "Firebase", "TypeScript", "PWA", "Service Workers"]
+category: "pwa"
+liveUrl: "https://pocky-next.vercel.app"
+repoUrl: "https://github.com/Antony-potato/Pocky"
+cover: "../../../assets/projects/pocky/cover.webp"
+gallery: ["../../../assets/projects/pocky/escritorio.webp", "../../../assets/projects/pocky/movil.webp"]
+featured: true
+order: 4
+lang: "en"
+---
+
+## Context
+
+**Pocky** is a modern, Tamagotchi-style virtual pet: it runs in any browser, installs as an app and keeps its state synced across devices in real time. The idea: experiment with PWA + Firebase and see how far the browser can be pushed as a mobile app runtime.
+
+## Challenge
+
+- Real-time state between iPhone and Android with no backend of my own.
+- Installable as an app from Safari (PWAs on iOS have their quirks).
+- Service Workers for background tasks (the little guy gets sad if you ignore him).
+- Human latency: animations that feel alive, not robotic.
+
+## Solution
+
+- **Firebase Realtime DB** for sync with presence.
+- Manifest + optimized icons for Add to Home Screen on iOS and Android.
+- Service Worker with a `stale-while-revalidate` cache strategy.
+- Animation loop with `requestAnimationFrame` and interpolation.
+
+## Result
+
+- Works as an installable app on iPhone and Android without an app store.
+- State synced across devices in under 200 ms.
+- Zero custom backend: all the logic lives in the client + Firebase.

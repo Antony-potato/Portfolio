@@ -1,9 +1,12 @@
 ---
-import type { MarkdownHeading } from "astro";
+import type { ImageMetadata, MarkdownHeading } from "astro";
+import { Picture } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import BaseLayout from "./BaseLayout.astro";
 import Button from "~/components/ui/Button.astro";
+import SplitTitle from "~/components/ui/SplitTitle.astro";
 import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
+import { SITE } from "~/lib/seo";
 
 interface Props {
   title: string;
@@ -13,25 +16,44 @@ interface Props {
   client?: string | undefined;
   stack: string[];
   category: string;
-  cover: string;
-  gallery?: string[] | undefined;
+  cover: ImageMetadata;
+  gallery?: ImageMetadata[] | undefined;
+  metrics?: { label: string; value: string }[] | undefined;
+  slug: string;
   liveUrl?: string | null | undefined;
   repoUrl?: string | null | undefined;
   index: number;
   total: number;
   headings: MarkdownHeading[];
-  next?: { slug: string; title: string; cover: string } | undefined;
+  next?: { slug: string; title: string; cover: ImageMetadata } | undefined;
   lang: Lang;
 }
 
-const { title, summary, role, year, client, stack, category, cover, gallery = [], liveUrl, repoUrl, index, total, headings, next, lang } =
+const { title, summary, role, year, client, stack, category, cover, gallery = [], metrics = [], slug, liveUrl, repoUrl, index, total, headings, next, lang } =
   Astro.props;
 
 const t = useTranslations(lang);
 const base = lang === "es" ? "/proyectos" : "/projects";
 const pad = (n: number) => String(n).padStart(2, "0");
 const toc = headings.filter((h) => h.depth === 2);
-const extra = gallery.filter((src) => src !== cover);
+// Galería: capturas de escritorio a lo ancho, las de móvil como teléfono al lado
+const wide = gallery.filter((g) => g.width >= g.height);
+const tall = gallery.filter((g) => g.width < g.height);
+const og = `/og/${slug}.png`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  name: title,
+  description: summary,
+  dateCreated: String(year),
+  inLanguage: lang,
+  url: new URL(Astro.url.pathname, Astro.site ?? SITE.url).toString(),
+  image: new URL(og, Astro.site ?? SITE.url).toString(),
+  keywords: stack.join(", "),
+  author: { "@type": "Person", name: SITE.author, url: SITE.url },
+  ...(client && { sourceOrganization: { "@type": "Organization", name: client } }),
+};
 
 const specs = [
   { label: t("projects.role"), value: role },
@@ -41,10 +63,11 @@ const specs = [
 ];
 ---
 
-<BaseLayout title={title} description={summary} type="article" image={cover}>
+<BaseLayout title={title} description={summary} type="article" image={og}>
+  <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <article>
     <header data-hero class="wrapper pt-[calc(var(--nav-h)+2.5rem)] md:pt-[calc(var(--nav-h)+4rem)]">
-      <div data-intro class="eyebrow flex items-center justify-between gap-4">
+      <div class="eyebrow flex items-center justify-between gap-4">
         <a href={getLocalizedPath(lang, base)} class="group inline-flex items-center gap-2 text-fg">
           <Icon name="lucide:arrow-left" class="size-3.5 transition-transform duration-500 group-hover:-translate-x-1" aria-hidden="true" />
           <span class="roll"><span>{t("projects.back")}</span><span aria-hidden="true">{t("projects.back")}</span></span>
@@ -52,13 +75,13 @@ const specs = [
         <span>{t("projects.case")} {pad(index)} / {pad(total)}</span>
       </div>
 
-      <h1 data-intro class="mt-12 -ml-[0.04em] text-[clamp(3.25rem,13.5vw,15rem)] leading-[0.82] font-extrabold tracking-[-0.065em] md:mt-16">
-        <span data-hero-line class="block">{title}</span>
+      <h1 class="mt-12 -ml-[0.04em] text-[clamp(3.25rem,13.5vw,15rem)] leading-[0.82] font-extrabold tracking-[-0.065em] md:mt-16">
+        <span class="block"><SplitTitle text={title} /></span><span class="sr-only">{title}</span>
       </h1>
 
-      <div data-intro class="relative mt-10 grid gap-10 pt-6 md:mt-14 lg:grid-cols-12 lg:gap-6">
+      <div class="relative mt-10 grid gap-10 pt-6 md:mt-14 lg:grid-cols-12 lg:gap-6">
         <span data-intro-line class="absolute inset-x-0 top-0 h-px bg-line"></span>
-        <div data-intro-up class="flex flex-col gap-8 lg:col-span-5">
+        <div data-intro-up style="--d:1" class="flex flex-col gap-8 lg:col-span-5">
           <p class="text-xl leading-snug tracking-[-0.01em] md:text-2xl">{summary}</p>
           <div class="flex flex-wrap gap-3">
             {
@@ -79,7 +102,7 @@ const specs = [
             }
           </div>
         </div>
-        <dl data-intro-up class="grid grid-cols-2 gap-x-6 self-start border-t border-line lg:col-span-6 lg:col-start-7 lg:border-t-0">
+        <dl data-intro-up style="--d:2" class="grid grid-cols-2 gap-x-6 self-start border-t border-line lg:col-span-6 lg:col-start-7 lg:border-t-0">
           {
             specs.map((s) => (
               <div class="flex flex-col gap-1 border-b border-line py-3">
@@ -92,21 +115,36 @@ const specs = [
             <dt class="eyebrow">{t("projects.stack")}</dt>
             <dd class="font-medium">{stack.join(" · ")}</dd>
           </div>
+          {
+            metrics.length > 0 && (
+              <div class="col-span-2 flex flex-col gap-3 border-b border-line py-3">
+                <dt class="eyebrow">{t("projects.metrics")}</dt>
+                <dd class="flex flex-wrap gap-x-8 gap-y-3">
+                  {metrics.map((m) => (
+                    <span class="flex items-baseline gap-2">
+                      <span class="text-3xl leading-none font-extrabold tracking-[-0.04em] tabular-nums">{m.value}</span>
+                      <span class="text-sm text-muted">{m.label}</span>
+                    </span>
+                  ))}
+                </dd>
+              </div>
+            )
+          }
         </dl>
       </div>
     </header>
 
     <figure class="wrapper mt-14 md:mt-20">
-      <div data-clip class="relative aspect-[4/3] overflow-hidden rounded-md bg-surface md:aspect-[16/9]">
-        <img
+      <div class="relative aspect-[4/3] overflow-hidden rounded-md bg-surface md:aspect-[16/9]">
+        <Picture
           data-parallax="6"
           src={cover}
           alt={title}
-          width="1920"
-          height="1080"
+          formats={["avif", "webp"]}
+          widths={[640, 1024, 1600, 1920]}
+          sizes="100vw"
           loading="eager"
           fetchpriority="high"
-          decoding="async"
           class="absolute inset-0 size-full scale-[1.12] object-cover"
         />
       </div>
@@ -141,14 +179,39 @@ const specs = [
     </div>
 
     {
-      extra.length > 0 && (
-        <div class="wrapper grid gap-6 pb-24 md:pb-36">
-          {extra.map((src) => (
-            <div data-clip class="relative aspect-[16/9] overflow-hidden rounded-md bg-surface">
-              <img data-parallax="5" src={src} alt="" loading="lazy" decoding="async" class="absolute inset-0 size-full scale-[1.1] object-cover" />
-            </div>
-          ))}
-        </div>
+      gallery.length > 0 && (
+        <section class="wrapper pb-24 md:pb-36" aria-label={t("projects.gallery")}>
+          <p class="eyebrow mb-6">{t("projects.gallery")}</p>
+          <div class="grid items-stretch gap-4 md:grid-cols-12 md:gap-6">
+            {wide.map((img) => (
+              <div data-clip class="relative aspect-[16/10] overflow-hidden rounded-md bg-surface md:col-span-9 md:aspect-auto md:min-h-full">
+                <Picture
+                  data-parallax="5"
+                  src={img}
+                  alt={`${title} — ${lang === "es" ? "vista de escritorio" : "desktop view"}`}
+                  formats={["avif", "webp"]}
+                  widths={[640, 1024, 1440]}
+                  sizes="(min-width: 768px) 75vw, 100vw"
+                  loading="lazy"
+                  class="absolute inset-0 size-full scale-[1.1] object-cover"
+                />
+              </div>
+            ))}
+            {tall.map((img) => (
+              <div data-reveal="up" class="mx-auto w-2/3 overflow-hidden rounded-[2rem] border-4 border-fg bg-fg md:col-span-3 md:w-full">
+                <Picture
+                  src={img}
+                  alt={`${title} — ${lang === "es" ? "vista móvil" : "mobile view"}`}
+                  formats={["avif", "webp"]}
+                  widths={[360, 720]}
+                  sizes="(min-width: 768px) 25vw, 66vw"
+                  loading="lazy"
+                  class="block aspect-[390/844] w-full object-cover object-top"
+                />
+              </div>
+            ))}
+          </div>
+        </section>
       )
     }
 
@@ -166,7 +229,16 @@ const specs = [
                 {next.title}
               </span>
               <span class="next-cover hidden aspect-[16/10] w-[min(26rem,30vw)] shrink-0 overflow-hidden rounded-md md:block">
-                <img src={next.cover} alt="" loading="lazy" decoding="async" class="size-full scale-110 object-cover transition-transform duration-1000 ease-(--ease-out-expo) group-hover:scale-100" />
+                <Picture
+                  src={next.cover}
+                  alt=""
+                  formats={["avif", "webp"]}
+                  widths={[480, 900]}
+                  sizes="30vw"
+                  loading="lazy"
+                  pictureAttributes={{ class: "block size-full" }}
+                  class="size-full scale-110 object-cover transition-transform duration-1000 ease-(--ease-out-expo) group-hover:scale-100"
+                />
               </span>
             </span>
           </a>

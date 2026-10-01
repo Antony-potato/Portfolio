@@ -10,6 +10,7 @@ export function initLenis(): void {
   gsap.registerPlugin(ScrollTrigger);
 
   lenis = new Lenis({ lerp: 0.1, anchors: { offset: -80 } });
+  window.__lenis = lenis;
   // Un solo reloj: GSAP maneja el raf de Lenis y ScrollTrigger lee su scroll.
   lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add(tick);
@@ -19,7 +20,11 @@ export function initLenis(): void {
 export function destroyLenis(): void {
   gsap.ticker.remove(tick);
   lenis?.destroy();
-  lenis = null;
+  lenis = window.__lenis = null;
 }
 
-export const getLenis = () => lenis;
+declare global {
+  interface Window {
+    __lenis?: Lenis | null;
+  }
+}

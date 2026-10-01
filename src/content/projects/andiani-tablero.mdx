@@ -1,0 +1,51 @@
+---
+title: "Andiani Tablero"
+summary: "Plataforma interna de operaciones en tiempo real para 250+ rentas vacacionales: limpiezas, mantenimiento, huéspedes, finanzas y equipo, con un agente de IA."
+role: "Fullstack Developer"
+year: 2026
+client: "Andiani Travel"
+stack: ["React 18", "TypeScript", "Firebase", "Cloud Functions", "Tailwind CSS", "PWA"]
+category: "dashboard"
+liveUrl: null
+repoUrl: null
+cover: "../../assets/projects/andiani-tablero/cover.webp"
+featured: true
+order: 2
+lang: "es"
+---
+
+## Contexto
+
+**Andiani** administra más de 250 rentas vacacionales en México. Detrás de cada estancia hay limpiezas, mantenimiento, mensajes de huéspedes, pagos a propietarios y un equipo repartido en varias ciudades. El tablero es la herramienta interna donde toda esa operación vive en un solo lugar y en tiempo real.
+
+Lo construimos entre dos personas: la dueña, que define cómo opera el negocio, y yo, a cargo de la parte técnica. Desde junio de 2026 llevo más de 2,000 commits en el proyecto.
+
+*Por ser una herramienta interna, las imágenes de este caso son ilustrativas y no muestran datos reales.*
+
+## El Reto
+
+- **Todo en un solo lugar:** operación, huéspedes, finanzas y equipo tenían que convivir en una misma plataforma, incluida una bandeja de mensajes propia que reemplazara la herramienta de terceros que se usaba.
+- **Permisos por persona:** cada integrante ve y edita solo lo que le toca (finanzas, recursos humanos, operación), y esa regla se valida en el servidor, no solo en la interfaz.
+- **Tiempo real y en campo:** limpieza y mantenimiento trabajan desde el teléfono; un cambio tiene que verse al instante en todas las pantallas.
+- **Atención a huéspedes a toda hora:** conversaciones de Guesty, WhatsApp y Meta en una sola bandeja, con un agente que pueda contestar.
+
+## La Solución
+
+- **Módulos por área:** operación de propiedades, limpiezas y mantenimiento, bandeja de huéspedes, finanzas y tesorería, propietarios, recursos humanos, KPIs y capacitaciones.
+- **Andi, agente de IA:** contesta a huéspedes desde la bandeja y corre en su propio backend, separado del resto.
+- **Portal de campo instalable (PWA):** el equipo de limpieza y mantenimiento trabaja desde el teléfono, sin tienda de apps.
+- **Gamificación del equipo:** puntos, ranking semanal y KPIs por persona para reconocer el buen trabajo.
+- **Encuesta NPS a propietarios:** una liga pública para calificar el servicio, con los resultados en el tablero.
+- **Arquitectura:** React 18 + TypeScript estricto + Tailwind sobre Vite, Firestore en tiempo real, más de 100 Cloud Functions e inicio de sesión con Google restringido al dominio de la empresa, con permisos validados por las reglas de Firestore.
+
+## Ingeniería
+
+- **Pruebas en tres niveles:** lógica pura con `node --test`, store y componentes con Vitest, y reglas de Firestore contra el emulador.
+- **CI con trinquetes que solo bajan:** tope de líneas por archivo, peso máximo del bundle por pantalla, cobertura mínima y avisos de ESLint. Si algo crece, se arregla el código; no se sube el número.
+- **Modo demo:** datos sembrados en memoria para desarrollar y probar pantallas sin tocar producción.
+
+## Resultado
+
+- El tablero está en producción y es la herramienta de trabajo del equipo de Andiani.
+- La bandeja propia sustituyó a la herramienta de mensajería de terceros y quedó integrada con el resto de la operación.
+- Más de 2,000 commits propios desde junio de 2026, con un CI que protege la calidad en cada cambio.

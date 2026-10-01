@@ -271,7 +271,8 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
 </style>
 
 <script>
-  import { getLenis } from "~/lib/lenis";
+  // Lenis se carga diferido (ver BaseLayout); el menú solo lo pausa si ya existe
+  const getLenis = () => window.__lenis;
 
   // Reloj — hora local de Cancún (se re-consulta cada tick, sobrevive a las navegaciones)
   const clock = new Intl.DateTimeFormat("es-MX", {

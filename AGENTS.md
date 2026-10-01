@@ -29,10 +29,10 @@
 | Estilos | **Tailwind CSS** | **4.3.x** (via `@tailwindcss/vite`) |
 | Lenguaje | **TypeScript** | 5.6+ en modo `strict` |
 | Contenido | Astro Content Collections (`zod`) | nativo |
-| Islas | **React 19** (solo donde se necesita estado de cliente) | — |
+| Interactividad | `<script>` de Astro + TypeScript vanilla (sin React desde sep 2026) | — |
 | Smooth scroll | **lenis** | última estable |
 | Animación on-scroll | **gsap** + ScrollTrigger | 3.13+ |
-| WebGL ambiental | **@appletosolutions/reactbits** + **ogl** | última |
+| WebGL ambiental | WebGL puro (`src/lib/hero-gl.ts`), sin dependencias | — |
 | Iconos | **astro-icon** + `@iconify-json/lucide`, `@iconify-json/simple-icons` | — |
 | MDX | **@astrojs/mdx** | última |
 | SEO | **@astrojs/sitemap** | última |
@@ -60,7 +60,7 @@ src/
 │   ├── ui/                  ← primitivos (.astro)
 │   ├── layout/              ← Navbar, Footer, LanguageSwitcher
 │   ├── sections/            ← Hero, About, Stack, Projects, ...
-│   └── islands/             ← .tsx con `client:*` directive
+│   └── (sin islands/)       ← no hay React; JS de cliente en <script> de cada componente
 ├── i18n/                    ← ui.ts + utils.ts (sin librería externa)
 ├── lib/                     ← lenis init, seo helpers
 ├── pages/                   ← ruteo. `/` (es) y `/en/` (en)
@@ -135,10 +135,12 @@ Antes de declarar una tarea como completa, agente debe correr **`npm run astro c
 
 ## 6. Contenido (Content Collections)
 
-- Source of truth: `src/content/projects/*.mdx`.
+- Source of truth: `src/content/projects/*.mdx` (español) y `src/content/projects/en/*.mdx` (inglés). Mismo nombre de archivo = mismo slug público.
 - Schema en `src/content.config.ts` (ver PLAN.md §5).
 - Cada proyecto **debe** tener: `title`, `summary`, `role`, `year`, `stack`, `cover`, `featured`, `order`, `lang`.
-- Imágenes referenciadas desde el `.mdx` con paths relativos a `src/assets/`.
+- Imágenes en `src/assets/projects/<slug>/` (`cover.webp` + galería), referenciadas con paths relativos y servidas con `<Picture>` (AVIF + WebP).
+- `metrics` (opcional): solo cifras medidas y verificables (p. ej. Lighthouse móvil con fecha).
+- OG por proyecto: `public/og/<slug>.png` (1200×630). Si agregas un proyecto, genera su OG.
 - Locales: campo `lang: "es" | "en"`. Listados filtran por idioma de la ruta.
 
 ---
