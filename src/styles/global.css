@@ -400,12 +400,16 @@
     opacity 1.6s var(--ease-out-expo),
     transform 2.2s var(--ease-out-expo);
 }
+/* v2.1: el fondo acompaña, no compite. Tenue y desvanecido hacia el nombre. */
 [data-gl].is-on {
-  opacity: var(--gl-opacity, 1);
+  opacity: var(--gl-opacity, 0.32);
   transform: none;
 }
 .theme-dark [data-gl] {
-  --gl-opacity: 0.8;
+  --gl-opacity: 0.5;
+}
+[data-gl-wrap] {
+  mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 80%);
 }
 
 @keyframes char-in {

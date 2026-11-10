@@ -7,6 +7,24 @@
 
 ---
 
+## 0.1 Cambios v2.1 — limpieza del home (2026-11-10, manda sobre v2.0)
+
+Motivo: el home se sentía saturado (≈10 900 px, 8 títulos gigantes, WhatsApp repetido 5 veces, naranja compitiendo con el texto).
+
+| Tema | v2.1 |
+|---|---|
+| Home | 4 secciones: **Hero → Proyectos → Sobre mí → Contacto** (≈5 600 px en desktop). Los proyectos van primero. |
+| Hero | Sin eyebrow `// 00`, sin franja ROL/BASE/ENFOQUE ni SCROLL. Un solo CTA ("Ver proyectos"). Metaballs al 32 % (50 % en oscuro) y desvanecidos hacia abajo con `mask-image` para no pasar detrás del nombre. |
+| Tipografía display | Gigante solo en el nombre del hero y en "¿Construimos algo juntos?". `SectionTitle` baja a `clamp(2rem, 4.5vw, 4rem)`. Se quitó el wordmark gigante del footer. |
+| Numeración | Sin índices 01–06 en eyebrows de sección ni en el nav desktop. Se quitó el reloj del nav desktop (sigue en el menú móvil). |
+| Proyectos (home) | Rejilla simple: el primero a todo el ancho (21:9), el resto en 2 columnas. Card = portada + título + resumen de 2 líneas + `categoría · año · cliente`. Se quitaron las cards apiladas sticky, la barra de progreso y su JS. |
+| Sobre mí | Sin el párrafo gigante (repetía al hero), sin pie de foto ni botón de WhatsApp. Stats en tamaño normal. Las certificaciones viven aquí como lista compacta (datos en `src/lib/certifications.ts`). |
+| Clientes | Salió del home; ahora está en `/servicios` y `/en/services`, debajo de Servicios. |
+| Servicios / Certificaciones | Salieron del home. Servicios queda en su página; la banda de certificaciones se eliminó. |
+| WhatsApp | Solo en Contacto y en el teléfono del footer. |
+
+---
+
 ## 0. Cambios v2.0 (manda sobre lo de abajo si hay conflicto)
 
 Paleta y tipografía base **no cambian** (crema + ink + naranja, Geist / Geist Mono). Lo que cambia:

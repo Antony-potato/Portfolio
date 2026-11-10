@@ -53,14 +53,13 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
     <nav aria-label={es ? "Principal" : "Main"} class="hidden lg:block">
       <ul class="flex items-center gap-7">
         {
-          items.map((item, i) => (
+          items.map((item) => (
             <li>
               <a
                 href={item.href}
                 aria-current={isActive(item.href) ? "page" : undefined}
-                class="nav-link flex items-baseline gap-1.5 text-sm font-medium"
+                class="nav-link flex items-baseline text-sm font-medium"
               >
-                <span class="font-mono text-[0.625rem] text-muted">0{i + 1}</span>
                 <span class="roll">
                   <span>{item.label}</span>
                   <span aria-hidden="true">{item.label}</span>
@@ -73,11 +72,6 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
     </nav>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <p class="hidden items-center gap-2 font-mono text-[0.6875rem] uppercase tracking-[0.08em] xl:flex">
-        <span class="text-muted">CUN</span>
-        <time data-clock class="tabular-nums" aria-label={t("nav.clock")}>--:--:--</time>
-      </p>
-
       <a
         href={altHref}
         hreflang={other}

@@ -14,70 +14,34 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 
 const featured = (await getProjects(lang)).filter((p) => p.data.featured);
-
 const projectsBase = lang === "es" ? "/proyectos" : "/projects";
-const labels = {
-  role: t("projects.role"),
-  client: t("projects.client"),
-  stack: t("projects.stack"),
-  view: t("projects.view"),
-};
 ---
 
-<section id="projects" class="py-16 md:py-24">
-  <SectionTitle
-    index="02"
-    label={t("projects.label")}
-    title={t("projects.title")}
-    description={t("projects.subtitle")}
-    class="wrapper"
-  />
+<section id="projects" class="wrapper py-16 md:py-24">
+  <SectionTitle label={t("projects.label")} title={t("projects.title")} description={t("projects.subtitle")} />
 
-  <div class="mt-10 md:mt-16">
-    <!-- Barra sticky: proyecto actual + progreso mientras las cards se apilan -->
-    <div data-stack-bar class="sticky top-0 z-30 border-y border-line bg-bg/85 backdrop-blur-md">
-      <div class="wrapper flex h-12 items-center justify-between gap-4 font-mono text-[0.6875rem] uppercase tracking-[0.08em]">
-        <span class="shrink-0 text-muted">02 — {t("projects.label")}</span>
-        <span data-stack-title class="truncate">{featured[0]?.data.title}</span>
-        <span class="shrink-0 tabular-nums">
-          <span data-stack-count>01</span><span class="text-muted"> / {String(featured.length).padStart(2, "0")}</span>
-        </span>
-      </div>
-      <span data-stack-progress class="absolute inset-x-0 -bottom-px h-0.5 origin-left bg-accent" style="transform: scaleX(0)"></span>
-    </div>
-
-    <!-- Cards apiladas: sticky nativo + escala con scroll (animations.ts → stackCards) -->
-    <ol class="wrapper mt-6">
-      {
-        featured.map((p, i) => (
-          <li
-            data-stack-card
-            data-title={p.data.title}
-            class="sticky mb-5 md:mb-8"
-            style={`top: calc(3rem + 0.75rem + ${i} * 0.85rem)`}
-          >
+  <!-- Rejilla simple: el primero ocupa todo el ancho, el resto en dos columnas -->
+  <ul class="mt-10 grid gap-x-6 gap-y-12 md:mt-14 md:grid-cols-2 md:gap-y-16" data-stagger>
+    {
+      featured.map((p, i) => (
+        <li class:list={[i === 0 && "md:col-span-2"]}>
           <ProjectCard
             href={getLocalizedPath(lang, `${projectsBase}/${projectSlug(p)}`)}
-            index={i + 1}
-            total={featured.length}
             title={p.data.title}
             summary={p.data.summary}
             category={p.data.category}
-            role={p.data.role}
             year={p.data.year}
             client={p.data.client}
-            stack={p.data.stack}
             cover={p.data.cover}
-            labels={labels}
+            large={i === 0}
           />
         </li>
       ))
     }
-    </ol>
-  </div>
+  </ul>
 
-  <div class="wrapper mt-10 flex justify-center md:mt-12">
-    <Button href={getLocalizedPath(lang, projectsBase)} variant="secondary" size="lg" magnetic>
+  <div class="mt-12 flex justify-center md:mt-16">
+    <Button href={getLocalizedPath(lang, projectsBase)} variant="secondary" size="lg">
       {t("projects.all")}
       <Icon name="lucide:arrow-right" class="size-4" aria-hidden="true" />
     </Button>
