@@ -1,4 +1,5 @@
 ---
+import { Picture } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import SectionTitle from "../ui/SectionTitle.astro";
 import ProjectCard from "../ui/ProjectCard.astro";
@@ -13,67 +14,119 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const featured = (await getProjects(lang)).filter((p) => p.data.featured);
-
 const projectsBase = lang === "es" ? "/proyectos" : "/projects";
-const labels = {
-  role: t("projects.role"),
-  client: t("projects.client"),
-  stack: t("projects.stack"),
-  view: t("projects.view"),
-};
+const featured = (await getProjects(lang))
+  .filter((p) => p.data.featured)
+  .map((p) => ({ ...p.data, href: getLocalizedPath(lang, `${projectsBase}/${projectSlug(p)}`) }));
+const pad = (n: number) => String(n).padStart(2, "0");
+const meta = (p: (typeof featured)[number]) => [p.category, p.year, p.client].filter(Boolean).join(" · ");
 ---
 
 <section id="projects" class="py-16 md:py-24">
-  <SectionTitle
-    index="02"
-    label={t("projects.label")}
-    title={t("projects.title")}
-    description={t("projects.subtitle")}
-    class="wrapper"
-  />
-
-  <div class="mt-10 md:mt-16">
-    <!-- Barra sticky: proyecto actual + progreso mientras las cards se apilan -->
-    <div data-stack-bar class="sticky top-0 z-30 border-y border-line bg-bg/85 backdrop-blur-md">
-      <div class="wrapper flex h-12 items-center justify-between gap-4 font-mono text-[0.6875rem] uppercase tracking-[0.08em]">
-        <span class="shrink-0 text-muted">02 — {t("projects.label")}</span>
-        <span data-stack-title class="truncate">{featured[0]?.data.title}</span>
-        <span class="shrink-0 tabular-nums">
-          <span data-stack-count>01</span><span class="text-muted"> / {String(featured.length).padStart(2, "0")}</span>
-        </span>
-      </div>
-      <span data-stack-progress class="absolute inset-x-0 -bottom-px h-0.5 origin-left bg-accent" style="transform: scaleX(0)"></span>
-    </div>
-
-    <!-- Cards apiladas: sticky nativo + escala con scroll (animations.ts → stackCards) -->
-    <ol class="wrapper mt-6">
+  <!-- Móvil y tablet: carrusel horizontal con scroll-snap -->
+  <div class="lg:hidden">
+    <SectionTitle label={t("projects.label")} title={t("projects.title")} description={t("projects.subtitle")} class="wrapper" />
+    <ol class="mt-10 flex snap-x snap-mandatory scroll-px-(--gutter) gap-4 overflow-x-auto px-(--gutter) pb-2 [scrollbar-width:none]">
       {
-        featured.map((p, i) => (
-          <li
-            data-stack-card
-            data-title={p.data.title}
-            class="sticky mb-5 md:mb-8"
-            style={`top: calc(3rem + 0.75rem + ${i} * 0.85rem)`}
-          >
-          <ProjectCard
-            href={getLocalizedPath(lang, `${projectsBase}/${projectSlug(p)}`)}
-            index={i + 1}
-            total={featured.length}
-            title={p.data.title}
-            summary={p.data.summary}
-            category={p.data.category}
-            role={p.data.role}
-            year={p.data.year}
-            client={p.data.client}
-            stack={p.data.stack}
-            cover={p.data.cover}
-            labels={labels}
-          />
-        </li>
-      ))
-    }
+        featured.map((p) => (
+          <li class="w-[82%] shrink-0 snap-start sm:w-[58%]">
+            <ProjectCard
+              href={p.href}
+              title={p.title}
+              summary={p.summary}
+              category={p.category}
+              year={p.year}
+              client={p.client}
+              cover={p.cover}
+            />
+          </li>
+        ))
+      }
     </ol>
+  </div>
+
+  <!-- Escritorio: escaparate fijo. El scroll dentro del contenedor elige el proyecto activo (script abajo). -->
+  <div data-showcase class="relative hidden lg:block" style={`height: calc(100svh + ${featured.length} * 75svh); --i: 0`}>
+    <div class="sticky top-0 h-svh pt-(--nav-h) pb-6">
+      <div class="wrapper grid h-full grid-cols-12 gap-6">
+        <div class="col-span-5 flex min-h-0 flex-col pt-4">
+          <div class="eyebrow flex items-center gap-4">
+            <span>{t("projects.label")}</span>
+            <span data-line class="h-px flex-1 bg-line"></span>
+          </div>
+          <h2 class="mt-5 text-[clamp(2rem,3.6vw,3.5rem)] leading-[0.95] tracking-[-0.045em]">{t("projects.title")}</h2>
+
+          <ol class="mt-6 border-t border-line">
+            {
+              featured.map((p, i) => (
+                <li>
+                  <button
+                    type="button"
+                    data-sc-go={i}
+                    aria-current={i === 0 ? "true" : "false"}
+                    class="sc-item flex w-full items-baseline gap-4 border-b border-line py-2 text-left text-lg font-semibold tracking-[-0.02em]"
+                  >
+                    <span class="font-mono text-[0.6875rem] font-medium tracking-[0.08em]">{pad(i + 1)}</span>
+                    {p.title}
+                  </button>
+                </li>
+              ))
+            }
+          </ol>
+
+          <div class="mt-6 grid">
+            {
+              featured.map((p, i) => (
+                <div data-sc-detail class:list={["sc-detail flex flex-col gap-3 [grid-area:1/1]", i === 0 && "is-active"]} inert={i !== 0}>
+                  <p class="font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted">{meta(p)}</p>
+                  <p class="line-clamp-3 max-w-md text-muted">{p.summary}</p>
+                  <p class="text-sm">{p.stack.slice(0, 4).join(" · ")}</p>
+                  <a href={p.href} class="group inline-flex w-fit items-center gap-2 text-sm font-medium">
+                    <span class="link-line">{t("projects.view")}</span>
+                    <Icon name="lucide:arrow-right" class="size-4 transition-transform duration-500 group-hover:translate-x-1" aria-hidden="true" />
+                  </a>
+                </div>
+              ))
+            }
+          </div>
+
+          <p class="mt-auto flex items-end gap-3 font-display font-extrabold tracking-[-0.06em] tabular-nums" aria-hidden="true">
+            <span class="sc-count text-[min(10vw,20svh)]">
+              <span class="sc-digits">{featured.map((_, i) => <span>{pad(i + 1)}</span>)}</span>
+            </span>
+            <span class="pb-[0.4em] font-mono text-sm font-medium tracking-normal text-muted">/ {pad(featured.length)}</span>
+          </p>
+        </div>
+
+        <div class="relative col-span-7 overflow-hidden rounded-md bg-surface">
+          {
+            featured.map((p, i) => (
+              <a
+                href={p.href}
+                data-sc-cover
+                class:list={["sc-cover group absolute inset-0", i === 0 && "is-active"]}
+                inert={i !== 0}
+                aria-label={`${t("projects.view")}: ${p.title}`}
+              >
+                <Picture
+                  src={p.cover}
+                  alt=""
+                  formats={["avif", "webp"]}
+                  widths={[800, 1200, 1600]}
+                  sizes="58vw"
+                  loading={i === 0 ? "eager" : "lazy"}
+                  class="size-full object-cover"
+                />
+                <span class="tag absolute bottom-4 left-4 z-10 bg-bg">
+                  {t("projects.view")}
+                  <Icon name="lucide:arrow-up-right" class="size-3 transition-transform duration-500 group-hover:rotate-45" aria-hidden="true" />
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="wrapper mt-10 flex justify-center md:mt-12">
@@ -83,3 +136,130 @@ const labels = {
     </Button>
   </div>
 </section>
+
+<style>
+  /* Curva de entrada de la referencia: lenta al inicio y al final */
+  [data-showcase] {
+    --sc-ease: cubic-bezier(0.87, 0, 0.13, 1);
+  }
+
+  .sc-item {
+    color: var(--muted);
+    transition: color 400ms ease;
+  }
+  .sc-item:hover,
+  .sc-item[aria-current="true"] {
+    color: var(--fg);
+  }
+  .sc-item[aria-current="true"] > span {
+    color: var(--accent-ink);
+  }
+
+  .sc-detail {
+    opacity: 0;
+    transform: translateY(0.75rem);
+    transition:
+      opacity 400ms ease,
+      transform 400ms ease;
+  }
+  .sc-detail.is-active {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 700ms ease 250ms,
+      transform 900ms var(--ease-out-expo) 250ms;
+  }
+
+  /* Contador: columna de números que rueda hasta el activo */
+  .sc-count {
+    display: block;
+    height: 0.8em;
+    overflow: hidden;
+    line-height: 0.8;
+  }
+  .sc-digits {
+    display: flex;
+    flex-direction: column;
+    transform: translateY(calc(var(--i) * -0.8em));
+    transition: transform 1.1s var(--sc-ease);
+  }
+
+  /* Portadas apiladas: la nueva se revela encima (de abajo hacia arriba al bajar, al revés al subir)
+     y la anterior se queda visible debajo hasta que termina, luego se cierra de golpe. */
+  .sc-cover {
+    z-index: 0;
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 0s 1.1s;
+  }
+  [data-dir="up"] .sc-cover {
+    clip-path: inset(0 0 100% 0);
+  }
+  .sc-cover.is-active {
+    z-index: 1;
+    clip-path: inset(0);
+    transition: clip-path 1.1s var(--sc-ease);
+  }
+  /* Paneo leve con el avance dentro del tramo del proyecto (--p de 0 a 1) */
+  .sc-cover :global(img) {
+    scale: 1.22;
+    translate: 0 calc((var(--p, 0.5) - 0.5) * -6%);
+    transition: scale 1.6s var(--ease-out-expo);
+  }
+  .sc-cover.is-active :global(img) {
+    scale: 1.08;
+  }
+</style>
+
+<script>
+  // Escaparate: el avance del scroll dentro de [data-showcase] elige el proyecto activo.
+  // Va fuera de animations.ts a propósito: con reduced-motion también cambia de proyecto (solo sin transiciones).
+  function initShowcase() {
+    const root = document.querySelector<HTMLElement>("[data-showcase]");
+    if (!root) return () => {};
+    const covers = [...root.querySelectorAll<HTMLElement>("[data-sc-cover]")];
+    const details = [...root.querySelectorAll<HTMLElement>("[data-sc-detail]")];
+    const items = [...root.querySelectorAll<HTMLElement>("[data-sc-go]")];
+    const n = covers.length;
+    const range = () => root.offsetHeight - innerHeight;
+    let current = 0;
+
+    const update = () => {
+      const r = root.getBoundingClientRect();
+      if (!r.height || r.bottom < 0 || r.top > innerHeight) return; // oculto (móvil) o fuera de vista
+      const p = Math.min(1, Math.max(0, -r.top / range())) * n;
+      const i = Math.min(n - 1, Math.floor(p));
+      root.style.setProperty("--p", String(Math.min(1, p - i)));
+      if (i === current) return;
+      root.dataset.dir = i > current ? "down" : "up";
+      root.style.setProperty("--i", String(i));
+      current = i;
+      for (const list of [covers, details])
+        list.forEach((el, k) => {
+          el.classList.toggle("is-active", k === i);
+          el.inert = k !== i;
+        });
+      items.forEach((el, k) => el.setAttribute("aria-current", String(k === i)));
+    };
+
+    // Click en la lista: baja (o sube) hasta la mitad del tramo de ese proyecto
+    items.forEach((el, k) =>
+      el.addEventListener("click", () => {
+        const y = root.getBoundingClientRect().top + scrollY + ((k + 0.5) / n) * range();
+        if (window.__lenis) window.__lenis.scrollTo(y);
+        else scrollTo({ top: y, behavior: "smooth" });
+      }),
+    );
+
+    addEventListener("scroll", update, { passive: true });
+    addEventListener("resize", update);
+    update();
+    return () => {
+      removeEventListener("scroll", update);
+      removeEventListener("resize", update);
+    };
+  }
+
+  let off = () => {};
+  document.addEventListener("astro:page-load", () => (off = initShowcase()));
+  document.addEventListener("astro:before-swap", () => off());
+</script>

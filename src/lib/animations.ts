@@ -25,7 +25,6 @@ export function initAnimations(): void {
       heroScroll();
       reveals();
       scrubs();
-      stackCards();
       if (fine) return pointerFx();
     },
   );
@@ -152,55 +151,6 @@ function scrubs() {
         scrollTrigger: { trigger: el.parentElement, start: "top bottom", end: "bottom top", scrub: true },
       },
     );
-  });
-
-  // Wordmark gigante del footer sube desde el borde
-  q("[data-wordmark]").forEach((el) =>
-    gsap.from(el, {
-      yPercent: 60,
-      ease: "none",
-      scrollTrigger: { trigger: el.parentElement, start: "top bottom", end: "bottom bottom", scrub: true },
-    }),
-  );
-}
-
-/* ── Cards apiladas: la de abajo se encoge cuando la siguiente la cubre ── */
-function stackCards() {
-  const cards = q("[data-stack-card]");
-
-  // Barra sticky: línea de progreso + título/contador del proyecto visible
-  const bar = document.querySelector<HTMLElement>("[data-stack-bar]");
-  if (bar && cards.length) {
-    const title = bar.querySelector("[data-stack-title]");
-    const count = bar.querySelector("[data-stack-count]");
-    let current = -1;
-    gsap.to(bar.querySelector("[data-stack-progress]"), {
-      scaleX: 1,
-      ease: "none",
-      scrollTrigger: {
-        trigger: bar.parentElement,
-        start: "top top",
-        end: "bottom 70%",
-        scrub: true,
-        onUpdate: ({ progress }) => {
-          const i = Math.round(progress * (cards.length - 1)); // cambia cuando la siguiente card domina el viewport
-          if (i === current || !title || !count) return;
-          current = i;
-          title.textContent = cards[i]?.dataset.title ?? "";
-          count.textContent = String(i + 1).padStart(2, "0");
-          gsap.fromTo([title, count], { yPercent: 60, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: EASE });
-        },
-      },
-    });
-  }
-
-  cards.forEach((card, i) => {
-    const next = cards[i + 1];
-    if (!next) return;
-    const shade = card.querySelector("[data-shade]");
-    const st = { trigger: next, start: "top bottom", end: "top 20%", scrub: true };
-    gsap.to(card.firstElementChild, { scale: 0.92, ease: "none", scrollTrigger: st });
-    if (shade) gsap.to(shade, { opacity: 0.55, ease: "none", scrollTrigger: st });
   });
 }
 

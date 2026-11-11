@@ -19,6 +19,10 @@ export const ui = {
     "nav.theme": "Cambiar tema claro / oscuro",
     "nav.clock": "Hora local en Cancún",
     "nav.skip": "Saltar al contenido",
+    "menu.words.projects": "Diseñar · Construir · Lanzar",
+    "menu.words.about": "Soporte · Diseño · Código",
+    "menu.words.services": "Web · Rendimiento · Infra",
+    "menu.words.contact": "Escríbeme · Cotiza · Empecemos",
 
     "hero.eyebrow": "Portfolio — 2026",
     "hero.role": "Software Engineer",
@@ -135,6 +139,10 @@ export const ui = {
     "nav.theme": "Toggle light / dark theme",
     "nav.clock": "Local time in Cancún",
     "nav.skip": "Skip to content",
+    "menu.words.projects": "Design · Build · Ship",
+    "menu.words.about": "Support · Design · Code",
+    "menu.words.services": "Web · Performance · Infra",
+    "menu.words.contact": "Write me · Get a quote · Let's start",
 
     "hero.eyebrow": "Portfolio — 2026",
     "hero.role": "Software Engineer",
