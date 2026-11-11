@@ -142,6 +142,8 @@ Antes de declarar una tarea como completa, agente debe correr **`npm run astro c
 - `metrics` (opcional): solo cifras medidas y verificables (p. ej. Lighthouse móvil con fecha).
 - OG por proyecto: `public/og/<slug>.png` (1200×630). Si agregas un proyecto, genera su OG.
 - Locales: campo `lang: "es" | "en"`. Listados filtran por idioma de la ruta.
+- `draft: true` oculta un proyecto de listados, rutas y sitemap (útil para casos pendientes de aprobación del cliente). Nunca usar `getCollection("projects")` directo en páginas: usar `getProjects(lang)`.
+- Contenido de casos: primera persona, qué hice yo, sin cifras que no estén medidas y sin frases de marketing. Todo dato técnico debe poder verificarse en el repo del proyecto.
 
 ---
 
@@ -196,7 +198,7 @@ Herramientas: Lighthouse CI en preview deploys, `astro build --analyze`, WebPage
 - Default: español (`/`).
 - Inglés: `/en/`.
 - Sin librería externa — usar `src/i18n/ui.ts` + `utils.ts`.
-- Cada `.mdx` de proyecto puede tener variante con sufijo: `aldea-savia.mdx` (es) + `aldea-savia.en.mdx` (en) **o** un solo archivo con campo `lang` y dos por proyecto. Decidir y mantener consistencia.
+- **Decisión (sep 2026):** el `.mdx` en español vive en `src/content/projects/<slug>.mdx` y su traducción en `src/content/projects/en/<slug>.mdx` (`lang: "en"`). Listados y rutas usan `getProjects(lang)` de `src/lib/projects.ts`, que cae al español si falta la traducción.
 - `<LanguageSwitcher />` cambia entre rutas equivalentes, no redirige a home si falta traducción — muestra fallback con aviso.
 
 ---
