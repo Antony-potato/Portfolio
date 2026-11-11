@@ -3,6 +3,7 @@ import { Picture } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import SectionTitle from "../ui/SectionTitle.astro";
 import ProjectCard from "../ui/ProjectCard.astro";
+import CoverVideo from "../ui/CoverVideo.astro";
 import Button from "../ui/Button.astro";
 import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
 import { getProjects, projectSlug } from "~/lib/projects";
@@ -38,6 +39,7 @@ const meta = (p: (typeof featured)[number]) => [p.category, p.year, p.client].fi
               year={p.year}
               client={p.client}
               cover={p.cover}
+              video={p.video}
             />
           </li>
         ))
@@ -108,15 +110,19 @@ const meta = (p: (typeof featured)[number]) => [p.category, p.year, p.client].fi
                 inert={i !== 0}
                 aria-label={`${t("projects.view")}: ${p.title}`}
               >
-                <Picture
-                  src={p.cover}
-                  alt=""
-                  formats={["avif", "webp"]}
-                  widths={[800, 1200, 1600]}
-                  sizes="58vw"
-                  loading={i === 0 ? "eager" : "lazy"}
-                  class="size-full object-cover"
-                />
+                {p.video ? (
+                  <CoverVideo src={p.video} poster={p.cover} class="size-full object-cover" />
+                ) : (
+                  <Picture
+                    src={p.cover}
+                    alt=""
+                    formats={["avif", "webp"]}
+                    widths={[800, 1200, 1600]}
+                    sizes="58vw"
+                    loading={i === 0 ? "eager" : "lazy"}
+                    class="size-full object-cover"
+                  />
+                )}
                 <span class="tag absolute bottom-4 left-4 z-10 bg-bg">
                   {t("projects.view")}
                   <Icon name="lucide:arrow-up-right" class="size-3 transition-transform duration-500 group-hover:rotate-45" aria-hidden="true" />
@@ -221,6 +227,7 @@ const meta = (p: (typeof featured)[number]) => [p.category, p.year, p.client].fi
     const items = [...root.querySelectorAll<HTMLElement>("[data-sc-go]")];
     const n = covers.length;
     const range = () => root.offsetHeight - innerHeight;
+    const still = matchMedia("(prefers-reduced-motion: reduce)");
     let current = 0;
 
     const update = () => {
@@ -239,6 +246,14 @@ const meta = (p: (typeof featured)[number]) => [p.category, p.year, p.client].fi
           el.inert = k !== i;
         });
       items.forEach((el, k) => el.setAttribute("aria-current", String(k === i)));
+      // Videos: el activo arranca desde el inicio del recorrido, el resto se pausa (CoverVideo.astro cubre la entrada en pantalla)
+      covers.forEach((el, k) => {
+        const v = el.querySelector("video");
+        if (!v) return;
+        if (k !== i) return v.pause();
+        v.currentTime = 0;
+        if (!still.matches) v.play().catch(() => {});
+      });
     };
 
     // Click en la lista: baja (o sube) hasta la mitad del tramo de ese proyecto

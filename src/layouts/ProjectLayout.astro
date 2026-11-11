@@ -5,6 +5,7 @@ import { Icon } from "astro-icon/components";
 import BaseLayout from "./BaseLayout.astro";
 import Button from "~/components/ui/Button.astro";
 import SplitTitle from "~/components/ui/SplitTitle.astro";
+import CoverVideo from "~/components/ui/CoverVideo.astro";
 import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
 import { SITE } from "~/lib/seo";
 
@@ -17,6 +18,7 @@ interface Props {
   stack: string[];
   category: string;
   cover: ImageMetadata;
+  video?: string | undefined;
   gallery?: ImageMetadata[] | undefined;
   metrics?: { label: string; value: string }[] | undefined;
   metricsNote?: string | undefined;
@@ -30,7 +32,7 @@ interface Props {
   lang: Lang;
 }
 
-const { title, summary, role, year, client, stack, category, cover, gallery = [], metrics = [], metricsNote, slug, liveUrl, repoUrl, index, total, headings, next, lang } =
+const { title, summary, role, year, client, stack, category, cover, video, gallery = [], metrics = [], metricsNote, slug, liveUrl, repoUrl, index, total, headings, next, lang } =
   Astro.props;
 
 const t = useTranslations(lang);
@@ -137,17 +139,23 @@ const specs = [
 
     <figure class="wrapper mt-14 md:mt-20">
       <div class="relative aspect-[4/3] overflow-hidden rounded-md bg-surface md:aspect-[16/9]">
-        <Picture
-          data-parallax="6"
-          src={cover}
-          alt={title}
-          formats={["avif", "webp"]}
-          widths={[640, 1024, 1600, 1920]}
-          sizes="100vw"
-          loading="eager"
-          fetchpriority="high"
-          class="absolute inset-0 size-full scale-[1.12] object-cover"
-        />
+        {
+          video ? (
+            <CoverVideo src={video} poster={cover} class="absolute inset-0 size-full object-cover" />
+          ) : (
+            <Picture
+              data-parallax="6"
+              src={cover}
+              alt={title}
+              formats={["avif", "webp"]}
+              widths={[640, 1024, 1600, 1920]}
+              sizes="100vw"
+              loading="eager"
+              fetchpriority="high"
+              class="absolute inset-0 size-full scale-[1.12] object-cover"
+            />
+          )
+        }
       </div>
     </figure>
 

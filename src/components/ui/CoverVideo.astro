@@ -1,0 +1,39 @@
+---
+import type { ImageMetadata } from "astro";
+import { getImage } from "astro:assets";
+
+interface Props {
+  src: string;
+  /** La portada del proyecto: se ve mientras carga, fuera de pantalla y con reduced-motion */
+  poster: ImageMetadata;
+  class?: string;
+}
+
+const { src, poster, class: className } = Astro.props;
+const still = await getImage({ src: poster, width: 1280, format: "webp" });
+---
+
+<video data-cover-video class={className} poster={still.src} muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true">
+  <source src={src} type="video/mp4" />
+</video>
+
+<script>
+  // Solo se descarga y reproduce cuando se ve. Dentro de un [inert] (escaparate) lo maneja Projects.astro.
+  const still = matchMedia("(prefers-reduced-motion: reduce)");
+  let io: IntersectionObserver | undefined;
+
+  document.addEventListener("astro:page-load", () => {
+    io = new IntersectionObserver(
+      (entries) => {
+        for (const { target, isIntersecting } of entries) {
+          const v = target as HTMLVideoElement;
+          if (isIntersecting && !still.matches && !v.closest("[inert]")) v.play().catch(() => {});
+          else v.pause();
+        }
+      },
+      { threshold: 0.4 },
+    );
+    document.querySelectorAll("[data-cover-video]").forEach((v) => io!.observe(v));
+  });
+  document.addEventListener("astro:before-swap", () => io?.disconnect());
+</script>

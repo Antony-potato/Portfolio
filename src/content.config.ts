@@ -17,6 +17,8 @@ const projects = defineCollection({
       liveUrl: z.url().nullable().optional(),
       repoUrl: z.url().nullable().optional(),
       cover: image(),
+      /** Recorrido grabado del sitio (MP4 en `public/videos/`). Reemplaza a la portada; `cover` queda como póster. */
+      video: z.string().startsWith("/videos/").optional(),
       gallery: z.array(image()).optional(),
       /** Cifras medidas (p. ej. Lighthouse); solo datos verificables */
       metrics: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
