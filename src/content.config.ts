@@ -28,6 +28,8 @@ const projects = defineCollection({
       accent: z.string().optional(),
       /** Texto sobre `accent`: claro u oscuro (lo que dé contraste AA) */
       accentInk: z.enum(["light", "dark"]).default("light"),
+      // Halo detrás del mockup del escaparate. Por defecto el accent; para acentos casi negros conviene uno más claro
+      glow: z.string().optional(),
       featured: z.boolean().default(false),
       order: z.number().int().default(99),
       lang: z.enum(["es", "en"]).default("es"),
