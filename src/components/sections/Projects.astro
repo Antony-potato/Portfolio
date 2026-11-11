@@ -3,6 +3,7 @@ import { Picture } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import SectionTitle from "../ui/SectionTitle.astro";
 import ProjectCard from "../ui/ProjectCard.astro";
+import CoverVideo from "../ui/CoverVideo.astro";
 import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
 import { getProjects, projectSlug } from "~/lib/projects";
 
@@ -50,6 +51,7 @@ const meta = (p: (typeof featured)[number]) => [p.category, p.year, p.client].fi
               year={p.year}
               client={p.client}
               cover={p.cover}
+              video={p.video}
             />
           </li>
         ))
@@ -123,6 +125,9 @@ const meta = (p: (typeof featured)[number]) => [p.category, p.year, p.client].fi
                 aria-label={`${t("projects.view")}: ${p.title}`}
               >
                 <span data-sc-inner class="absolute inset-0 block">
+                  {p.video ? (
+                    <CoverVideo src={p.video} poster={p.cover} class="size-full object-cover" />
+                  ) : (
                   <Picture
                     src={p.cover}
                     alt=""
@@ -132,6 +137,7 @@ const meta = (p: (typeof featured)[number]) => [p.category, p.year, p.client].fi
                     loading={i === 0 ? "eager" : "lazy"}
                     class="size-full object-cover"
                   />
+                  )}
                   <span class="tag absolute bottom-4 left-4 z-10 bg-bg">
                     {t("projects.view")}
                     <Icon name="lucide:arrow-up-right" class="size-3 transition-transform duration-500 group-hover:rotate-45" aria-hidden="true" />
@@ -226,11 +232,11 @@ const meta = (p: (typeof featured)[number]) => [p.category, p.year, p.client].fi
   /* Paneo leve con el avance dentro del tramo (--p de 0 a 1). --p vive solo en la portada activa
      (ponerlo en todo el escaparate recalculaba estilos de la sección en cada frame) y la imagen va
      en su propia capa para que moverla no la repinte. */
-  .sc-cover :global(img) {
+  .sc-cover :global(:is(img, video)) {
     scale: 1.08;
     translate: 0 calc((var(--p, 0.5) - 0.5) * -6%);
   }
-  .sc-cover:is(.is-active, .is-prev) :global(img) {
+  .sc-cover:is(.is-active, .is-prev) :global(:is(img, video)) {
     will-change: translate;
   }
 </style>
@@ -302,6 +308,14 @@ const meta = (p: (typeof featured)[number]) => [p.category, p.year, p.client].fi
           el.inert = k !== i;
         });
       items.forEach((el, k) => el.setAttribute("aria-current", String(k === i)));
+      // Videos: el activo arranca desde el inicio del recorrido, el resto se pausa (CoverVideo.astro cubre la entrada en pantalla)
+      covers.forEach((el, k) => {
+        const v = el.querySelector("video");
+        if (!v) return;
+        if (k !== i) return v.pause();
+        v.currentTime = 0;
+        if (onStage && !reduced.matches) v.play().catch(() => {});
+      });
 
       const next = covers[i];
       const inner = next?.querySelector<HTMLElement>("[data-sc-inner]");
@@ -357,11 +371,25 @@ const meta = (p: (typeof featured)[number]) => [p.category, p.year, p.client].fi
     );
     io.observe(root);
 
+    // Videos del escaparate: los maneja solo este script (CoverVideo los ignora, porque al entrar
+    // con la cortina el video queda recortado un instante y su propio observer lo pausaría).
+    // Corre el del proyecto activo mientras el escaparate está en pantalla.
+    let onStage = false;
+    const videoIO = new IntersectionObserver(([entry]) => {
+      onStage = entry?.isIntersecting ?? false;
+      const v = covers[current]?.querySelector("video");
+      if (!v) return;
+      if (onStage && !reduced.matches) v.play().catch(() => {});
+      else v.pause();
+    });
+    videoIO.observe(stage ?? root);
+
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("resize", onResize);
     update();
     return () => {
       io.disconnect();
+      videoIO.disconnect();
       themeNav(false);
       reveal?.cancel();
       innerReveal?.cancel();

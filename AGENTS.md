@@ -143,6 +143,7 @@ Antes de declarar una tarea como completa, agente debe correr **`npm run astro c
 - Cada proyecto **debe** tener: `title`, `summary`, `role`, `year`, `stack`, `cover`, `featured`, `order`, `lang`.
 - `accent` + `accentInk` (opcionales): color de marca del proyecto y tinta (`light`/`dark`) para el fondo del escaparate del home. La tinta debe dar contraste AA sobre el color.
 - Imágenes en `src/assets/projects/<slug>/` (`cover.webp` + galería), referenciadas con paths relativos y servidas con `<Picture>` (AVIF + WebP).
+- `video` (opcional): recorrido grabado del sitio en `public/videos/<slug>.mp4` (H.264, 1280 px, sin audio, ≤ 3 MB). Reemplaza la portada en el escaparate, las tarjetas y la cabecera del caso (`CoverVideo.astro`); `cover` queda como póster y es lo que se ve con reduced-motion.
 - `metrics` (opcional): solo cifras medidas y verificables (p. ej. Lighthouse móvil con fecha).
 - OG por proyecto: `public/og/<slug>.png` (1200×630). Si agregas un proyecto, genera su OG.
 - Locales: campo `lang: "es" | "en"`. Listados filtran por idioma de la ruta.
