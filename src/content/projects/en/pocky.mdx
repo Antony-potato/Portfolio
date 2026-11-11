@@ -1,10 +1,10 @@
 ---
 title: "Pocky"
-summary: "A virtual pet shared by two people: state synced through Firestore, 24/7 decay from a server-side cron, and push notifications."
-role: "Full-stack development"
+summary: "Shared virtual pet on a 3D island: two phones care for it in real time, it keeps living with the app closed and sends push notifications when it needs you."
+role: "Fullstack Developer"
 year: 2026
 client: "Personal project"
-stack: ["Next.js", "React 19", "TypeScript", "Firestore", "Zustand", "Vercel Cron", "Web Push"]
+stack: ["Next.js", "Three.js", "React Three Fiber", "Firebase", "TypeScript", "PWA"]
 category: "pwa"
 liveUrl: "https://pocky-next.vercel.app"
 repoUrl: "https://github.com/Antony-potato/Pocky"
@@ -17,25 +17,28 @@ lang: "en"
 
 ## Context
 
-**Pocky** is a Tamagotchi-style virtual pet built for two people: both take care of the same pet from their own phones and see the same state. I built it as a personal project to practice shared state, server-side logic and web notifications. The pet is drawn as animated ASCII art (bunny, cat, dog or hamster) and the background changes with the time of day.
+**Pocky** is a Tamagotchi-style virtual pet for two people: both care for it from their own phone and see the same state instantly. It started as a 2D PWA and grew into a **3D island** where Pocky walks on its own to the bowl, the pond, the play area or its bed depending on what you ask. Everything runs in the browser and installs without an app store.
 
-## The Challenge
+## Challenge
 
-- **One state, two devices:** if one person feeds the pet, the other has to see it without reloading.
-- **The pet lives even when nobody opens the app:** hunger, happiness and cleanliness have to drop over time even if no phone has the app open.
-- **No duplicated logic:** the same rules have to apply in the browser and on the server without drifting apart.
-- **Notify when the pet needs something**, on both Android and iPhone, without spamming anyone.
+- Two phones touching the same state at once without overwriting each other.
+- The pet has to get hungry or sleepy even when nobody has the app open.
+- Push notifications that actually arrive on iPhone (installed PWA) and Android, without spam.
+- A lively, smooth 3D scene on modest phones.
+- An honest offline mode: `navigator.onLine` lies.
 
-## The Solution
+## Solution
 
-- **Firestore as the source of truth.** The state lives in a single document. Each client subscribes with `onSnapshot` and local state is handled by **Zustand**, so any action on one phone shows up on the other.
-- **Shared pure logic (`petLogic.ts`).** The functions that compute decay, mood and needs don't depend on the browser, so I use them unchanged on the client and on the server.
-- **Vercel Cron with the Firebase Admin SDK.** A `/api/cron/tick` endpoint applies decay based on elapsed time, even when nobody has the app open. The endpoint is protected with a `CRON_SECRET` in the `Authorization` header.
-- **Push notifications on two channels:** FCM for Chrome/Android and Web Push with VAPID keys for Safari/iOS. The cron only notifies urgent needs, respects a 4-hour cooldown and cleans up expired tokens and subscriptions.
-- **PWA groundwork:** a manifest and Apple touch icons to add it to the home screen.
+- **Procedurally built 3D island** with Three.js and React Three Fiber: house, trees, pond and paths. Pocky moves along a waypoint graph and the lighting follows the time of day.
+- **Firestore** with a persistent cache: the app boots with the latest data even offline. Every action runs in a **transaction** so two devices never clobber each other.
+- **Anonymous Firebase Auth session** + Firestore rules: nothing is read or written without a session.
+- **24/7 decay**: an external cron hits a secret-protected Next.js route every 15 min that applies the same pure logic the client uses.
+- **Push via Firebase Cloud Messaging**: data-only messages drawn by the service worker (reliable on iOS, no duplicates), at most one every 4 h, with automatic cleanup of dead tokens.
+- Lower grass density on devices with 4 cores or fewer.
 
-## Outcome
+## Result
 
-- State shared between two people with a minimal backend: one protected endpoint plus Firestore.
-- Game rules written once and reused between client and server.
-- **Still on the roadmap:** packaging the Android version with Capacitor, an iPhone widget and pet customization.
+- Installs as an app on iPhone and Android straight from the browser, no store.
+- State is shared in real time between both phones and keeps going with the app closed.
+- Notifications arrive on iPhone and don't pile up on Android.
+- Clearly tells you when what you do offline won't be saved.

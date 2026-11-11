@@ -91,6 +91,8 @@
     background: var(--bg);
     color: var(--fg);
   }
+  /* Siempre claro, sin importar el tema (panel del menú) */
+  .paper,
   :root.theme-dark .inverse {
     --bg: var(--color-ink-50);
     --surface: var(--color-ink-100);
@@ -329,15 +331,18 @@
     transform: translateY(0);
     border-radius: 0;
   }
-  .btn-fill:hover,
-  .btn-fill:focus-visible {
-    color: var(--fill-ink, var(--bg));
-    border-color: var(--fill, var(--fg));
-  }
 
   .pixelated {
     image-rendering: pixelated;
   }
+}
+
+/* Fuera de @layer a propósito: las utilities (text-fg, text-ink-950, border-line)
+   viven en una capa superior y le ganarían al hover sin importar la especificidad. */
+.btn-fill:hover,
+.btn-fill:focus-visible {
+  color: var(--fill-ink, var(--bg));
+  border-color: var(--fill, var(--fg));
 }
 
 @keyframes pulse {
@@ -392,17 +397,18 @@
   }
 }
 
-/* El canvas aparece cuando el WebGL ya pintó su primer frame (hero-gl.ts añade .is-on) */
+/* El canvas aparece cuando el WebGL ya pintó su primer frame (hero-gl.ts añade .is-on).
+   Ambiental, no protagonista: baja opacidad y se desvanece hacia abajo para no pelear con el nombre. */
 [data-gl] {
+  --gl-opacity: 0.32;
   opacity: 0;
   transform: scale(1.08);
   transition:
     opacity 1.6s var(--ease-out-expo),
     transform 2.2s var(--ease-out-expo);
 }
-/* v2.1: el fondo acompaña, no compite. Tenue y desvanecido hacia el nombre. */
 [data-gl].is-on {
-  opacity: var(--gl-opacity, 0.32);
+  opacity: var(--gl-opacity);
   transform: none;
 }
 .theme-dark [data-gl] {
@@ -410,6 +416,18 @@
 }
 [data-gl-wrap] {
   mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 80%);
+}
+
+/* Mientras corre el loader (Loader.astro): sin scroll, el intro del hero en pausa y el nav oculto */
+[data-loader] {
+  overflow: hidden;
+}
+[data-loader] :is(.split-char, [data-intro-up], [data-intro-line]) {
+  animation-play-state: paused;
+}
+[data-loader] .site-nav {
+  opacity: 0;
+  transform: translateY(-0.75rem);
 }
 
 @keyframes char-in {

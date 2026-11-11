@@ -1,9 +1,22 @@
 # DESIGN.md — Línea visual del portafolio
 
-> **Versión:** 2.0 — 2026-09-30 (rediseño `feat/awwwards-redesign`)
+> **Versión:** 2.2 — 2026-11-10 (`feat/limpieza-home`: §0.2 y §0.1). Base 2.0 — 2026-09-30.
 > **Tono:** editorial-brutalista con calidez lo-fi.
 > **Inspiración directa:** ChainGPT Labs (estructura), Teenage Engineering TP-7 (tipografía y metadata), WorldQuant Foundry (animaciones), arte lo-fi anime (atmósfera del hero).
 > Cualquier decisión visual nueva se compara contra este documento antes de mergear.
+
+---
+
+## 0.2 Escaparate, loader y menú (v2.2 — manda sobre §0 y §0.1)
+
+Referencias: **ksenpanchenko.com** (solo cómo muestra los proyectos) y **douglus.co** (loader + intro y menú). Se copia la mecánica, no el aspecto: paleta, Geist y tono siguen igual.
+
+| Tema | v2.2 |
+|---|---|
+| Proyectos (escritorio, `lg+`) | Escaparate fijo en `Projects.astro`: contenedor de `100svh + n × 75svh` con bloque `sticky`. Izquierda: título, lista 01–05 (clic = baja a ese proyecto), meta + resumen + stack + "Ver caso" del activo y contador gigante que rueda. Derecha: portadas apiladas; la nueva se revela con `clip-path` (abajo→arriba al bajar, al revés al subir) y paneo leve según el avance (`--p`). Curva `cubic-bezier(0.87, 0, 0.13, 1)`. El script vive en el componente, fuera de `gsap.matchMedia`: con reduced-motion el proyecto activo también cambia (sin transición). |
+| Proyectos (móvil/tablet) | Carrusel horizontal con `scroll-snap` y `ProjectCard` compacta (portada, meta, título, resumen). |
+| Loader (`Loader.astro`) | Solo en el home, solo la **primera carga completa por sesión** (`sessionStorage`), nunca con reduced-motion ni al navegar con el ClientRouter. Pantalla `.inverse` con el logo AC partido en 6 franjas que entran desfasadas y "titilan", nombre que sube desde una máscara, barra + % (mínimo 1,5 s; espera en 90 % a `document.fonts.ready`). Sale con una banda del color de la página: línea horizontal → se abre en vertical. Mientras dura, `html[data-loader]` bloquea el scroll, pausa el intro CSS del hero y oculta el nav; al quitarse, el intro arranca. Red de seguridad: el atributo se quita solo a los 9 s. **Excepción consciente a §6.3** (loaders artificiales): lo pidió el usuario; retrasa el LCP en la primera visita. |
+| Menú | Botón "Menú" (al centro en escritorio, a la derecha en móvil) con líneas que se cruzan y etiqueta que rueda a "Cerrar". `<dialog>` modal (focus trap, Esc): fondo `ink-950/90`, panel siempre claro (`.paper`) a la derecha con enlaces gigantes que suben escalonados, punto en la página actual y pie con contacto, reloj de Cancún e idioma. En escritorio, a la izquierda, vista previa por enlace (imagen en gris que se abre desde el centro + 3 palabras que entran en 3D; claves `menu.words.*`). Ya no hay enlaces sueltos en el nav. |
 
 ---
 
@@ -49,6 +62,8 @@ Paleta y tipografía base **no cambian** (crema + ink + naranja, Geist / Geist M
 | Contraste | `--muted` en tema claro es `#5f5f69` (un punto más oscuro que ink-500) para cumplir AA también sobre `--surface`. |
 | Transiciones de página | Cortina `clip-path` sobre `::view-transition-new(root)`; el nav queda fijo (`view-transition-name: site-nav`). |
 | Grano | Una capa de ruido SVG estática (`body::after`, 4.5 % de opacidad). |
+
+---
 
 ---
 
@@ -286,7 +301,7 @@ Trabajo seleccionado
 - ❌ Parallax en texto largo — rompe lectura.
 - ❌ Carrousels autoplay sin pausa.
 - ❌ Cursores custom complejos en mobile.
-- ❌ Loaders artificiales para sitios estáticos rápidos.
+- ❌ Loaders artificiales para sitios estáticos rápidos. (Excepción documentada: el loader del home, §0.2.)
 
 ---
 

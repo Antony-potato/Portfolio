@@ -10,6 +10,7 @@ export function initLenis(): void {
   gsap.registerPlugin(ScrollTrigger);
 
   lenis = new Lenis({ lerp: 0.1, anchors: { offset: -80 } });
+  if (document.documentElement.hasAttribute("data-loader")) lenis.stop(); // Loader.astro lo reanuda
   window.__lenis = lenis;
   // Un solo reloj: GSAP maneja el raf de Lenis y ScrollTrigger lee su scroll.
   lenis.on("scroll", ScrollTrigger.update);

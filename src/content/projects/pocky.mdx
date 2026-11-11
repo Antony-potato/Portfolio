@@ -1,10 +1,10 @@
 ---
 title: "Pocky"
-summary: "Mascota virtual compartida entre dos personas: estado sincronizado con Firestore, degradación 24/7 desde un cron en el servidor y notificaciones push."
-role: "Desarrollo full-stack"
+summary: "Mascota virtual compartida en una isla 3D: dos teléfonos la cuidan en tiempo real, sigue viviendo con la app cerrada y avisa con notificaciones push."
+role: "Fullstack Developer"
 year: 2026
 client: "Proyecto personal"
-stack: ["Next.js", "React 19", "TypeScript", "Firestore", "Zustand", "Vercel Cron", "Web Push"]
+stack: ["Next.js", "Three.js", "React Three Fiber", "Firebase", "TypeScript", "PWA"]
 category: "pwa"
 liveUrl: "https://pocky-next.vercel.app"
 repoUrl: "https://github.com/Antony-potato/Pocky"
@@ -17,25 +17,28 @@ lang: "es"
 
 ## Contexto
 
-**Pocky** es una mascota virtual al estilo Tamagotchi pensada para dos personas: los dos cuidan a la misma mascota desde su propio teléfono y ven el mismo estado. La hice como proyecto personal para practicar estado compartido, lógica en el servidor y notificaciones en la web. La mascota se dibuja con ASCII art animado (conejo, gato, perro o hámster) y el fondo cambia según la hora del día.
+**Pocky** es una mascota virtual estilo Tamagotchi para dos personas: los dos la cuidan desde su teléfono y ven el mismo estado al instante. Empezó como una PWA 2D y evolucionó a una **isla 3D** donde Pocky camina sola al cuenco, al estanque, a jugar o a su cama según lo que le pidas. Todo corre en el navegador y se instala sin tienda de apps.
 
-## El Reto
+## Reto
 
-- **Un solo estado para dos dispositivos:** si una persona le da de comer, la otra tiene que verlo sin recargar.
-- **La mascota vive aunque nadie abra la app:** el hambre, la felicidad y la limpieza tienen que bajar con el tiempo aunque ningún teléfono tenga la app abierta.
-- **Que la lógica no se duplique:** las mismas reglas deben aplicarse en el navegador y en el servidor, sin que se desincronicen.
-- **Avisar cuando la mascota necesita algo**, tanto en Android como en iPhone, sin llenar de notificaciones a nadie.
+- Dos teléfonos tocando el mismo estado a la vez sin pisarse.
+- Que la mascota tenga hambre o sueño aunque nadie tenga la app abierta.
+- Notificaciones push que lleguen de verdad en iPhone (PWA instalada) y Android, sin spam.
+- Una escena 3D viva y fluida en móviles modestos.
+- Un modo sin conexión honesto: `navigator.onLine` miente.
 
-## La Solución
+## Solución
 
-- **Firestore como fuente de verdad.** El estado vive en un solo documento. Cada cliente se suscribe con `onSnapshot` y el estado local lo maneja **Zustand**, así que cualquier acción de un teléfono se refleja en el otro.
-- **Lógica pura compartida (`petLogic.ts`).** Las funciones que calculan la degradación, el estado de ánimo y las necesidades no dependen del navegador, así que las uso igual en el cliente y en el servidor.
-- **Cron en Vercel con Firebase Admin SDK.** Un endpoint `/api/cron/tick` aplica la degradación según el tiempo transcurrido, aunque nadie tenga la app abierta. El endpoint está protegido con un `CRON_SECRET` en el encabezado `Authorization`.
-- **Notificaciones push en dos canales:** FCM para Chrome/Android y Web Push con claves VAPID para Safari/iOS. El cron solo notifica necesidades urgentes, respeta un *cooldown* de 4 horas y limpia tokens y suscripciones que ya expiraron.
-- **Base de PWA:** *manifest* e íconos de Apple para agregarla a la pantalla de inicio.
+- **Isla 3D generada por código** con Three.js y React Three Fiber: casa, árboles, estanque y caminos. Pocky se mueve por un grafo de puntos de paso y la luz cambia según la hora del día.
+- **Firestore** con caché persistente: la app arranca con los últimos datos aunque no haya red. Cada acción va en una **transacción** para que dos dispositivos no se sobrescriban.
+- **Sesión anónima** de Firebase Auth + reglas de Firestore: nada se lee ni escribe sin sesión.
+- **Degradación 24/7**: un cron externo llama cada 15 min a una ruta de Next.js protegida con secreto que aplica la misma lógica pura que el cliente.
+- **Push con Firebase Cloud Messaging**: mensajes solo de datos que pinta el service worker (fiable en iOS, sin duplicados), máximo uno cada 4 h y limpieza automática de tokens muertos.
+- Densidad de pasto reducida en dispositivos con 4 núcleos o menos.
 
 ## Resultado
 
-- Estado compartido entre dos personas con un backend mínimo: un solo endpoint protegido y Firestore.
-- Reglas del juego escritas una sola vez y reutilizadas entre cliente y servidor.
-- **Pendiente en el roadmap:** empaquetar la versión Android con Capacitor, un widget para iPhone y personalización de la mascota.
+- Se instala como app en iPhone y Android desde el navegador, sin tienda.
+- El estado se comparte en tiempo real entre los dos teléfonos y se mantiene con la app cerrada.
+- Las notificaciones llegan en iPhone y no se acumulan en Android.
+- Indica de forma clara cuándo lo que haces sin conexión no se va a guardar.

@@ -1,8 +1,12 @@
 ---
-import { Icon } from "astro-icon/components";
+import type { ImageMetadata } from "astro";
+import { getImage } from "astro:assets";
 import { useTranslations, getLocalizedPath, getAlternateLang, getAlternatePath, type Lang } from "~/i18n/utils";
 import { languages } from "~/i18n/ui";
 import { EMAIL, whatsappUrl } from "~/lib/contact";
+import portrait from "~/assets/portrait.webp";
+import projectsCover from "~/assets/projects/aldea-savia/cover.webp";
+import servicesCover from "~/assets/projects/crzr-tech/cover.webp";
 
 interface Props {
   lang: Lang;
@@ -14,18 +18,25 @@ const es = lang === "es";
 
 const home = getLocalizedPath(lang, "/");
 const contactHref = getLocalizedPath(lang, es ? "/contacto" : "/contact");
+const preview = async (src: ImageMetadata) => (await getImage({ src, width: 720, format: "webp" })).src;
+
+// Vista previa del menú (escritorio): imagen + 3 palabras por destino. Contacto usa un bloque naranja.
 const items = [
-  { href: getLocalizedPath(lang, es ? "/proyectos" : "/projects"), label: t("nav.projects") },
-  { href: `${home === "/" ? "" : home}/#about`, label: t("nav.about") },
-  { href: getLocalizedPath(lang, es ? "/servicios" : "/services"), label: t("nav.services") },
-  { href: contactHref, label: t("nav.contact") },
-];
+  { key: "projects", href: getLocalizedPath(lang, es ? "/proyectos" : "/projects"), label: t("nav.projects"), img: await preview(projectsCover) },
+  { key: "about", href: `${home === "/" ? "" : home}/#about`, label: t("nav.about"), img: await preview(portrait) },
+  { key: "services", href: getLocalizedPath(lang, es ? "/servicios" : "/services"), label: t("nav.services"), img: await preview(servicesCover) },
+  { key: "contact", href: contactHref, label: t("nav.contact"), img: null },
+] as const;
+const words = (key: (typeof items)[number]["key"]) => t(`menu.words.${key}`).split(" · ");
 
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
 const isActive = (href: string) => !href.includes("#") && (path === href || path.startsWith(`${href}/`));
+const activeKey = items.find((i) => isActive(i.href))?.key ?? "projects";
 
 const other = getAlternateLang(lang);
 const altHref = getAlternatePath(lang, Astro.url.pathname);
+const menuBtn =
+  "menu-btn flex h-9 items-center gap-2.5 rounded-full border px-3.5 text-sm font-medium lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-1/2";
 ---
 
 <a
@@ -36,7 +47,7 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
 </a>
 
 <header data-nav class="site-nav fixed inset-x-0 top-0 z-50">
-  <div class="wrapper flex h-(--nav-h) items-center justify-between gap-6">
+  <div class="wrapper relative flex h-(--nav-h) items-center justify-between gap-6">
     <a href={home} class="group flex items-center gap-3" aria-label={`Antonio Cortazar — ${t("nav.home")}`}>
       <img
         src="/logo-ac.svg"
@@ -49,27 +60,6 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
         Antonio<br />Cortazar
       </span>
     </a>
-
-    <nav aria-label={es ? "Principal" : "Main"} class="hidden lg:block">
-      <ul class="flex items-center gap-7">
-        {
-          items.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                aria-current={isActive(item.href) ? "page" : undefined}
-                class="nav-link flex items-baseline text-sm font-medium"
-              >
-                <span class="roll">
-                  <span>{item.label}</span>
-                  <span aria-hidden="true">{item.label}</span>
-                </span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
 
     <div class="flex items-center gap-2 sm:gap-3">
       <a
@@ -105,69 +95,86 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
         <span class="size-1.5 rounded-full bg-accent"></span>
       </a>
 
+      <!-- En escritorio va al centro; dentro del menú hay una copia en el mismo lugar que hace de "Cerrar" -->
       <button
         type="button"
         data-menu-open
         aria-haspopup="dialog"
         aria-controls="site-menu"
-        class="flex h-9 items-center gap-2 rounded-full border border-line px-3.5 text-sm font-medium lg:hidden"
+        class={`${menuBtn} border-line transition-colors hover:border-fg`}
       >
-        {t("nav.menu")}
-        <span class="flex flex-col gap-[3px]" aria-hidden="true">
-          <span class="block h-px w-3.5 bg-current"></span>
-          <span class="block h-px w-3.5 bg-current"></span>
-        </span>
+        <span class="menu-icon" aria-hidden="true"><span></span><span></span></span>
+        <span class="menu-label"><span>{t("nav.menu")}</span><span aria-hidden="true">{t("nav.close")}</span></span>
       </button>
     </div>
   </div>
 </header>
 
-<dialog id="site-menu" data-menu class="menu inverse" aria-label={t("nav.menu")}>
-  <div class="wrapper flex min-h-full flex-col pb-8">
-    <div class="flex h-(--nav-h) items-center justify-between">
-      <span class="eyebrow">// {t("nav.menu")}</span>
-      <button
-        type="button"
-        data-menu-close
-        class="flex h-9 items-center gap-2 rounded-full border border-line px-3.5 text-sm font-medium"
-      >
-        {t("nav.close")}
-        <Icon name="lucide:x" class="size-3.5" aria-hidden="true" />
-      </button>
-    </div>
+<!-- Menú (referencia: douglus.co). <dialog> nativo = focus trap, Esc e inert gratis.
+     Panel claro a la derecha con enlaces gigantes; a la izquierda (escritorio) una vista previa por enlace. -->
+<dialog id="site-menu" data-menu class="menu" aria-label={t("nav.menu")}>
+  <div data-menu-dim class="menu-dim absolute inset-0 bg-ink-950/90"></div>
 
-    <nav aria-label={t("nav.menu")} class="mt-8">
-      <ol class="border-t border-line">
+  <div class="menu-stage" aria-hidden="true">
+    {
+      items.map((it) => (
+        <div data-menu-preview={it.key} class:list={["menu-preview", it.key === activeKey && "is-active"]}>
+          <div class="menu-preview-media">
+            {it.img ? <img src={it.img} alt="" loading="lazy" decoding="async" /> : <span class="block size-full bg-accent" />}
+          </div>
+          <p class="menu-preview-words">
+            {words(it.key).map((w, k) => (
+              <span class="block overflow-hidden">
+                <span class="block" style={`--k:${k}`}>{w}</span>
+              </span>
+            ))}
+          </p>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="wrapper relative z-20 flex h-(--nav-h) items-center justify-end">
+    <button type="button" data-menu-close class={`${menuBtn} border-ink-600 text-ink-100`}>
+      <span class="menu-icon" aria-hidden="true"><span></span><span></span></span>
+      <span class="menu-label"><span aria-hidden="true">{t("nav.menu")}</span><span>{t("nav.close")}</span></span>
+    </button>
+  </div>
+
+  <div class="menu-panel paper">
+    <nav aria-label={es ? "Principal" : "Main"}>
+      <ul class="flex flex-col gap-[0.6vh]">
         {
           items.map((item, i) => (
-            <li class="overflow-clip border-b border-line">
+            <li>
               <a
                 href={item.href}
-                data-menu-link
+                data-menu-link={item.key}
                 aria-current={isActive(item.href) ? "page" : undefined}
-                class="menu-link flex items-baseline justify-between py-3"
+                class="menu-link flex items-center justify-between gap-6"
                 style={`--i:${i}`}
               >
-                <span class="font-display text-[clamp(2.75rem,13vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.045em]">
-                  {item.label}
+                <span class="block overflow-hidden pb-[0.12em]">
+                  <span class="menu-link-text block">{item.label}</span>
                 </span>
-                <span class="font-mono text-xs text-muted">0{i + 1}</span>
+                <span class="menu-dot" aria-hidden="true"></span>
               </a>
             </li>
           ))
         }
-      </ol>
+      </ul>
     </nav>
 
-    <div class="menu-foot mt-auto grid grid-cols-2 gap-6 pt-12 font-mono text-xs uppercase tracking-[0.08em]">
+    <div class="menu-foot mt-auto grid grid-cols-2 gap-6 border-t border-line pt-5 font-mono text-xs uppercase tracking-[0.08em]">
       <div class="flex flex-col gap-2">
-        <span class="text-muted">// {t("nav.contact")}</span>
-        <a href={`mailto:${EMAIL}`} class="normal-case tracking-normal">{EMAIL}</a>
-        <a href={whatsappUrl(t("whatsapp.message"))} target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>
+        <span class="text-muted">{t("nav.contact")}</span>
+        <a href={`mailto:${EMAIL}`} class="link-line w-fit normal-case tracking-normal">{EMAIL}</a>
+        <a href={whatsappUrl(t("whatsapp.message"))} target="_blank" rel="noopener noreferrer" class="link-line w-fit">WhatsApp ↗</a>
+        <a href="https://linkedin.com/in/antoniocortazar" target="_blank" rel="noopener noreferrer" class="link-line w-fit">LinkedIn ↗</a>
       </div>
       <div class="flex flex-col items-end gap-2 text-right">
         <span class="text-muted">CUN</span>
-        <time data-clock class="tabular-nums">--:--:--</time>
+        <time data-clock class="tabular-nums" aria-label={t("nav.clock")}>--:--:--</time>
         <a href={altHref} hreflang={other} lang={other}>{languages[lang]} / <span class="text-muted">{languages[other]}</span></a>
       </div>
     </div>
@@ -179,6 +186,7 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
     view-transition-name: site-nav;
     transition:
       transform 600ms var(--ease-in-out-quart),
+      opacity 900ms ease,
       background-color 400ms ease,
       border-color 400ms ease;
     border-bottom: 1px solid transparent;
@@ -196,10 +204,6 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
     transform: translateY(-100%);
   }
 
-  .nav-link[aria-current="page"] > span:first-child {
-    color: var(--accent-ink);
-  }
-
   .theme-icon {
     transition: transform 900ms var(--ease-in-out-quart);
   }
@@ -207,7 +211,58 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
     transform: rotate(180deg);
   }
 
-  /* Menú móvil: <dialog> nativo = focus trap, Esc e inert gratis */
+  /* Botón Menú ⇄ Cerrar: dos líneas que se cruzan y etiqueta que rueda */
+  .menu-icon {
+    position: relative;
+    width: 0.875rem;
+    height: 0.5rem;
+  }
+  .menu-icon > span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    transition:
+      top 450ms var(--ease-in-out-quart),
+      rotate 450ms var(--ease-in-out-quart) 0ms;
+  }
+  .menu-icon > span:first-child {
+    top: 0;
+  }
+  .menu-icon > span:last-child {
+    top: calc(100% - 1.5px);
+  }
+  .menu-label {
+    display: inline-grid;
+    overflow: hidden;
+    line-height: 1.2;
+  }
+  .menu-label > span {
+    grid-area: 1 / 1;
+    transition: transform 600ms var(--ease-in-out-quart);
+  }
+  .menu-label > span + span {
+    transform: translateY(110%);
+  }
+  .menu.is-open .menu-icon > span {
+    top: calc(50% - 0.75px);
+    transition-delay: 0ms, 200ms;
+  }
+  .menu.is-open .menu-icon > span:first-child {
+    rotate: 45deg;
+  }
+  .menu.is-open .menu-icon > span:last-child {
+    rotate: -45deg;
+  }
+  .menu.is-open .menu-label > span:first-child {
+    transform: translateY(-110%);
+  }
+  .menu.is-open .menu-label > span + span {
+    transform: none;
+  }
+
+  /* El <dialog> ocupa la pantalla; lo visible se anima con .is-open (transiciones = cierre gratis) */
   .menu {
     position: fixed;
     inset: 0;
@@ -218,55 +273,175 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
     margin: 0;
     padding: 0;
     border: 0;
-    overflow-y: auto;
+    overflow: hidden;
+    background: transparent;
+    color: var(--color-ink-100);
   }
   .menu::backdrop {
     background: transparent;
   }
-  .menu[open] {
-    animation: menu-in 800ms var(--ease-in-out-quart) both;
+  .menu-dim {
+    opacity: 0;
+    transition: opacity 500ms ease;
   }
-  .menu[data-closing] {
-    animation: menu-out 550ms var(--ease-in-out-quart) both;
+  .menu.is-open .menu-dim {
+    opacity: 1;
   }
-  .menu[open] .menu-link {
-    animation: menu-link 1000ms var(--ease-out-expo) both;
-    animation-delay: calc(250ms + var(--i) * 70ms);
+
+  .menu-panel {
+    position: absolute;
+    z-index: 10;
+    top: calc(var(--nav-h) + 0.5rem);
+    right: var(--gutter);
+    bottom: var(--gutter);
+    left: var(--gutter);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: clamp(1.25rem, 2.4vw, 2.5rem);
+    border-radius: 0.375rem;
+    background: var(--bg);
+    color: var(--fg);
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 700ms var(--ease-in-out-quart) 100ms;
   }
-  .menu[open] .menu-foot {
-    animation: menu-fade 800ms ease both 600ms;
+  .menu.is-open .menu-panel {
+    clip-path: inset(0);
+    transition-delay: 0ms;
   }
-  .menu-link[aria-current="page"] > span:first-child {
-    color: var(--color-accent-500);
-  }
-  @keyframes menu-in {
-    from {
-      clip-path: inset(0 0 100% 0);
+  @media (min-width: 1024px) {
+    .menu-panel {
+      top: calc(var(--nav-h) + 1.5rem);
+      left: auto;
+      width: clamp(30rem, 46vw, 52rem);
     }
-    to {
-      clip-path: inset(0 0 0 0);
+  }
+
+  .menu-link {
+    font-size: clamp(2.75rem, min(14vw, 9svh), 6rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.055em;
+  }
+  @media (min-width: 1024px) {
+    .menu-link {
+      font-size: clamp(2.75rem, min(5.6vw, 9.5svh), 6rem);
     }
   }
-  @keyframes menu-out {
-    to {
-      clip-path: inset(0 0 100% 0);
+  .menu-link-text {
+    transform: translateY(110%);
+    transition:
+      transform 500ms var(--ease-in-out-quart),
+      color 300ms ease;
+  }
+  .menu.is-open .menu-link-text {
+    transform: none;
+    transition:
+      transform 1000ms var(--ease-out-expo) calc(300ms + var(--i) * 60ms),
+      color 300ms ease;
+  }
+  .menu-link:hover .menu-link-text,
+  .menu-link:focus-visible .menu-link-text {
+    color: var(--accent-ink);
+  }
+  .menu-dot {
+    width: 0.16em;
+    aspect-ratio: 1;
+    flex: none;
+    border-radius: 9999px;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity 400ms ease;
+  }
+  .menu.is-open .menu-link[aria-current="page"] .menu-dot {
+    opacity: 1;
+    transition-delay: 700ms;
+  }
+  .menu-foot {
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+  .menu.is-open .menu-foot {
+    opacity: 1;
+    transition: opacity 800ms ease 600ms;
+  }
+
+  /* Vista previa (solo escritorio): la imagen se abre desde el centro y las palabras entran en 3D */
+  .menu-stage {
+    display: none;
+    pointer-events: none;
+  }
+  @media (min-width: 1024px) {
+    .menu-stage {
+      position: absolute;
+      inset: 0 calc(clamp(30rem, 46vw, 52rem) + var(--gutter)) 0 0;
+      display: grid;
+      place-items: center;
     }
   }
-  @keyframes menu-link {
-    from {
-      transform: translateY(105%);
-    }
+  .menu-preview {
+    grid-area: 1 / 1;
+    display: flex;
+    align-items: flex-end;
+    gap: 1.5rem;
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity 350ms ease,
+      visibility 0s 350ms;
   }
-  @keyframes menu-fade {
-    from {
-      opacity: 0;
-    }
+  .menu.is-open .menu-preview.is-active {
+    z-index: 1;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0s;
+  }
+  .menu-preview-media {
+    width: min(22vw, 42svh);
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    clip-path: inset(50% 0 50% 0);
+    transition: clip-path 350ms var(--ease-in-out-quart);
+  }
+  .menu-preview-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.08);
+    scale: 1.25;
+    transition: scale 1200ms var(--ease-out-expo);
+  }
+  .menu.is-open .menu-preview.is-active .menu-preview-media {
+    clip-path: inset(0);
+    transition: clip-path 900ms var(--ease-in-out-quart) 150ms;
+  }
+  .menu.is-open .menu-preview.is-active img {
+    scale: 1;
+  }
+  .menu-preview-words {
+    perspective: 8em;
+    font-size: clamp(1.5rem, 2.4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+  .menu-preview-words > span > span {
+    transform: translateY(100%) rotateX(-55deg);
+    transform-origin: 50% 100%;
+    transition: transform 350ms var(--ease-in-out-quart);
+  }
+  .menu.is-open .menu-preview.is-active .menu-preview-words > span > span {
+    transform: none;
+    transition: transform 800ms var(--ease-out-expo) calc(300ms + var(--k) * 70ms);
   }
 </style>
 
 <script>
   // Lenis se carga diferido (ver BaseLayout); el menú solo lo pausa si ya existe
   const getLenis = () => window.__lenis;
+  const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // Reloj — hora local de Cancún (se re-consulta cada tick, sobrevive a las navegaciones)
   const clock = new Intl.DateTimeFormat("es-MX", {
@@ -307,7 +482,7 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
         localStorage.setItem("theme", dark ? "dark" : "light");
       } catch {}
     };
-    if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) return apply();
+    if (!document.startViewTransition || reduced()) return apply();
 
     const r = button.getBoundingClientRect();
     const x = r.left + r.width / 2;
@@ -334,34 +509,43 @@ const altHref = getAlternatePath(lang, Astro.url.pathname);
 
     const menu = document.querySelector<HTMLDialogElement>("[data-menu]");
     if (!menu) return;
-    const close = () => {
-      if (!menu.open || menu.dataset.closing !== undefined) return;
-      menu.dataset.closing = "";
-      menu.addEventListener(
-        "animationend",
-        () => {
-          delete menu.dataset.closing;
-          menu.close();
-        },
-        { once: true },
-      );
-    };
-    document.querySelector("[data-menu-open]")?.addEventListener("click", () => {
+    const previews = [...menu.querySelectorAll<HTMLElement>("[data-menu-preview]")];
+    const initial = previews.find((p) => p.classList.contains("is-active"));
+    const show = (key: string | undefined) => previews.forEach((p) => p.classList.toggle("is-active", p.dataset.menuPreview === key));
+
+    let closing = 0;
+    const open = () => {
+      clearTimeout(closing);
+      show(initial?.dataset.menuPreview);
       menu.showModal();
       getLenis()?.stop();
-    });
+      // un frame después: las transiciones necesitan un estado inicial ya pintado
+      requestAnimationFrame(() => requestAnimationFrame(() => menu.classList.add("is-open")));
+    };
+    const close = () => {
+      if (!menu.open || !menu.classList.contains("is-open")) return;
+      menu.classList.remove("is-open");
+      closing = window.setTimeout(() => menu.close(), reduced() ? 0 : 800);
+    };
+
+    document.querySelector("[data-menu-open]")?.addEventListener("click", open);
     menu.querySelector("[data-menu-close]")?.addEventListener("click", close);
+    menu.querySelector("[data-menu-dim]")?.addEventListener("click", close);
     menu.addEventListener("cancel", (e) => {
       e.preventDefault();
       close();
     });
     menu.addEventListener("close", () => getLenis()?.start());
-    // Al navegar, el dialog se va con la página; solo liberamos el scroll
-    menu.querySelectorAll("[data-menu-link]").forEach((a) =>
+
+    menu.querySelectorAll<HTMLAnchorElement>("[data-menu-link]").forEach((a) => {
+      const preview = () => show(a.dataset.menuLink);
+      a.addEventListener("pointerenter", preview);
+      a.addEventListener("focus", preview);
+      // Al navegar, el dialog se va con la página; solo liberamos el scroll
       a.addEventListener("click", () => {
         getLenis()?.start();
-        if ((a as HTMLAnchorElement).hash) close();
-      }),
-    );
+        if (a.hash) close();
+      });
+    });
   });
 </script>

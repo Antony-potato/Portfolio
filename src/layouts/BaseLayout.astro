@@ -4,10 +4,14 @@ import { Font } from "astro:assets";
 import "~/styles/global.css";
 import Navbar from "~/components/layout/Navbar.astro";
 import Footer from "~/components/layout/Footer.astro";
+import Loader from "~/components/layout/Loader.astro";
 import { getLangFromUrl, getAlternatePath } from "~/i18n/utils";
 import { SITE, buildTitle, type SeoProps } from "~/lib/seo";
 
-type Props = SeoProps;
+type Props = SeoProps & {
+  /** Loader de entrada (solo home, primera carga por sesión) */
+  loader?: boolean;
+};
 
 const lang = getLangFromUrl(Astro.url);
 const {
@@ -16,6 +20,7 @@ const {
   image = SITE.defaultImage,
   canonical = Astro.url.href,
   type = "website",
+  loader = false,
 } = Astro.props;
 
 const site = Astro.site ?? SITE.url;
@@ -85,6 +90,7 @@ const headInit = `(() => {
     <slot name="head" />
   </head>
   <body>
+    {loader && <Loader lang={lang} />}
     <Navbar lang={lang} />
     <main id="main">
       <slot />
