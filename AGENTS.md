@@ -33,6 +33,9 @@
 | Smooth scroll | **lenis** | última estable |
 | Animación on-scroll | **gsap** + ScrollTrigger | 3.13+ |
 | WebGL ambiental | WebGL puro (`src/lib/hero-gl.ts`), sin dependencias | — |
+| Tipografía | **Switzer** (Fontshare) + Geist Mono, autohospedadas con la Fonts API de Astro (nov 2026) | — |
+| QR (solo `/tarjeta`) | **lean-qr** (~3,5 KB gzip, carga diferida) | — |
+| Imágenes en build | **sharp** (foto de la vCard) | — |
 | Iconos | **astro-icon** + `@iconify-json/lucide`, `@iconify-json/simple-icons` | — |
 | MDX | **@astrojs/mdx** | última |
 | SEO | **@astrojs/sitemap** | última |
@@ -63,7 +66,7 @@ src/
 │   └── (sin islands/)       ← no hay React; JS de cliente en <script> de cada componente
 ├── i18n/                    ← ui.ts + utils.ts (sin librería externa)
 ├── lib/                     ← lenis init, seo helpers
-├── pages/                   ← ruteo. `/` (es) y `/en/` (en)
+├── pages/                   ← ruteo. `/` (es) y `/en` (en): todo el sitio vive en el home; solo los casos van aparte
 └── styles/global.css        ← @import "tailwindcss"; @theme { ... }
 ```
 
@@ -138,6 +141,7 @@ Antes de declarar una tarea como completa, agente debe correr **`npm run astro c
 - Source of truth: `src/content/projects/*.mdx` (español) y `src/content/projects/en/*.mdx` (inglés). Mismo nombre de archivo = mismo slug público.
 - Schema en `src/content.config.ts` (ver PLAN.md §5).
 - Cada proyecto **debe** tener: `title`, `summary`, `role`, `year`, `stack`, `cover`, `featured`, `order`, `lang`.
+- `accent` + `accentInk` (opcionales): color de marca del proyecto y tinta (`light`/`dark`) para el fondo del escaparate del home. La tinta debe dar contraste AA sobre el color.
 - Imágenes en `src/assets/projects/<slug>/` (`cover.webp` + galería), referenciadas con paths relativos y servidas con `<Picture>` (AVIF + WebP).
 - `metrics` (opcional): solo cifras medidas y verificables (p. ej. Lighthouse móvil con fecha).
 - OG por proyecto: `public/og/<slug>.png` (1200×630). Si agregas un proyecto, genera su OG.

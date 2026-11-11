@@ -9,7 +9,7 @@ export function initLenis(): void {
   if (lenis || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   gsap.registerPlugin(ScrollTrigger);
 
-  lenis = new Lenis({ lerp: 0.1, anchors: { offset: -80 } });
+  lenis = new Lenis({ lerp: 0.1 }); // las anclas las maneja BaseLayout
   if (document.documentElement.hasAttribute("data-loader")) lenis.stop(); // Loader.astro lo reanuda
   window.__lenis = lenis;
   // Un solo reloj: GSAP maneja el raf de Lenis y ScrollTrigger lee su scroll.

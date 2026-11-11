@@ -1,22 +1,22 @@
 ---
-// Loader de entrada del home (referencia: douglus.co). Solo la primera carga por sesión y nunca con
-// reduced-motion. Mientras corre, html[data-loader] pausa el intro del hero y oculta el nav (global.css).
+// Loader de entrada del home: saludo corto y una cortina que se abre desde el centro (~2 s).
+// Solo la primera carga por sesión y nunca con reduced-motion. Mientras corre, html[data-loader]
+// pausa el intro del hero y oculta el nav (global.css); al abrirse la cortina pasa a data-loader="open"
+// para que el hero entre a la vez y quede listo cuando termina.
 import { useTranslations, type Lang } from "~/i18n/utils";
 
 interface Props {
   lang: Lang;
 }
 
-const t = useTranslations(Astro.props.lang);
-// Desfase horizontal de cada franja del logo (el "glitch" que se acomoda)
-const shifts = [-7, 5, -3, 8, -5, 3];
+const words = useTranslations(Astro.props.lang)("loader.welcome").split(" ");
 ---
 
 <script is:inline>
   // Decide antes de pintar, por eso va inline y antes del markup.
   // El ClientRouter vuelve a correr este script al navegar: ahí el documento ya cargó y no hay loader.
   (() => {
-    if (document.readyState !== "loading") return;
+    if (document.readyState !== "loading" || location.hash) return;
     try {
       if (sessionStorage.getItem("intro") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       sessionStorage.setItem("intro", "1");
@@ -25,30 +25,17 @@ const shifts = [-7, 5, -3, 8, -5, 3];
     }
     const d = document.documentElement;
     d.setAttribute("data-loader", "");
-    setTimeout(() => d.removeAttribute("data-loader"), 9000); // red de seguridad si el JS no llega
+    setTimeout(() => d.removeAttribute("data-loader"), 6000); // red de seguridad si el JS no llega
   })();
 </script>
 
-<div class="loader" aria-hidden="true">
-  <div class="inverse absolute inset-0">
-    <div class="loader-art">
-      {shifts.map((x, k) => <span class="loader-frag" style={`--k:${k}; --x:${x}%`} />)}
-    </div>
-    <div data-loader-content class="wrapper relative flex h-full flex-col justify-end pb-[clamp(1.5rem,6svh,3.5rem)]">
-      <p class="eyebrow loader-up">{t("hero.eyebrow")}</p>
-      <p class="mt-3 overflow-hidden pb-[0.08em] text-[clamp(2.5rem,7vw,6.5rem)] leading-[0.95] font-extrabold tracking-[-0.055em]">
-        <span class="loader-title block">Antonio Cortazar</span>
-      </p>
-      <div class="loader-up mt-6 flex items-center gap-4">
-        <span class="relative h-px flex-1 bg-line">
-          <span data-loader-bar class="absolute inset-0 origin-left bg-fg" style="transform: scaleX(0)"></span>
-        </span>
-        <span data-loader-pct class="w-10 text-right font-mono text-xs tabular-nums">0%</span>
-      </div>
-    </div>
-  </div>
-  <!-- Banda del color de la página: primero una línea, luego se abre y deja el hero a la vista -->
-  <div data-loader-band class="absolute inset-0 bg-bg" style="transform: scaleY(0)"></div>
+<div class="loader inverse" aria-hidden="true">
+  <span data-loader-half class="loader-half top-0 origin-top"></span>
+  <span data-loader-half class="loader-half bottom-0 origin-bottom"></span>
+  <span data-loader-line class="loader-line"></span>
+  <p data-loader-text class="loader-text">
+    {words.map((w, i) => <span class="loader-word"><span style={`--i:${i}`}>{w}</span></span>)}
+  </p>
 </div>
 
 <style>
@@ -60,114 +47,75 @@ const shifts = [-7, 5, -3, 8, -5, 3];
     inset: 0;
     z-index: 55; /* sobre el nav (50), bajo el grano (60) */
     display: block;
+    background: transparent; /* el color lo ponen las dos mitades */
   }
 
-  .loader-art {
+  .loader-half {
     position: absolute;
-    top: 42%;
-    left: 50%;
-    width: min(58vw, 44svh);
-    aspect-ratio: 1;
-    translate: -50% -50%;
+    inset-inline: 0;
+    height: 50.5%;
+    background: var(--bg);
   }
-  .loader-frag {
+  .loader-line {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(50% - 1px);
+    height: 2px;
+    background: var(--fg);
+    transform: scaleX(0);
+  }
+  .loader-text {
     position: absolute;
     inset: 0;
-    background: var(--fg);
-    mask: url(/logo-ac.svg) center / contain no-repeat;
-    clip-path: inset(calc(var(--k) * 16.667%) 0 calc(100% - (var(--k) + 1) * 16.667%) 0);
-    opacity: 0.14;
-    animation:
-      frag-in 900ms var(--ease-out-expo) both calc(var(--k) * 45ms),
-      frag-jitter 1.7s steps(1) infinite calc(900ms + var(--k) * 130ms);
+    display: flex;
+    flex-wrap: wrap;
+    place-content: center;
+    gap: 0 0.26em;
+    padding-inline: var(--gutter);
+    font-size: clamp(2rem, 6vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.05em;
   }
-  .loader-title {
-    animation: loader-title 1.4s var(--ease-out-expo) both 350ms;
+  .loader-word {
+    display: inline-block;
+    overflow: hidden;
+    padding-block: 0.1em 0.18em;
+    margin-block: -0.1em -0.18em;
   }
-  .loader-up {
-    animation: intro-up 900ms var(--ease-out-expo) both 200ms;
+  .loader-word > span {
+    display: inline-block;
+    animation: loader-word 700ms var(--ease-out-expo) both calc(80ms + var(--i) * 60ms);
   }
-
-  @keyframes frag-in {
+  @keyframes loader-word {
     from {
-      opacity: 0;
-      translate: var(--x) 0;
-      scale: 1.04;
-    }
-  }
-  @keyframes frag-jitter {
-    0%,
-    100% {
-      translate: 0;
-    }
-    31% {
-      translate: var(--x) 0;
-    }
-    34% {
-      translate: 0;
-    }
-    72% {
-      translate: calc(var(--x) * -0.5) 0;
-    }
-    74% {
-      translate: 0;
-    }
-  }
-  @keyframes loader-title {
-    from {
-      translate: 0 110%;
+      transform: translateY(125%);
     }
   }
 </style>
 
 <script>
   const root = document.documentElement;
-  const MIN = 1500; // ms mínimos de progreso, aunque todo ya esté en caché
   const EASE = "cubic-bezier(0.87, 0, 0.13, 1)";
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   async function run() {
-    const q = (sel: string) => document.querySelector<HTMLElement>(sel);
-    const bar = q("[data-loader-bar]");
-    const pct = q("[data-loader-pct]");
-    const content = q("[data-loader-content]");
-    const band = q("[data-loader-band]");
-    if (!bar || !pct || !content || !band) return root.removeAttribute("data-loader");
+    const text = document.querySelector<HTMLElement>("[data-loader-text]");
+    const line = document.querySelector<HTMLElement>("[data-loader-line]");
+    const halves = [...document.querySelectorAll<HTMLElement>("[data-loader-half]")];
+    if (!text || !line || halves.length < 2) return root.removeAttribute("data-loader");
 
-    // Progreso: avanza con el tiempo y se queda en 90 % hasta que cargan las fuentes
-    let ready = false;
-    document.fonts.ready.then(() => (ready = true));
-    await new Promise<void>((done) => {
-      const t0 = performance.now();
-      const tick = (now: number) => {
-        const k = Math.min(1, (now - t0) / MIN);
-        const p = Math.min(1 - (1 - k) ** 3, ready ? 1 : 0.9);
-        bar.style.transform = `scaleX(${p})`;
-        pct.textContent = `${Math.round(p * 100)}%`;
-        if (p < 1) requestAnimationFrame(tick);
-        else done();
-      };
-      requestAnimationFrame(tick);
-    });
+    await wait(1000); // el saludo ya entró y se alcanza a leer
+    text.animate([{ opacity: 1 }, { opacity: 0, transform: "translateY(-0.5rem)" }], { duration: 300, easing: "ease-in", fill: "forwards" });
+    await line.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 380, easing: EASE, fill: "forwards" }).finished;
 
-    await wait(250);
-    await content.animate([{ opacity: 1 }, { opacity: 0, transform: "translateY(-1rem)" }], {
-      duration: 450,
-      easing: "cubic-bezier(0.76, 0, 0.24, 1)",
-      fill: "forwards",
-    }).finished;
+    // La cortina se abre desde la línea; el hero y el nav arrancan su entrada al mismo tiempo
+    root.setAttribute("data-loader", "open");
+    line.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 150, fill: "forwards" });
+    await Promise.all(
+      halves.map((h) => h.animate([{ transform: "scaleY(1)" }, { transform: "scaleY(0)" }], { duration: 750, easing: EASE, fill: "forwards" }).finished),
+    );
 
-    const line = 2 / innerHeight;
-    await band.animate(
-      [
-        { transform: `scale(0, ${line})`, easing: "cubic-bezier(0.65, 0, 0.35, 1)" },
-        { transform: `scale(1, ${line})`, offset: 0.4, easing: EASE },
-        { transform: "scale(1, 1)" },
-      ],
-      { duration: 1400, fill: "forwards" },
-    ).finished;
-
-    // La banda ya es la página: se quita el loader y arranca el intro del hero
     root.removeAttribute("data-loader");
     window.__lenis?.start();
   }

@@ -57,6 +57,27 @@ El usuario aclaró el alcance: de **ksenpanchenko.com** solo le gustó **cómo m
 - `astro check`: 0 errores. `npm run build`: OK (los avisos `MODULE_LEVEL_DIRECTIVE` vienen de los `.mdx`, no se tocaron). JS de `/` muy por debajo de 80 KB.
 - Capturas con Chrome headless por CDP (no había herramienta de navegador en la sesión; script de Node sin dependencias): escritorio 1440×900 en claro y oscuro, móvil 390×844 (sin scroll horizontal; botones Menú/Cerrar alineados al píxel), `/en`, `/servicios`, reduced-motion (sin loader, el escaparate sí cambia), navegación con el ClientRouter (sin loader, el escaparate se reinicia), clic en la lista, foco en el menú y Esc. Sin errores en consola.
 
+### 3.4 Una sola página, hero nuevo, blanco y Switzer (v2.3, `DESIGN.md §0.3`, 2026-11-11, Mac)
+Feedback del usuario al ver v2.2 en local: el loader tardaba y no decía "Bienvenido a mi portafolio" (sí le gustó que se abra desde el centro), al terminar "seguía cargando", las secciones en páginas aparte se sentían raras, las imágenes del menú/escaparate no cargaban, quería de vuelta la banda de certificaciones y "Gracias por su confianza", y no le gustaban el fondo beige ni la fuente. Referencia nueva para hero y fuente: paulkalkbrenner.net.
+
+- Home con todo: Hero → Proyectos → Clientes → Servicios → Sobre mí → Certificaciones → Contacto. Menú, footer y "Hablemos" van a anclas; `/servicios`, `/contacto` y sus pares en inglés redirigen (`astro.config.mjs`). Se borraron esas 4 páginas.
+- Scroll a secciones: listener único en `BaseLayout.astro`.
+- Hero tipográfico centrado con la ficha del pato (`Hero.astro`); sin metaballs.
+- Loader corto (~2 s) con el saludo y cortina desde el centro (`Loader.astro`, `data-loader="open"`).
+- Fondo blanco y Switzer (Fontshare). La fuente de la referencia (ABC Diatype, Dinamo) es de pago: Switzer es el sustituto libre.
+- Banda de certificaciones restaurada (`Certifications.astro`); lista de Sobre mí quitada.
+- Portadas del escaparate, retrato y vistas previas del menú se piden antes de mostrarse.
+- Verificado: `astro check` 0 errores, `npm run build` OK, capturas de escritorio/móvil/oscuro. **No** se pudo ver el movimiento en vivo (el panel del navegador estaba oculto y congela animaciones): falta que el usuario confirme loader, scroll del menú y transiciones del escaparate.
+
+### 3.5 Color por proyecto, TechText, tarjeta de contacto y Pocky 3D (v2.4, `DESIGN.md §0.4`, 2026-11-11, Mac)
+- Escaparate: se corrigió la portada gris (regla `[data-dir=up]` le ganaba a `.is-active`), la revelación pasó a WAAPI con `transform`, y el fondo cambia al color de marca del proyecto activo (`accent`/`accentInk` en los `.mdx`; el nav toma el mismo tema).
+- Sin botón "Ver todos los proyectos". Certificaciones dentro de Sobre mí. Foto a color.
+- Hero con TechText (`src/lib/tech-text.ts`, port sin React del componente de React Bits).
+- Tarjeta de contacto en `/tarjeta` y `/en/card` con vCard (`src/pages/antonio-cortazar.vcf.ts`), QR (`lean-qr`), compartir y NFC. Dependencias nuevas: `lean-qr` y `sharp`.
+- Pocky: portada = captura de escritorio que mandó el usuario; `isla-detalle.webp` es un recorte de esa misma captura (el panel del navegador no captura escritorio a buena resolución); `isla-movil.webp` es una captura nueva de pocky-next.vercel.app. **No** se regeneró `public/og/pocky.png` (sigue con la versión 2D).
+- Ojo en local: si se cambia `src/content.config.ts` con el dev server corriendo, a veces `.astro/data-store.json` queda con el esquema viejo (los campos nuevos llegan vacíos). Se arregla borrando ese archivo y reiniciando `npm run dev`.
+- Sin verificar en vivo (panel oculto): suavidad del scroll, transiciones de color y el efecto del hero en movimiento continuo. NFC y "Guardar contacto" hay que probarlos en un teléfono real.
+
 ## 4. Pendiente / ideas no hechas
 - El usuario no ha visto el resultado en vivo; esperar su feedback del loader, el menú y el escaparate.
 - Validar los textos de `menu.words.*` y la imagen de Contacto en el menú.

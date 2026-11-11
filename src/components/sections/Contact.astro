@@ -47,7 +47,7 @@ const inputClass =
 
   <Heading
     data-reveal={isPage ? undefined : "lines"}
-    class="mt-8 max-w-[14ch] text-[clamp(3.25rem,10.5vw,11rem)] leading-[0.84] font-extrabold tracking-[-0.065em] md:mt-10"
+    class="mt-8 max-w-[14ch] text-[clamp(3.25rem,10.5vw,11rem)] leading-[0.84] font-bold tracking-[-0.065em] md:mt-10"
   >
     {isPage ? <Fragment><SplitTitle text={t("contact.title")} /><span class="sr-only">{t("contact.title")}</span></Fragment> : t("contact.title")}
   </Heading>
@@ -166,7 +166,7 @@ const inputClass =
           <path class="contact-success__check" d="M15 27l7 7 15-15" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
         <div class="contact-success__text flex flex-col gap-2">
-          <p class="font-display text-4xl leading-none font-extrabold tracking-[-0.04em]">{t("contact.form.success.title")}</p>
+          <p class="font-display text-4xl leading-none font-bold tracking-[-0.04em]">{t("contact.form.success.title")}</p>
           <p class="text-lg text-muted">{t("contact.form.success")}</p>
         </div>
         <div class="contact-success__text">

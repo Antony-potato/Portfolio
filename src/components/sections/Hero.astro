@@ -1,8 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
-import Button from "../ui/Button.astro";
 import SplitTitle from "~/components/ui/SplitTitle.astro";
-import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
+import { useTranslations, type Lang } from "~/i18n/utils";
 
 interface Props {
   lang: Lang;
@@ -10,54 +9,93 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-const projectsPath = getLocalizedPath(lang, lang === "es" ? "/proyectos" : "/projects");
 ---
 
-<section data-hero class="relative isolate flex min-h-svh flex-col overflow-clip">
-  <!-- Metaballs con dithering 1-bit (ver lib/hero-gl.ts). Tenue y desvanecido hacia abajo (global.css). -->
-  <div data-gl-wrap class="absolute inset-0 -z-10" aria-hidden="true">
-    <canvas data-gl class="pixelated size-full"></canvas>
-  </div>
-
-  <div data-hero-inner class="wrapper flex flex-1 flex-col pt-[calc(var(--nav-h)+1.25rem)] pb-10 md:pb-14">
-    <div class="flex justify-end">
-      <p data-intro-up style="--d:0" class="tag bg-bg">
-        <span class="pulse-dot"></span>
-        {t("hero.spec.status.value")}
-      </p>
-    </div>
-
-    <div class="mt-auto grid gap-6 pt-10 lg:grid-cols-12 lg:items-end lg:gap-8">
-      <p
-        data-intro-up
-        style="--d:1"
-        class="max-w-xl text-[clamp(1.25rem,2vw,1.75rem)] leading-[1.35] font-medium tracking-[-0.015em] text-balance lg:col-span-6 lg:col-start-7"
-      >
-        {t("hero.title")}
-      </p>
-      <div data-intro-up style="--d:2" class="lg:col-span-6 lg:col-start-7 lg:-mt-2">
-        <Button href={projectsPath} size="lg" magnetic>
-          {t("hero.cta.primary")}
-          <Icon name="lucide:arrow-down-right" class="size-4" aria-hidden="true" />
-        </Button>
-      </div>
-    </div>
-
-    <h1 class="mt-8 -ml-[0.05em] text-[clamp(4rem,min(20vw,31svh),23rem)] leading-[0.8] font-extrabold tracking-[-0.065em] md:mt-6">
-      <span class="block"><SplitTitle text="Antonio" /></span>
-      <span class="block whitespace-nowrap"><SplitTitle text="Cortazar" offset={7} /><span class="hero-cursor" aria-hidden="true"></span></span>
+<!-- Hero tipográfico (referencia: paulkalkbrenner.net): el nombre centrado en una línea con el logo
+     del pato en una ficha entre nombre y apellido; abajo, tres datos pequeños.
+     El nombre lleva el efecto TechText (lib/tech-text.ts): un canvas calca las letras del HTML y,
+     cuando ya las pintó, el HTML se oculta (.is-tech). Sin JS o con reduced-motion queda el HTML. -->
+<section data-hero data-tech-zone class="relative flex min-h-svh touch-pan-y flex-col overflow-clip">
+  <div data-hero-inner class="wrapper flex flex-1 flex-col pt-(--nav-h) pb-6 md:pb-8">
+    <h1 data-tech-text class="hero-name my-auto">
+      <canvas data-tech-canvas class="hero-canvas" aria-hidden="true"></canvas>
+      <span class="hero-line">
+        <SplitTitle text="Antonio" /><span data-intro-clip class="hero-tile" aria-hidden="true"><span class="hero-duck"></span></span>
+      </span>
+      <span class="hero-line"><SplitTitle text="Cortazar" offset={7} /></span>
       <span class="sr-only">Antonio Cortazar — {t("hero.role")}</span>
     </h1>
+
+    <div class="grid gap-4 text-[0.8125rem] leading-snug font-semibold md:grid-cols-12 md:items-end md:gap-6">
+      <p data-intro-up style="--d:0" class="flex items-center gap-2.5 md:col-span-3">
+        <span class="pulse-dot"></span>
+        {t("hero.spec.status.value")} — {t("hero.role")}
+      </p>
+      <p data-intro-up style="--d:1" class="max-w-[24rem] md:col-span-5 md:col-start-5">{t("hero.title")}</p>
+      <a data-intro-up style="--d:2" href="#projects" class="group flex w-fit items-center gap-2 md:col-span-3 md:justify-self-end">
+        <span class="link-line">{t("hero.cta.primary")}</span>
+        <Icon name="lucide:arrow-down" class="size-3.5 transition-transform duration-500 group-hover:translate-y-0.5" aria-hidden="true" />
+      </a>
+    </div>
   </div>
 </section>
 
 <style>
-  .hero-cursor {
-    display: inline-block;
-    width: 0.3em;
-    height: 0.62em;
-    margin-left: 0.08em;
-    background: var(--color-accent-500);
-    animation: blink 1.1s steps(1) infinite;
+  .hero-name {
+    position: relative;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-block: 2rem;
+    font-size: 20.5vw;
+    font-weight: 700;
+    line-height: 0.86;
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+  }
+  .hero-line {
+    display: flex;
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .hero-name {
+      flex-direction: row;
+      justify-content: center;
+      font-size: clamp(4rem, 9.9vw, 12rem);
+    }
+  }
+
+  /* Ficha entre nombre y apellido: del alto de las minúsculas, con el pato calado */
+  .hero-tile {
+    position: relative;
+    flex: none;
+    width: 0.76em;
+    height: 0.53em;
+    margin-inline: 0.09em 0.07em;
+    translate: 0 0.085em;
+    background: var(--fg);
+  }
+  .hero-duck {
+    position: absolute;
+    inset: 9% 0;
+    background: var(--bg);
+    mask: url(/logo-ac.svg) center / contain no-repeat;
+  }
+
+  /* Canvas del efecto: todo el ancho de la pantalla y 1.2em de aire arriba y abajo del nombre,
+     para el marco, las motas y las letras arrastradas. No recibe eventos: los escucha el hero. */
+  .hero-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: calc(100% + 2.4em);
+    translate: -50% -50%;
+    pointer-events: none;
+  }
+  .hero-name.is-tech :global(.split-char),
+  .hero-name.is-tech .hero-tile {
+    visibility: hidden;
   }
 </style>

@@ -76,7 +76,7 @@ const specs = [
         <span>{t("projects.case")} {pad(index)} / {pad(total)}</span>
       </div>
 
-      <h1 class="mt-12 -ml-[0.04em] text-[clamp(3.25rem,13.5vw,15rem)] leading-[0.82] font-extrabold tracking-[-0.065em] md:mt-16">
+      <h1 class="mt-12 -ml-[0.04em] text-[clamp(3.25rem,13.5vw,15rem)] leading-[0.82] font-bold tracking-[-0.065em] md:mt-16">
         <span class="block"><SplitTitle text={title} /></span><span class="sr-only">{title}</span>
       </h1>
 
@@ -123,7 +123,7 @@ const specs = [
                 <dd class="flex flex-wrap gap-x-8 gap-y-3">
                   {metrics.map((m) => (
                     <span class="flex items-baseline gap-2">
-                      <span class="text-3xl leading-none font-extrabold tracking-[-0.04em] tabular-nums">{m.value}</span>
+                      <span class="text-3xl leading-none font-bold tracking-[-0.04em] tabular-nums">{m.value}</span>
                       <span class="text-sm text-muted">{m.label}</span>
                     </span>
                   ))}
@@ -226,7 +226,7 @@ const specs = [
               <Icon name="lucide:arrow-right" class="size-4 text-fg transition-transform duration-500 group-hover:translate-x-1" aria-hidden="true" />
             </span>
             <span class="flex items-end justify-between gap-6">
-              <span class="text-[clamp(3rem,12vw,13rem)] leading-[0.82] font-extrabold tracking-[-0.065em] transition-transform duration-700 ease-(--ease-out-expo) group-hover:translate-x-3">
+              <span class="text-[clamp(3rem,12vw,13rem)] leading-[0.82] font-bold tracking-[-0.065em] transition-transform duration-700 ease-(--ease-out-expo) group-hover:translate-x-3">
                 {next.title}
               </span>
               <span class="next-cover hidden aspect-[16/10] w-[min(26rem,30vw)] shrink-0 overflow-hidden rounded-md md:block">

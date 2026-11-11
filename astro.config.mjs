@@ -15,6 +15,14 @@ export default defineConfig({
   // CSS inline en cada página: quita la petición que bloqueaba el render (~1 s en móvil)
   build: { inlineStylesheets: "always" },
 
+  // Todo vive en el home: las páginas sueltas de antes redirigen a su sección
+  redirects: {
+    "/servicios": "/#services",
+    "/contacto": "/#contact",
+    "/en/services": "/en#services",
+    "/en/contact": "/en#contact",
+  },
+
   i18n: {
     defaultLocale: "es",
     locales: ["es", "en"],
@@ -25,10 +33,11 @@ export default defineConfig({
 
   fonts: [
     {
-      provider: fontProviders.google(),
-      name: "Geist",
+      // Neo-grotesca libre (Fontshare), lo más cercano a la ABC Diatype de la referencia (de pago)
+      provider: fontProviders.fontshare(),
+      name: "Switzer",
       cssVariable: "--font-sans",
-      weights: [400, 500, 600, 700, 800],
+      weights: [400, 500, 600, 700],
       styles: ["normal"],
       subsets: ["latin"],
       fallbacks: ["system-ui", "sans-serif"],
@@ -53,6 +62,8 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
+      // La tarjeta de contacto va con noindex: fuera del sitemap
+      filter: (page) => !/\/(tarjeta|card)\/?$/.test(page),
       i18n: {
         defaultLocale: "es",
         locales: { es: "es-MX", en: "en-US" },

@@ -9,11 +9,19 @@ const q = <T extends Element = HTMLElement>(sel: string) => gsap.utils.toArray<T
 
 let mm: gsap.MatchMedia | null = null;
 let glCleanup: (() => void) | null = null;
+let techCleanup: (() => void) | null = null;
 
 export function initAnimations(): void {
   const canvas = document.querySelector<HTMLCanvasElement>("[data-gl]");
   // isConnected: si el usuario ya navegó a otra página, no arrancar sobre un canvas huérfano
   if (canvas) import("./hero-gl").then((m) => canvas.isConnected && (glCleanup = m.initHeroGL(canvas)));
+
+  // Efecto del nombre del hero (canvas). Se carga aparte: solo existe en el home
+  const title = document.querySelector<HTMLElement>("[data-tech-text]");
+  const techCanvas = title?.querySelector<HTMLCanvasElement>("[data-tech-canvas]");
+  const zone = title?.closest<HTMLElement>("[data-tech-zone]");
+  if (title && techCanvas && zone)
+    import("./tech-text").then((m) => title.isConnected && (techCleanup = m.initTechText(title, techCanvas, zone)));
 
   mm = gsap.matchMedia();
   mm.add(
@@ -35,6 +43,8 @@ export function teardownAnimations(): void {
   mm = null;
   glCleanup?.();
   glCleanup = null;
+  techCleanup?.();
+  techCleanup = null;
 }
 
 /* ── Hero al hacer scroll (el intro de entrada es CSS: ver global.css) ── */
@@ -101,7 +111,10 @@ function reveals() {
     const tl = gsap.timeline({ scrollTrigger: onEnter(el, "top 85%"), defaults: { duration: 1.5, ease: "expo.inOut" } });
     tl.fromTo(el, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)" });
     const img = el.querySelector("img");
-    if (img) tl.from(img, { scale: 1.3, duration: 1.8, ease: EASE }, 0);
+    if (!img) return;
+    tl.from(img, { scale: 1.3, duration: 1.8, ease: EASE }, 0);
+    // Recortada al 100 % el lazy-load nativo no la pide: se adelanta antes de que entre en pantalla
+    ScrollTrigger.create({ trigger: el, start: "top 250%", once: true, onEnter: () => (img.loading = "eager") });
   });
 
   q("[data-count]").forEach((el) => {

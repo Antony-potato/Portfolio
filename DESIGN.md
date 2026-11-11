@@ -1,13 +1,45 @@
 # DESIGN.md — Línea visual del portafolio
 
-> **Versión:** 2.2 — 2026-11-10 (`feat/limpieza-home`: §0.2 y §0.1). Base 2.0 — 2026-09-30.
+> **Versión:** 2.4 — 2026-11-11 (`feat/limpieza-home`: §0.4, §0.3, §0.2 y §0.1). Base 2.0 — 2026-09-30.
 > **Tono:** editorial-brutalista con calidez lo-fi.
 > **Inspiración directa:** ChainGPT Labs (estructura), Teenage Engineering TP-7 (tipografía y metadata), WorldQuant Foundry (animaciones), arte lo-fi anime (atmósfera del hero).
 > Cualquier decisión visual nueva se compara contra este documento antes de mergear.
 
 ---
 
-## 0.2 Escaparate, loader y menú (v2.2 — manda sobre §0 y §0.1)
+## 0.4 Color por proyecto, TechText y tarjeta de contacto (v2.4 — manda sobre todo lo de abajo)
+
+| Tema | v2.4 |
+|---|---|
+| Escaparate: color por proyecto | El bloque fijo del escaparate toma como fondo el **color de marca del proyecto activo** (frontmatter `accent` + `accentInk: light \| dark` en cada `.mdx`): Aldea Savia `#B85C47`, Andiani `rgb(0 60 79)`, Koa `#263022ed`, Pocky beige `#EBDDC3`, cRZR `#0a0a0b`. Las variables `--sc-*` van registradas con `@property` (así el cambio se anima, 700 ms) y `.sc-theme` (global.css) las mapea a los tokens del sitio (`--bg`, `--fg`, `--muted`, `--line`, `--surface`). Con tinta clara todo el texto es blanco puro: sobre el terracota de Aldea es lo único que da AA (4.51:1); los proyectos inactivos de la lista usan `--sc-dim`. Mientras el escaparate está bajo el nav, el nav recibe el mismo tema (`data-ink` invierte el logo). Solo escritorio; el carrusel móvil no cambia. |
+| Proyectos | Se quitó el botón "Ver todos los proyectos" (el índice `/proyectos` sigue existiendo, sin enlace desde el home). |
+| Sobre mí | Foto **a color** (sin `grayscale`). La banda de certificaciones vive dentro de la sección (`Certifications.astro` es un bloque con etiqueta pequeña, ya no una sección con título). |
+| Hero: TechText | El nombre lleva el efecto TechText de React Bits portado a TypeScript sin React (`src/lib/tech-text.ts`, modo `reveal="letter"`): la letra bajo el puntero (o bajo un barrido automático) pasa a su contorno punteado dentro de un marco con motas y etiqueta; las letras y la ficha del pato se arrastran y vuelven con resorte; un clic las patea con onda. Un canvas calca las letras del HTML (`.split-char`), que sigue siendo la primera pintura y el respaldo sin JS o con reduced-motion; cuando el canvas ya pintó, el HTML se oculta (`.is-tech`). El color del marco se puede cambiar con `--tech-accent`. |
+| Tarjeta de contacto | `/tarjeta` y `/en/card` (`ContactCard.astro`, layout `bare` sin nav ni footer, `noindex`, fuera del sitemap). Móvil primero y limpia: foto, nombre, **Enviar WhatsApp** y **Guardar contacto** (vCard estática `/antonio-cortazar.vcf` con foto, generada en el build), filas de teléfono, correo, portafolio, LinkedIn, GitHub y CV, y un bloque para compartir: QR generado en el navegador con `lean-qr` (apunta a la URL donde esté publicada), hoja de compartir nativa y, solo en Chrome Android, grabar el enlace en una etiqueta NFC (Web NFC). Botón "Tarjeta de contacto" en el footer. |
+| Pocky | Portada y galería nuevas con la isla 3D (`isla.webp`, `isla-detalle.webp`, `isla-movil.webp`). |
+
+---
+
+## 0.3 Una sola página, hero tipográfico, blanco y Switzer (v2.3)
+
+Pedido por el usuario tras ver v2.2 en local. Referencia nueva: **paulkalkbrenner.net** (hero y tipografía).
+
+| Tema | v2.3 |
+|---|---|
+| Estructura | **Todo vive en el home**: Hero → Proyectos → Clientes ("Gracias por su confianza") → Servicios → Sobre mí → Certificaciones → Contacto. El menú, el footer y "Hablemos" llevan a anclas (`/#projects`, `/#services`, `/#about`, `/#contact`; en inglés `/en#…`). `/servicios`, `/contacto`, `/en/services` y `/en/contact` ya no son páginas: redirigen a su sección (`redirects` en `astro.config.mjs`). Solo los casos de estudio y su índice siguen aparte. |
+| Scroll a secciones | Un único listener en `BaseLayout.astro` (fase de captura, `preventDefault` para que el ClientRouter no navegue): usa `lenis.scrollTo` si Lenis ya cargó, si no `scrollIntoView`. Lenis ya no usa su opción `anchors`. En escritorio `#projects` no lleva margen arriba para caer justo donde el escaparate queda fijo. |
+| Paleta | Fondo **blanco** (`--color-ink-50: #ffffff`) y neutros sin tinte crema (`ink-100 #f2f2f2`, `ink-200 #dedede`, línea `#d9d9d9`, `--muted #5c5c5c`). El naranja y el modo oscuro no cambian. Grano al 3 %. |
+| Tipografía | **Switzer** (Fontshare, libre, autohospedada con la Fonts API de Astro) en pesos 400/500/600/700. Es la alternativa libre más cercana a la ABC Diatype de la referencia, que es de pago (Dinamo); si se compra la licencia, se cambia en `astro.config.mjs` con el proveedor `local`. Títulos en **700** (antes 800). Geist Mono sigue para etiquetas. Solo se precargan 700 y 500. |
+| Hero | Tipográfico y centrado: `Antonio ▮ Cortazar` en una línea (`9.9vw`, tracking `-0.05em`), con una **ficha** del alto de las minúsculas entre nombre y apellido que lleva el logo del pato calado (`/logo-ac.svg` como máscara); en hover la ficha pasa a naranja. En móvil son dos líneas (`20.5vw`). Abajo, tres datos pequeños en semibold: estado, frase y "Ver proyectos ↓". Sin metaballs (el WebGL queda solo en la 404). |
+| Loader | ~2 s: "Bienvenido a mi portafolio" (`loader.welcome`) sube palabra por palabra sobre pantalla `.inverse`, aparece una línea al centro y **la cortina se abre desde el centro** (dos mitades). Al empezar a abrirse, `html[data-loader="open"]` suelta el intro del hero y el nav para que terminen junto con la cortina (antes arrancaban después y se sentía que "seguía cargando"). Sin logo en franjas, sin barra ni %. No corre si la URL trae ancla. Sigue siendo solo primera carga por sesión y nunca con reduced-motion. |
+| Intro del hero | Más corto: letras 1 s con 22 ms de desfase, datos 0,9 s. La ficha se abre desde el centro (`[data-intro-clip]`). |
+| Certificaciones | Vuelve la **banda** (marquee) como sección propia después de Sobre mí; la lista compacta de Sobre mí se quitó. Datos en `src/lib/certifications.ts` (`short` = lo que se ve). |
+| Escaparate (fix) | La portada activa se quedaba en gris al **subir** por el escaparate: Astro agrega su atributo de scope a cada selector y `[data-dir=up] .sc-cover` (0,4,0) le ganaba a `.sc-cover.is-active` (0,3,0). Ahora no hay estados que compitan: las inactivas van con `visibility: hidden`, la activa encima y la anterior debajo (`.is-prev`) hasta que termina la revelación. La revelación es WAAPI y solo usa `transform` (la portada entra desde abajo/arriba y su contenido se desplaza al revés: efecto de máscara), así va por el compositor; antes `clip-path` + el paneo repintaban una imagen de ~1000 px a 2× en cada frame y trababan el scroll. `--p` (paneo) vive solo en la portada activa y su imagen lleva `will-change: translate`. El scroll se procesa una vez por frame (`requestAnimationFrame`). Las portadas se piden y decodifican una pantalla antes de llegar (IntersectionObserver) y, de respaldo, la activa y sus vecinas al cambiar de proyecto. |
+| Imágenes recortadas | Las portadas del escaparate, el retrato (`[data-clip]`) y las vistas previas del menú están ocultas con `clip-path` hasta que les toca: el lazy-load nativo no las pedía a tiempo y salían en gris. Ahora se piden antes: el escaparate al acercarse (IntersectionObserver), `[data-clip]` a 2,5 pantallas (ScrollTrigger) y el menú al acercar el cursor al botón o abrirlo. |
+
+---
+
+## 0.2 Escaparate, loader y menú (v2.2 — el loader, la paleta y la fuente los reemplaza §0.3)
 
 Referencias: **ksenpanchenko.com** (solo cómo muestra los proyectos) y **douglus.co** (loader + intro y menú). Se copia la mecánica, no el aspecto: paleta, Geist y tono siguen igual.
 

@@ -81,7 +81,7 @@ const clients = [
     <!-- Tercera celda: invitación, cierra la rejilla y convierte -->
     <li class="bg-surface">
       <a
-        href={getLocalizedPath(lang, lang === "es" ? "/contacto" : "/contact")}
+        href="#contact"
         class="group flex h-full min-h-[18rem] flex-col justify-between gap-10 p-6 md:min-h-[30rem] md:p-8"
       >
         <span class="flex items-center justify-between font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted">
@@ -89,7 +89,7 @@ const clients = [
           <span class="pulse-dot"></span>
         </span>
         <span class="flex flex-col gap-4">
-          <span class="text-[clamp(2.25rem,3.6vw,3.5rem)] leading-[0.95] font-extrabold tracking-[-0.05em]">
+          <span class="text-[clamp(2.25rem,3.6vw,3.5rem)] leading-[0.95] font-bold tracking-[-0.05em]">
             {t("clients.cta.title")}
           </span>
           <span class="max-w-xs text-muted">{t("clients.cta.body")}</span>

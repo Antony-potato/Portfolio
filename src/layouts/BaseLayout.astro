@@ -11,6 +11,8 @@ import { SITE, buildTitle, type SeoProps } from "~/lib/seo";
 type Props = SeoProps & {
   /** Loader de entrada (solo home, primera carga por sesión) */
   loader?: boolean;
+  /** Sin nav ni footer (tarjeta de contacto) */
+  bare?: boolean;
 };
 
 const lang = getLangFromUrl(Astro.url);
@@ -21,6 +23,7 @@ const {
   canonical = Astro.url.href,
   type = "website",
   loader = false,
+  bare = false,
 } = Astro.props;
 
 const site = Astro.site ?? SITE.url;
@@ -50,7 +53,7 @@ const headInit = `(() => {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" content="#f4f2ed" />
+    <meta name="theme-color" content="#ffffff" />
     {
       // Analítica sin cookies (Umami). Solo se carga si existe PUBLIC_UMAMI_WEBSITE_ID en el .env
       import.meta.env.PUBLIC_UMAMI_WEBSITE_ID && (
@@ -81,7 +84,8 @@ const headInit = `(() => {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" href="/favicon.ico" sizes="32x32" />
 
-    <Font cssVariable="--font-sans" preload />
+    {/* Solo los pesos del primer pantallazo (nombre del hero y nav); el resto carga con swap */}
+    <Font cssVariable="--font-sans" preload={[{ weight: 700 }, { weight: 500 }]} />
     <Font cssVariable="--font-mono" preload />
 
     <script is:inline set:html={headInit} />
@@ -91,11 +95,11 @@ const headInit = `(() => {
   </head>
   <body>
     {loader && <Loader lang={lang} />}
-    <Navbar lang={lang} />
+    {!bare && <Navbar lang={lang} />}
     <main id="main">
       <slot />
     </main>
-    <Footer lang={lang} />
+    {!bare && <Footer lang={lang} />}
 
     <script>
       // El motion (GSAP + Lenis + WebGL) se carga cuando el navegador queda libre: la primera
@@ -104,6 +108,32 @@ const headInit = `(() => {
         "requestIdleCallback" in window ? requestIdleCallback(fn, { timeout: 1200 }) : setTimeout(fn, 150);
       const load = () => Promise.all([import("~/lib/lenis"), import("~/lib/animations")]);
       let page = 0;
+
+      // Enlaces a una sección de esta misma página: scroll suave (con Lenis si ya cargó).
+      // En captura y con preventDefault para que el ClientRouter no lo trate como navegación.
+      addEventListener(
+        "click",
+        (e) => {
+          if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+          const a = (e.target as Element | null)?.closest<HTMLAnchorElement>("a[href*='#']");
+          if (!a || a.target === "_blank") return;
+          const url = new URL(a.href);
+          const bare = (p: string) => p.replace(/\/$/, "");
+          if (url.origin !== location.origin || bare(url.pathname) !== bare(location.pathname) || url.hash.length < 2) return;
+          const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+          if (!target) return;
+          e.preventDefault();
+          history.replaceState(history.state, "", url.hash);
+          const lenis = window.__lenis;
+          if (lenis) {
+            lenis.start(); // el menú lo deja en pausa mientras está abierto
+            lenis.scrollTo(target);
+          } else {
+            target.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+          }
+        },
+        true,
+      );
 
       document.addEventListener("astro:page-load", () => {
         const current = ++page;

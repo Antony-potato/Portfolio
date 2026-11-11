@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import Button from "../ui/Button.astro";
 import { useTranslations, getLocalizedPath, type Lang } from "~/i18n/utils";
 import { EMAIL, PHONE_DISPLAY, whatsappUrl } from "~/lib/contact";
 
@@ -9,15 +10,16 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = useTranslations(lang);
-const es = lang === "es";
 const year = new Date().getFullYear();
 const home = getLocalizedPath(lang, "/");
 
+const section = (id: string) => (home === "/" ? `/#${id}` : `${home}#${id}`);
+
 const nav = [
-  { href: getLocalizedPath(lang, es ? "/proyectos" : "/projects"), label: t("nav.projects") },
-  { href: `${home === "/" ? "" : home}/#about`, label: t("nav.about") },
-  { href: getLocalizedPath(lang, es ? "/servicios" : "/services"), label: t("nav.services") },
-  { href: getLocalizedPath(lang, es ? "/contacto" : "/contact"), label: t("nav.contact") },
+  { href: section("projects"), label: t("nav.projects") },
+  { href: section("services"), label: t("nav.services") },
+  { href: section("about"), label: t("nav.about") },
+  { href: section("contact"), label: t("nav.contact") },
 ];
 
 const socials = [
@@ -34,6 +36,12 @@ const colTitle = "font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-mu
       <p class="max-w-sm font-display text-3xl font-bold leading-[1.05] tracking-[-0.03em] text-balance">
         {t("footer.tagline")}
       </p>
+      <div>
+        <Button href={getLocalizedPath(lang, lang === "es" ? "/tarjeta" : "/card")} variant="secondary">
+          <Icon name="lucide:contact" class="size-4" aria-hidden="true" />
+          {t("card.title")}
+        </Button>
+      </div>
     </div>
 
     <div class="flex flex-col gap-3 md:col-span-3">

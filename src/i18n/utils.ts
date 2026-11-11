@@ -25,7 +25,7 @@ export function getAlternateLang(lang: Lang): Lang {
 }
 
 // Segmentos de ruta que cambian de nombre entre idiomas
-const routes = { proyectos: "projects", servicios: "services", contacto: "contact" } as const;
+const routes = { proyectos: "projects", servicios: "services", contacto: "contact", tarjeta: "card" } as const;
 
 /** Ruta equivalente en el otro idioma: /proyectos/pocky ↔ /en/projects/pocky */
 export function getAlternatePath(lang: Lang, pathname: string): string {

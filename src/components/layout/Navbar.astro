@@ -17,21 +17,24 @@ const t = useTranslations(lang);
 const es = lang === "es";
 
 const home = getLocalizedPath(lang, "/");
-const contactHref = getLocalizedPath(lang, es ? "/contacto" : "/contact");
+// Todo vive en el home: cada enlace del menú lleva a su sección
+const section = (id: string) => (home === "/" ? `/#${id}` : `${home}#${id}`);
+const contactHref = section("contact");
 const preview = async (src: ImageMetadata) => (await getImage({ src, width: 720, format: "webp" })).src;
 
 // Vista previa del menú (escritorio): imagen + 3 palabras por destino. Contacto usa un bloque naranja.
 const items = [
-  { key: "projects", href: getLocalizedPath(lang, es ? "/proyectos" : "/projects"), label: t("nav.projects"), img: await preview(projectsCover) },
-  { key: "about", href: `${home === "/" ? "" : home}/#about`, label: t("nav.about"), img: await preview(portrait) },
-  { key: "services", href: getLocalizedPath(lang, es ? "/servicios" : "/services"), label: t("nav.services"), img: await preview(servicesCover) },
+  { key: "projects", href: section("projects"), label: t("nav.projects"), img: await preview(projectsCover) },
+  { key: "services", href: section("services"), label: t("nav.services"), img: await preview(servicesCover) },
+  { key: "about", href: section("about"), label: t("nav.about"), img: await preview(portrait) },
   { key: "contact", href: contactHref, label: t("nav.contact"), img: null },
 ] as const;
 const words = (key: (typeof items)[number]["key"]) => t(`menu.words.${key}`).split(" · ");
 
-const path = Astro.url.pathname.replace(/\/$/, "") || "/";
-const isActive = (href: string) => !href.includes("#") && (path === href || path.startsWith(`${href}/`));
-const activeKey = items.find((i) => isActive(i.href))?.key ?? "projects";
+// Única página aparte: los casos de estudio (y su índice), que cuentan como "Proyectos"
+const inProjects = Astro.url.pathname.startsWith(getLocalizedPath(lang, es ? "/proyectos" : "/projects"));
+const isActive = (key: string) => inProjects && key === "projects";
+const activeKey = "projects";
 
 const other = getAlternateLang(lang);
 const altHref = getAlternatePath(lang, Astro.url.pathname);
@@ -120,7 +123,7 @@ const menuBtn =
       items.map((it) => (
         <div data-menu-preview={it.key} class:list={["menu-preview", it.key === activeKey && "is-active"]}>
           <div class="menu-preview-media">
-            {it.img ? <img src={it.img} alt="" loading="lazy" decoding="async" /> : <span class="block size-full bg-accent" />}
+            {it.img ? <img data-src={it.img} alt="" decoding="async" /> : <span class="block size-full bg-accent" />}
           </div>
           <p class="menu-preview-words">
             {words(it.key).map((w, k) => (
@@ -150,7 +153,7 @@ const menuBtn =
               <a
                 href={item.href}
                 data-menu-link={item.key}
-                aria-current={isActive(item.href) ? "page" : undefined}
+                aria-current={isActive(item.key) ? "page" : undefined}
                 class="menu-link flex items-center justify-between gap-6"
                 style={`--i:${i}`}
               >
@@ -184,11 +187,16 @@ const menuBtn =
 <style is:global>
   .site-nav {
     view-transition-name: site-nav;
+    color: var(--fg);
     transition:
       transform 600ms var(--ease-in-out-quart),
       opacity 900ms ease,
       background-color 400ms ease,
-      border-color 400ms ease;
+      border-color 400ms ease,
+      --sc-bg 700ms ease,
+      --sc-fg 700ms ease,
+      --sc-muted 700ms ease,
+      --sc-line 700ms ease;
     border-bottom: 1px solid transparent;
   }
   .theme-vt .site-nav {
@@ -202,6 +210,13 @@ const menuBtn =
   }
   .site-nav[data-hidden] {
     transform: translateY(-100%);
+  }
+  /* Sobre el escaparate (.sc-theme): el logo es un SVG negro, se invierte según la tinta del proyecto */
+  .site-nav[data-ink="light"] img {
+    filter: invert(1);
+  }
+  .site-nav[data-ink="dark"] img {
+    filter: none;
   }
 
   .theme-icon {
@@ -321,7 +336,7 @@ const menuBtn =
 
   .menu-link {
     font-size: clamp(2.75rem, min(14vw, 9svh), 6rem);
-    font-weight: 800;
+    font-weight: 700;
     line-height: 0.95;
     letter-spacing: -0.055em;
   }
@@ -513,9 +528,21 @@ const menuBtn =
     const initial = previews.find((p) => p.classList.contains("is-active"));
     const show = (key: string | undefined) => previews.forEach((p) => p.classList.toggle("is-active", p.dataset.menuPreview === key));
 
+    // Las vistas previas viven dentro del <dialog> cerrado y recortadas con clip-path: el lazy-load
+    // nativo no las pide a tiempo. Se cargan al acercar el cursor al botón o al abrir el menú.
+    const warm = () =>
+      menu.querySelectorAll<HTMLImageElement>("img[data-src]").forEach((img) => {
+        img.src = img.dataset.src ?? "";
+        img.removeAttribute("data-src");
+      });
+    const opener = document.querySelector("[data-menu-open]");
+    opener?.addEventListener("pointerenter", warm, { once: true });
+    opener?.addEventListener("focus", warm, { once: true });
+
     let closing = 0;
     const open = () => {
       clearTimeout(closing);
+      warm();
       show(initial?.dataset.menuPreview);
       menu.showModal();
       getLenis()?.stop();
@@ -528,7 +555,7 @@ const menuBtn =
       closing = window.setTimeout(() => menu.close(), reduced() ? 0 : 800);
     };
 
-    document.querySelector("[data-menu-open]")?.addEventListener("click", open);
+    opener?.addEventListener("click", open);
     menu.querySelector("[data-menu-close]")?.addEventListener("click", close);
     menu.querySelector("[data-menu-dim]")?.addEventListener("click", close);
     menu.addEventListener("cancel", (e) => {
@@ -541,10 +568,11 @@ const menuBtn =
       const preview = () => show(a.dataset.menuLink);
       a.addEventListener("pointerenter", preview);
       a.addEventListener("focus", preview);
-      // Al navegar, el dialog se va con la página; solo liberamos el scroll
+      // Misma página: BaseLayout hace el scroll a la sección y aquí solo se cierra el menú.
+      // Desde un caso de estudio el dialog se va con la página; solo liberamos el scroll.
       a.addEventListener("click", () => {
         getLenis()?.start();
-        if (a.hash) close();
+        close();
       });
     });
   });

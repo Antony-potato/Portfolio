@@ -1,0 +1,194 @@
+---
+// Tarjeta de contacto digital (/tarjeta, /en/card). Pensada para móvil: se comparte por QR, por el
+// menú de compartir del teléfono o grabando el enlace en una etiqueta NFC, y quien la abre puede
+// guardar el contacto (vCard) o escribir por WhatsApp con un toque.
+import { Picture } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import portrait from "~/assets/portrait.webp";
+import { useTranslations, getLocalizedPath, getAlternateLang, getAlternatePath, type Lang } from "~/i18n/utils";
+import { languages } from "~/i18n/ui";
+import { EMAIL, PHONE_DISPLAY, WHATSAPP_NUMBER, whatsappUrl } from "~/lib/contact";
+import { cvPath } from "~/lib/cv";
+import { SITE } from "~/lib/seo";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const home = getLocalizedPath(lang, "/");
+const other = getAlternateLang(lang);
+const cv = cvPath(lang);
+const domain = new URL(Astro.site ?? SITE.url).host;
+
+const rows = [
+  { icon: "lucide:phone", label: t("card.call"), value: `+52 ${PHONE_DISPLAY}`, href: `tel:+${WHATSAPP_NUMBER}` },
+  { icon: "lucide:mail", label: t("card.email"), value: EMAIL, href: `mailto:${EMAIL}` },
+  { icon: "lucide:globe", label: t("card.portfolio"), value: domain, href: home },
+  { icon: "simple-icons:linkedin", label: "LinkedIn", value: "in/antoniocortazar", href: "https://linkedin.com/in/antoniocortazar", external: true },
+  { icon: "simple-icons:github", label: "GitHub", value: "Antony-potato", href: "https://github.com/Antony-potato", external: true },
+  ...(cv ? [{ icon: "lucide:file-text", label: t("card.cv"), value: "PDF", href: cv, external: true }] : []),
+];
+const action = "flex h-14 items-center justify-center gap-2.5 rounded-full text-base font-semibold transition-transform duration-300 active:scale-[0.98]";
+---
+
+<div class="mx-auto flex min-h-svh w-full max-w-md flex-col gap-7 px-5 pt-5 pb-10">
+  <header class="flex items-center justify-between font-mono text-[0.6875rem] uppercase tracking-[0.08em]">
+    <a href={home} class="flex items-center gap-2.5" aria-label={`Antonio Cortazar — ${t("card.portfolio")}`}>
+      <img src="/logo-ac.svg" alt="" width="24" height="24" class="size-6 dark:invert" />
+      <span>{t("card.title")}</span>
+    </a>
+    <a href={getAlternatePath(lang, Astro.url.pathname)} hreflang={other} lang={other} class="text-muted">
+      <span class="text-fg">{languages[lang]}</span> / {languages[other]}
+    </a>
+  </header>
+
+  <div class="overflow-hidden rounded-xl bg-surface">
+    <Picture
+      src={portrait}
+      formats={["avif", "webp"]}
+      widths={[480, 800]}
+      sizes="(min-width: 448px) 408px, 90vw"
+      alt={lang === "es" ? "Antonio Cortazar sentado frente a una galería de arte" : "Antonio Cortazar sitting in front of an art gallery wall"}
+      loading="eager"
+      class="aspect-[4/3] w-full object-cover object-bottom"
+    />
+  </div>
+
+  <div>
+    <h1 class="text-[2.5rem] leading-[0.95] tracking-[-0.045em]">Antonio Cortazar</h1>
+    <p class="mt-2 text-lg text-muted">{t("hero.role")} · Cancún, MX</p>
+  </div>
+
+  <div class="grid gap-3">
+    <a href={whatsappUrl(t("whatsapp.message"))} target="_blank" rel="noopener noreferrer" class={`${action} bg-accent text-ink-950`}>
+      <Icon name="simple-icons:whatsapp" class="size-5" aria-hidden="true" />
+      {t("card.whatsapp")}
+    </a>
+    <a href="/antonio-cortazar.vcf" download="Antonio Cortazar.vcf" class={`${action} bg-fg text-bg`}>
+      <Icon name="lucide:user-plus" class="size-5" aria-hidden="true" />
+      {t("card.save")}
+    </a>
+  </div>
+
+  <ul class="border-t border-line">
+    {
+      rows.map((r) => (
+        <li class="border-b border-line">
+          <a
+            href={r.href}
+            target={"external" in r ? "_blank" : undefined}
+            rel={"external" in r ? "noopener noreferrer" : undefined}
+            class="group flex items-center gap-4 py-4"
+          >
+            <Icon name={r.icon} class="size-5 shrink-0" aria-hidden="true" />
+            <span class="flex min-w-0 flex-1 flex-col">
+              <span class="font-medium">{r.label}</span>
+              <span class="truncate text-sm text-muted">{r.value}</span>
+            </span>
+            <Icon name="lucide:arrow-up-right" class="size-4 shrink-0 text-muted transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <section data-card-share class="rounded-xl border border-line p-5" aria-labelledby="card-share-title">
+    <h2 id="card-share-title" class="eyebrow">{t("card.share.title")}</h2>
+    <!-- El QR siempre va negro sobre blanco (también en tema oscuro) para que cualquier cámara lo lea -->
+    <div class="mt-4 flex items-center gap-5">
+      <div data-card-qr class="size-32 shrink-0 rounded-md bg-white p-2" role="img" aria-label={t("card.qr.alt")}></div>
+      <p class="text-sm leading-snug text-muted">{t("card.qr.hint")}</p>
+    </div>
+    <div class="mt-5 grid gap-2.5">
+      <button type="button" data-card-share-btn class="flex h-12 items-center justify-center gap-2.5 rounded-full border border-line font-medium">
+        <Icon name="lucide:share-2" class="size-4" aria-hidden="true" />
+        <span data-idle={t("card.share")} data-done={t("card.copied")}>{t("card.share")}</span>
+      </button>
+      <!-- Solo aparece donde el navegador puede escribir etiquetas NFC (Chrome en Android) -->
+      <button
+        type="button"
+        hidden
+        data-card-nfc
+        data-idle={t("card.nfc")}
+        data-hold={t("card.nfc.hold")}
+        data-done={t("card.nfc.done")}
+        data-error={t("card.nfc.error")}
+        class="flex h-12 items-center justify-center gap-2.5 rounded-full border border-line font-medium"
+      >
+        <Icon name="lucide:nfc" class="size-4" aria-hidden="true" />
+        <span>{t("card.nfc")}</span>
+      </button>
+    </div>
+    <p role="status" aria-live="polite" class="sr-only" data-card-status></p>
+  </section>
+
+  <p class="mt-auto text-center font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-muted">
+    © {new Date().getFullYear()} Antonio Cortazar
+  </p>
+</div>
+
+<script>
+  // Web NFC no está en los tipos del DOM
+  declare class NDEFReader {
+    write(message: { records: Array<{ recordType: "url"; data: string }> }): Promise<void>;
+  }
+
+  function initCard() {
+    const root = document.querySelector<HTMLElement>("[data-card-share]");
+    if (!root || root.dataset.bound) return;
+    root.dataset.bound = "true";
+    // El enlace que se comparte es el de la página tal como está publicada (sirve en cualquier dominio)
+    const url = location.origin + location.pathname;
+    const status = root.querySelector<HTMLElement>("[data-card-status]");
+
+    // QR: se genera en el navegador con lean-qr y se pinta como un solo <path>
+    const holder = root.querySelector<HTMLElement>("[data-card-qr]");
+    if (holder)
+      import("lean-qr").then(({ generate }) => {
+        const code = generate(url);
+        let d = "";
+        for (let y = 0; y < code.size; y++) for (let x = 0; x < code.size; x++) if (code.get(x, y)) d += `M${x} ${y}h1v1h-1z`;
+        holder.innerHTML = `<svg viewBox="0 0 ${code.size} ${code.size}" shape-rendering="crispEdges" width="100%" height="100%"><path d="${d}" fill="#000"/></svg>`;
+      });
+
+    // Compartir: hoja nativa del teléfono; si no existe, copia el enlace
+    const share = root.querySelector<HTMLButtonElement>("[data-card-share-btn]");
+    const shareLabel = share?.querySelector<HTMLElement>("span");
+    share?.addEventListener("click", async () => {
+      if (navigator.share) {
+        await navigator.share({ title: "Antonio Cortazar", url }).catch(() => {});
+        return;
+      }
+      await navigator.clipboard?.writeText(url).catch(() => {});
+      if (!shareLabel) return;
+      shareLabel.textContent = shareLabel.dataset.done ?? "";
+      if (status) status.textContent = shareLabel.dataset.done ?? "";
+      setTimeout(() => (shareLabel.textContent = shareLabel.dataset.idle ?? ""), 2000);
+    });
+
+    // NFC: graba el enlace en una etiqueta para compartir la tarjeta con un toque
+    const nfc = root.querySelector<HTMLButtonElement>("[data-card-nfc]");
+    const nfcLabel = nfc?.querySelector<HTMLElement>("span");
+    if (nfc && nfcLabel && "NDEFReader" in window) {
+      nfc.hidden = false;
+      const say = (key: "idle" | "hold" | "done" | "error") => {
+        nfcLabel.textContent = nfc.dataset[key] ?? "";
+        if (status && key !== "idle") status.textContent = nfcLabel.textContent;
+      };
+      nfc.addEventListener("click", async () => {
+        say("hold");
+        try {
+          await new NDEFReader().write({ records: [{ recordType: "url", data: url }] });
+          say("done");
+        } catch {
+          say("error");
+        }
+        setTimeout(() => say("idle"), 3000);
+      });
+    }
+  }
+
+  document.addEventListener("astro:page-load", initCard);
+</script>
