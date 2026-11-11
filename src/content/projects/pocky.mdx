@@ -1,10 +1,10 @@
 ---
 title: "Pocky"
-summary: "Mascota virtual PWA con sincronización en tiempo real entre dispositivos. Funciona en iOS y Android desde la web."
+summary: "Mascota virtual compartida en una isla 3D: dos teléfonos la cuidan en tiempo real, sigue viviendo con la app cerrada y avisa con notificaciones push."
 role: "Fullstack Developer"
-year: 2025
+year: 2026
 client: "Proyecto personal"
-stack: ["React", "Firebase", "TypeScript", "PWA", "Service Workers"]
+stack: ["Next.js", "Three.js", "React Three Fiber", "Firebase", "TypeScript", "PWA"]
 category: "pwa"
 liveUrl: "https://pocky-next.vercel.app"
 repoUrl: "https://github.com/Antony-potato/Pocky"
@@ -17,24 +17,28 @@ lang: "es"
 
 ## Contexto
 
-**Pocky** es una mascota virtual estilo Tamagotchi pero moderna: corre en cualquier navegador, se instala como app y mantiene el estado sincronizado entre dispositivos en tiempo real. La idea: experimentar con PWA + Firebase y ver hasta dónde se puede empujar el navegador como runtime de app móvil.
+**Pocky** es una mascota virtual estilo Tamagotchi para dos personas: los dos la cuidan desde su teléfono y ven el mismo estado al instante. Empezó como una PWA 2D y evolucionó a una **isla 3D** donde Pocky camina sola al cuenco, al estanque, a jugar o a su cama según lo que le pidas. Todo corre en el navegador y se instala sin tienda de apps.
 
 ## Reto
 
-- Estado en tiempo real entre iPhone y Android sin servidor propio.
-- Instalable como app desde Safari (PWA en iOS tiene caprichos).
-- Service Workers para background tasks (el bicho se pone triste si no le hablas).
-- Latencia humana — animaciones que se sientan vivas, no robóticas.
+- Dos teléfonos tocando el mismo estado a la vez sin pisarse.
+- Que la mascota tenga hambre o sueño aunque nadie tenga la app abierta.
+- Notificaciones push que lleguen de verdad en iPhone (PWA instalada) y Android, sin spam.
+- Una escena 3D viva y fluida en móviles modestos.
+- Un modo sin conexión honesto: `navigator.onLine` miente.
 
 ## Solución
 
-- **Firebase Realtime DB** para sincronización con presence.
-- Manifest + iconos optimizados para añadir a Home Screen en iOS y Android.
-- Service Worker con estrategia de cache `stale-while-revalidate`.
-- Loop de animación con `requestAnimationFrame` y interpolación.
+- **Isla 3D generada por código** con Three.js y React Three Fiber: casa, árboles, estanque y caminos. Pocky se mueve por un grafo de puntos de paso y la luz cambia según la hora del día.
+- **Firestore** con caché persistente: la app arranca con los últimos datos aunque no haya red. Cada acción va en una **transacción** para que dos dispositivos no se sobrescriban.
+- **Sesión anónima** de Firebase Auth + reglas de Firestore: nada se lee ni escribe sin sesión.
+- **Degradación 24/7**: un cron externo llama cada 15 min a una ruta de Next.js protegida con secreto que aplica la misma lógica pura que el cliente.
+- **Push con Firebase Cloud Messaging**: mensajes solo de datos que pinta el service worker (fiable en iOS, sin duplicados), máximo uno cada 4 h y limpieza automática de tokens muertos.
+- Densidad de pasto reducida en dispositivos con 4 núcleos o menos.
 
 ## Resultado
 
-- Funciona como app instalable en iPhone y Android sin tienda.
-- Estado sincronizado en menos de 200 ms entre dispositivos.
-- 0 backend propio — toda la lógica vive en cliente + Firebase.
+- Se instala como app en iPhone y Android desde el navegador, sin tienda.
+- El estado se comparte en tiempo real entre los dos teléfonos y se mantiene con la app cerrada.
+- Las notificaciones llegan en iPhone y no se acumulan en Android.
+- Indica de forma clara cuándo lo que haces sin conexión no se va a guardar.
