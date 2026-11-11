@@ -415,7 +415,7 @@
   --gl-opacity: 0.5;
 }
 [data-gl-wrap] {
-  mask-image: linear-gradient(to bottom, #000 35%, transparent 92%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 80%);
 }
 
 /* Mientras corre el loader (Loader.astro): sin scroll, el intro del hero en pausa y el nav oculto */

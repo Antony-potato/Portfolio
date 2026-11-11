@@ -14,24 +14,26 @@ const projectsPath = getLocalizedPath(lang, lang === "es" ? "/proyectos" : "/pro
 ---
 
 <section data-hero class="relative isolate flex min-h-svh flex-col overflow-clip">
-  <!-- Metaballs con dithering 1-bit (ver lib/hero-gl.ts) -->
+  <!-- Metaballs con dithering 1-bit (ver lib/hero-gl.ts). Tenue y desvanecido hacia abajo (global.css). -->
   <div data-gl-wrap class="absolute inset-0 -z-10" aria-hidden="true">
     <canvas data-gl class="pixelated size-full"></canvas>
   </div>
 
-  <div data-hero-inner class="wrapper flex flex-1 flex-col pt-[calc(var(--nav-h)+1.25rem)] pb-8 md:pb-10">
-    <p data-intro-up style="--d:0" class="tag self-end bg-bg">
-      <span class="pulse-dot"></span>
-      {t("hero.spec.status.value")}
-    </p>
+  <div data-hero-inner class="wrapper flex flex-1 flex-col pt-[calc(var(--nav-h)+1.25rem)] pb-10 md:pb-14">
+    <div class="flex justify-end">
+      <p data-intro-up style="--d:0" class="tag bg-bg">
+        <span class="pulse-dot"></span>
+        {t("hero.spec.status.value")}
+      </p>
+    </div>
 
     <div class="mt-auto grid gap-6 pt-10 lg:grid-cols-12 lg:items-end lg:gap-8">
       <p
         data-intro-up
         style="--d:1"
-        class="max-w-xl text-[clamp(1.25rem,2vw,1.75rem)] leading-[1.35] font-medium tracking-[-0.015em] lg:col-span-6 lg:col-start-7"
+        class="max-w-xl text-[clamp(1.25rem,2vw,1.75rem)] leading-[1.35] font-medium tracking-[-0.015em] text-balance lg:col-span-6 lg:col-start-7"
       >
-        <span class="bg-bg box-decoration-clone px-1.5">{t("hero.title")}</span>
+        {t("hero.title")}
       </p>
       <div data-intro-up style="--d:2" class="lg:col-span-6 lg:col-start-7 lg:-mt-2">
         <Button href={projectsPath} size="lg" magnetic>

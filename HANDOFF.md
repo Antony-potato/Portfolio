@@ -14,17 +14,14 @@ Fecha: 2026-11-10. Resume todo lo hecho para que otra sesión siga sin releer la
 
 ## 2. Estado de git
 
-- Rama: **`feat/limpieza-home`**, subida a GitHub. Sale de `feat/cv-download` (commit `5068e12`, CV descargable), que a su vez sale de `main` (`f5b593e`). O sea, esta rama **incluye el CV**.
-- Commits de esta sesión, encima de `5068e12`:
-  1. Contenido de Pocky actualizado (es/en). Estaba sin commitear en Windows.
-  2. Limpieza del home + escaparate de proyectos + loader + menú (todo lo de abajo) + este archivo.
+- Rama: **`feat/limpieza-home`**, en GitHub. Historia:
+  - `5068e12` CV descargable por idioma (venía de `feat/cv-download`, solo estaba en Windows).
+  - `a0f4e7c` contenido de Pocky actualizado (es/en).
+  - `d3921a8` escaparate + loader + menú (Windows).
+  - `fe25ff7` limpieza v2.1 (Mac), fusionada con un merge commit.
+- En la fusión: hero, SectionTitle, Sobre mí, certificaciones y footer quedaron con la **versión de la Mac** (la que el usuario ya aprobó), con Sobre mí adaptado a la API del CV de esta rama (`cvPath(lang)`). Menú, escaparate, `ProjectCard`, loader y `global.css` quedaron con la versión de Windows (`global.css` usa la máscara del hero de la Mac).
 - Sin subir a propósito: `.claude/settings.local.json` (configuración local de Windows).
-- **En la Mac**: hay otra versión de la limpieza sin commitear sobre una rama local también llamada `feat/limpieza-home` (salida de `main`). La de GitHub la reemplaza. Para usarla allá sin perder nada:
-  ```sh
-  git stash -u                      # guarda la versión vieja de la Mac, por si acaso
-  git fetch origin
-  git checkout -B feat/limpieza-home origin/feat/limpieza-home
-  ```
+- **En la Mac**: la rama local ya tiene `fe25ff7`; basta con `git pull` (fast-forward). Si quedó algo sin commitear allá, guardarlo antes con `git stash -u`.
 
 ## 3. Hecho
 
@@ -32,7 +29,7 @@ Fecha: 2026-11-10. Resume todo lo hecho para que otra sesión siga sin releer la
 - Home con 4 secciones: `Hero → Proyectos → Sobre mí → Contacto`.
 - Sin números 01–06 en secciones, nav ni contacto. `SectionTitle` ya no tiene prop `index`; título `clamp(2rem,4.5vw,4rem)`.
 - Hero: un solo CTA ("Ver proyectos"); sin eyebrow `// 00`, sin franja Rol/Base/Enfoque, sin "Scroll", sin WhatsApp. Metaballs al 32 % (50 % en oscuro) con `mask-image` hacia abajo (`global.css`, `[data-gl]` / `[data-gl-wrap]`).
-- Sobre mí compacto: foto, título, cuerpo, botón de CV, 4 cifras en tamaño normal y certificaciones como lista. Datos en `src/lib/certifications.ts` (todas con `url: "#"` = placeholders; con `#` se muestran sin link).
+- Sobre mí compacto (versión de la Mac): foto, título, cuerpo, botón de CV, 4 cifras pequeñas y certificaciones como lista con ícono. Datos en `getCertifications()` de `src/lib/certifications.ts` (todas con `url: "#"` = placeholders).
 - Se borró `Certifications.astro`. Clientes se movió a `/servicios` y `/en/services`. Servicios ya no está en el home.
 - Footer: sin wordmark gigante, sin "Astro 7 · GSAP · WebGL", sin WhatsApp repetido.
 - `animations.ts`: se quitaron `stackCards()` y `data-wordmark`.
@@ -56,6 +53,7 @@ El usuario aclaró el alcance: de **ksenpanchenko.com** solo le gustó **cómo m
   - Escritorio: a la izquierda, vista previa por enlace (hover/foco): imagen en gris que se abre desde el centro + 3 palabras con entrada 3D. Imágenes: Proyectos = portada de Aldea Savia, Sobre mí = retrato, Servicios = portada de cRZR tech, Contacto = bloque naranja. Palabras en `src/i18n/ui.ts` → `menu.words.*` (es/en; **las inventé, validar con el usuario**).
 
 ### 3.3 Verificación hecha
+- Tras la fusión se repitieron `astro check` y `build`, más capturas del hero y de Sobre mí.
 - `astro check`: 0 errores. `npm run build`: OK (los avisos `MODULE_LEVEL_DIRECTIVE` vienen de los `.mdx`, no se tocaron). JS de `/` muy por debajo de 80 KB.
 - Capturas con Chrome headless por CDP (no había herramienta de navegador en la sesión; script de Node sin dependencias): escritorio 1440×900 en claro y oscuro, móvil 390×844 (sin scroll horizontal; botones Menú/Cerrar alineados al píxel), `/en`, `/servicios`, reduced-motion (sin loader, el escaparate sí cambia), navegación con el ClientRouter (sin loader, el escaparate se reinicia), clic en la lista, foco en el menú y Esc. Sin errores en consola.
 

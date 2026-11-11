@@ -1,9 +1,40 @@
 # DESIGN.md — Línea visual del portafolio
 
-> **Versión:** 2.2 — 2026-11-10 (`feat/limpieza-home`: §0.1 y §0.2). Base 2.0 — 2026-09-30.
+> **Versión:** 2.2 — 2026-11-10 (`feat/limpieza-home`: §0.2 y §0.1). Base 2.0 — 2026-09-30.
 > **Tono:** editorial-brutalista con calidez lo-fi.
 > **Inspiración directa:** ChainGPT Labs (estructura), Teenage Engineering TP-7 (tipografía y metadata), WorldQuant Foundry (animaciones), arte lo-fi anime (atmósfera del hero).
 > Cualquier decisión visual nueva se compara contra este documento antes de mergear.
+
+---
+
+## 0.2 Escaparate, loader y menú (v2.2 — manda sobre §0 y §0.1)
+
+Referencias: **ksenpanchenko.com** (solo cómo muestra los proyectos) y **douglus.co** (loader + intro y menú). Se copia la mecánica, no el aspecto: paleta, Geist y tono siguen igual.
+
+| Tema | v2.2 |
+|---|---|
+| Proyectos (escritorio, `lg+`) | Escaparate fijo en `Projects.astro`: contenedor de `100svh + n × 75svh` con bloque `sticky`. Izquierda: título, lista 01–05 (clic = baja a ese proyecto), meta + resumen + stack + "Ver caso" del activo y contador gigante que rueda. Derecha: portadas apiladas; la nueva se revela con `clip-path` (abajo→arriba al bajar, al revés al subir) y paneo leve según el avance (`--p`). Curva `cubic-bezier(0.87, 0, 0.13, 1)`. El script vive en el componente, fuera de `gsap.matchMedia`: con reduced-motion el proyecto activo también cambia (sin transición). |
+| Proyectos (móvil/tablet) | Carrusel horizontal con `scroll-snap` y `ProjectCard` compacta (portada, meta, título, resumen). |
+| Loader (`Loader.astro`) | Solo en el home, solo la **primera carga completa por sesión** (`sessionStorage`), nunca con reduced-motion ni al navegar con el ClientRouter. Pantalla `.inverse` con el logo AC partido en 6 franjas que entran desfasadas y "titilan", nombre que sube desde una máscara, barra + % (mínimo 1,5 s; espera en 90 % a `document.fonts.ready`). Sale con una banda del color de la página: línea horizontal → se abre en vertical. Mientras dura, `html[data-loader]` bloquea el scroll, pausa el intro CSS del hero y oculta el nav; al quitarse, el intro arranca. Red de seguridad: el atributo se quita solo a los 9 s. **Excepción consciente a §6.3** (loaders artificiales): lo pidió el usuario; retrasa el LCP en la primera visita. |
+| Menú | Botón "Menú" (al centro en escritorio, a la derecha en móvil) con líneas que se cruzan y etiqueta que rueda a "Cerrar". `<dialog>` modal (focus trap, Esc): fondo `ink-950/90`, panel siempre claro (`.paper`) a la derecha con enlaces gigantes que suben escalonados, punto en la página actual y pie con contacto, reloj de Cancún e idioma. En escritorio, a la izquierda, vista previa por enlace (imagen en gris que se abre desde el centro + 3 palabras que entran en 3D; claves `menu.words.*`). Ya no hay enlaces sueltos en el nav. |
+
+---
+
+## 0.1 Cambios v2.1 — limpieza del home (2026-11-10, manda sobre v2.0)
+
+Motivo: el home se sentía saturado (≈10 900 px, 8 títulos gigantes, WhatsApp repetido 5 veces, naranja compitiendo con el texto).
+
+| Tema | v2.1 |
+|---|---|
+| Home | 4 secciones: **Hero → Proyectos → Sobre mí → Contacto** (≈5 600 px en desktop). Los proyectos van primero. |
+| Hero | Sin eyebrow `// 00`, sin franja ROL/BASE/ENFOQUE ni SCROLL. Un solo CTA ("Ver proyectos"). Metaballs al 32 % (50 % en oscuro) y desvanecidos hacia abajo con `mask-image` para no pasar detrás del nombre. |
+| Tipografía display | Gigante solo en el nombre del hero y en "¿Construimos algo juntos?". `SectionTitle` baja a `clamp(2rem, 4.5vw, 4rem)`. Se quitó el wordmark gigante del footer. |
+| Numeración | Sin índices 01–06 en eyebrows de sección ni en el nav desktop. Se quitó el reloj del nav desktop (sigue en el menú móvil). |
+| Proyectos (home) | Rejilla simple: el primero a todo el ancho (21:9), el resto en 2 columnas. Card = portada + título + resumen de 2 líneas + `categoría · año · cliente`. Se quitaron las cards apiladas sticky, la barra de progreso y su JS. |
+| Sobre mí | Sin el párrafo gigante (repetía al hero), sin pie de foto ni botón de WhatsApp. Stats en tamaño normal. Las certificaciones viven aquí como lista compacta (datos en `src/lib/certifications.ts`). |
+| Clientes | Salió del home; ahora está en `/servicios` y `/en/services`, debajo de Servicios. |
+| Servicios / Certificaciones | Salieron del home. Servicios queda en su página; la banda de certificaciones se eliminó. |
+| WhatsApp | Solo en Contacto y en el teléfono del footer. |
 
 ---
 
@@ -33,31 +64,6 @@ Paleta y tipografía base **no cambian** (crema + ink + naranja, Geist / Geist M
 | Grano | Una capa de ruido SVG estática (`body::after`, 4.5 % de opacidad). |
 
 ---
-
-## 0.1 Limpieza del home (v2.1 — manda sobre §0)
-
-El home se sentía saturado. Regla: **cada pantalla muestra una sola cosa**.
-
-| Tema | v2.1 |
-|---|---|
-| Home | 4 secciones: Hero → Proyectos → Sobre mí → Contacto. Clientes pasó a `/servicios` (y `/en/services`); Servicios ya no está en el home; Certificaciones dejó de ser sección. |
-| Numeración | Sin índices 01–06 en secciones, nav ni contacto. La eyebrow queda solo con su etiqueta + línea. |
-| Hero | Sin eyebrow `// 00`, sin franja Rol/Base/Enfoque, sin "Scroll" y sin botón de WhatsApp: un solo CTA. Metaballs al 32 % (50 % en oscuro) con `mask-image` que los desvanece hacia abajo. |
-| SectionTitle | Título `clamp(2rem, 4.5vw, 4rem)`; sin prop `index`. |
-| Sobre mí | Sin párrafo gigante ni pie de foto ni WhatsApp. Stats en tamaño normal. Certificaciones como lista compacta (datos en `src/lib/certifications.ts`; con `url: "#"` se muestran sin link). |
-| Footer | Sin wordmark gigante, sin "Astro 7 · GSAP · WebGL", sin WhatsApp repetido en redes. |
-| Motion | Se quitaron `stackCards()` y `data-wordmark` de `animations.ts`. |
-
-## 0.2 Escaparate, loader y menú (v2.2 — manda sobre §0 y §0.1)
-
-Referencias: **ksenpanchenko.com** (solo cómo muestra los proyectos) y **douglus.co** (loader + intro y menú). Se copia la mecánica, no el aspecto: paleta, Geist y tono siguen igual.
-
-| Tema | v2.2 |
-|---|---|
-| Proyectos (escritorio, `lg+`) | Escaparate fijo en `Projects.astro`: contenedor de `100svh + n × 75svh` con bloque `sticky`. Izquierda: título, lista 01–05 (clic = baja a ese proyecto), meta + resumen + stack + "Ver caso" del activo y contador gigante que rueda. Derecha: portadas apiladas; la nueva se revela con `clip-path` (abajo→arriba al bajar, al revés al subir) y paneo leve según el avance (`--p`). Curva `cubic-bezier(0.87, 0, 0.13, 1)`. El script vive en el componente, fuera de `gsap.matchMedia`: con reduced-motion el proyecto activo también cambia (sin transición). |
-| Proyectos (móvil/tablet) | Carrusel horizontal con `scroll-snap` y `ProjectCard` compacta (portada, meta, título, resumen). |
-| Loader (`Loader.astro`) | Solo en el home, solo la **primera carga completa por sesión** (`sessionStorage`), nunca con reduced-motion ni al navegar con el ClientRouter. Pantalla `.inverse` con el logo AC partido en 6 franjas que entran desfasadas y "titilan", nombre que sube desde una máscara, barra + % (mínimo 1,5 s; espera en 90 % a `document.fonts.ready`). Sale con una banda del color de la página: línea horizontal → se abre en vertical. Mientras dura, `html[data-loader]` bloquea el scroll, pausa el intro CSS del hero y oculta el nav; al quitarse, el intro arranca. Red de seguridad: el atributo se quita solo a los 9 s. **Excepción consciente a §6.3** (loaders artificiales): lo pidió el usuario; retrasa el LCP en la primera visita. |
-| Menú | Botón "Menú" (al centro en escritorio, a la derecha en móvil) con líneas que se cruzan y etiqueta que rueda a "Cerrar". `<dialog>` modal (focus trap, Esc): fondo `ink-950/90`, panel siempre claro (`.paper`) a la derecha con enlaces gigantes que suben escalonados, punto en la página actual y pie con contacto, reloj de Cancún e idioma. En escritorio, a la izquierda, vista previa por enlace (imagen en gris que se abre desde el centro + 3 palabras que entran en 3D; claves `menu.words.*`). Ya no hay enlaces sueltos en el nav. |
 
 ---
 
