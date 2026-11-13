@@ -11,7 +11,7 @@ const fold = (line: string) => line.match(/.{1,74}/g)?.join("\r\n ") ?? line;
 export const GET: APIRoute = async ({ site }) => {
   // Recorte cuadrado alrededor de la persona (el retrato es un plano abierto de 808×1080)
   const photo = await sharp("src/assets/portrait.webp")
-    .extract({ left: 144, top: 540, width: 520, height: 520 })
+    .extract({ left: 224, top: 450, width: 360, height: 360 })
     .resize(360, 360)
     .jpeg({ quality: 78 })
     .toBuffer();

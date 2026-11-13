@@ -145,7 +145,7 @@ Antes de declarar una tarea como completa, agente debe correr **`npm run astro c
 - Imágenes en `src/assets/projects/<slug>/` (`cover.webp` + galería), referenciadas con paths relativos y servidas con `<Picture>` (AVIF + WebP).
 - `video` (opcional): recorrido grabado del sitio en `public/videos/<slug>.mp4` (H.264, 1280 px, sin audio, ≤ 3 MB). Reemplaza la portada en el escaparate, las tarjetas y la cabecera del caso (`CoverVideo.astro`); `cover` queda como póster y es lo que se ve con reduced-motion.
 - `metrics` (opcional): solo cifras medidas y verificables (p. ej. Lighthouse móvil con fecha).
-- OG por proyecto: `public/og/<slug>.png` (1200×630). Si agregas un proyecto, genera su OG.
+- OG por proyecto: `public/og/<slug>.png` (1200×630). Si agregas un proyecto, genera su OG. Al cambiar cualquier imagen de `public/og/`, sube `OG_VERSION` en `src/lib/seo.ts`: WhatsApp, LinkedIn y demás guardan la vista previa por URL de imagen y no la refrescan si la URL no cambia. Mantenlas < 300 KB (PNG con paleta).
 - Locales: campo `lang: "es" | "en"`. Listados filtran por idioma de la ruta.
 - `draft: true` oculta un proyecto de listados, rutas y sitemap (útil para casos pendientes de aprobación del cliente). Nunca usar `getCollection("projects")` directo en páginas: usar `getProjects(lang)`.
 - Contenido de casos: primera persona, qué hice yo, sin cifras que no estén medidas y sin frases de marketing. Todo dato técnico debe poder verificarse en el repo del proyecto.

@@ -9,13 +9,16 @@ export interface SeoProps {
 
 export const SITE = {
   name: "Antonio Cortazar",
-  url: "https://antoniocortazar.dev",
+  url: "https://www.antoniocortazar.dev",
   defaultTitle: "Antonio Cortazar — Software Engineer",
   defaultDescription: "Portafolio de Antonio Cortazar Jimenez. Frontend, integraciones con Firebase y optimización de sistemas. Astro, Next.js, React y TypeScript.",
   defaultImage: "/og/home.png",
   twitter: "@antony_cj",
   author: "Antonio Cortazar Jimenez",
 };
+
+/** Súbelo al cambiar las imágenes de /og: WhatsApp, LinkedIn y compañía guardan la vista previa por URL de imagen */
+export const OG_VERSION = 2;
 
 export function buildTitle(title?: string): string {
   if (!title) return SITE.defaultTitle;
@@ -30,7 +33,7 @@ export const personJsonLd = {
   "@type": "Person",
   name: SITE.author,
   url: SITE.url,
-  image: `${SITE.url}/og/home.png`,
+  image: `${SITE.url}/og/home.png?v=${OG_VERSION}`,
   jobTitle: "Software Engineer",
   email: "mailto:hola@antoniocortazar.dev",
   address: { "@type": "PostalAddress", addressLocality: "Cancún", addressRegion: "Quintana Roo", addressCountry: "MX" },

@@ -6,7 +6,7 @@ import Navbar from "~/components/layout/Navbar.astro";
 import Footer from "~/components/layout/Footer.astro";
 import Loader from "~/components/layout/Loader.astro";
 import { getLangFromUrl, getAlternatePath } from "~/i18n/utils";
-import { SITE, buildTitle, type SeoProps } from "~/lib/seo";
+import { SITE, OG_VERSION, buildTitle, type SeoProps } from "~/lib/seo";
 
 type Props = SeoProps & {
   /** Loader de entrada (solo home, primera carga por sesión) */
@@ -28,7 +28,9 @@ const {
 
 const site = Astro.site ?? SITE.url;
 const fullTitle = buildTitle(title);
-const ogImageUrl = new URL(image, site).toString();
+const ogUrl = new URL(image, site);
+ogUrl.searchParams.set("v", String(OG_VERSION));
+const ogImageUrl = ogUrl.toString();
 const alternates = [
   { hreflang: lang, href: new URL(Astro.url.pathname, site).toString() },
   { hreflang: lang === "es" ? "en" : "es", href: new URL(getAlternatePath(lang, Astro.url.pathname), site).toString() },

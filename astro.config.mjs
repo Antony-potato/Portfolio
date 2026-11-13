@@ -8,7 +8,7 @@ import icon from "astro-icon";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://antoniocortazar.dev",
+  site: "https://www.antoniocortazar.dev",
   trailingSlash: "never",
   prefetch: true,
 
